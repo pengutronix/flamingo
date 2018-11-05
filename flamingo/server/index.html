@@ -1,0 +1,32 @@
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="style.css">
+  </head>
+  <body>
+    <div id="ractive"></div>
+    <script id="main" type="text/html">
+      <div id="main-grid" {{#if overlay > 0}} class="overlay"{{/if}}>
+        <div id="top">
+          <span id="logo" on-click="toggle_overlay">Flamingo</span>
+          <input id="url-input" type="text" value="{{iframe_pathname}}" onChange="iframe_set_url(this.value);" />
+        </div>
+        <iframe src="/" onLoad="ractive.set('iframe_pathname', this.contentWindow.location.pathname);"></iframe>
+        <div id="overlay">
+          <div id="controls">
+            <button on-click="reload">Reload</button>
+            <button on-click="rebuild">Rebuild</button>
+            <button on-click="toggle_index">Toggle Index</button>
+          </div>
+          <h1>{{overlay_heading}}</h1>
+          <p>{{overlay_content}}</p>
+          {{#if log}}
+            <pre class="log">{{#log}}{{#if .level == 'ERROR'}}<span class="{{.level}}">{{.time}} {{.name}} {{.level}}: {{.message}}</span>
+{{/if}}{{/log}}</pre>{{/if}}
+        </div>
+      </div>
+    </script>
+    <script src="lib/ractive.min.js"></script>
+    <script src="lib/rpc.js"></script>
+    <script src="main.js"></script>
+  </body>
+</html>

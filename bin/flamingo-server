@@ -1,0 +1,165 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from datetime import datetime
+import asyncio
+import logging
+import os
+
+from aiohttp.web import Application, run_app
+from aiohttp_json_rpc import JsonRpc
+
+from flamingo.core.utils.cli import gen_default_parser, parse_args
+from flamingo.core.utils.aionotify import RecursiveWatcher
+from flamingo.core.utils.aiohttp import Exporter
+from flamingo.core.context import Context
+from flamingo import SERVER_STATIC_ROOT
+
+
+class RPCHandler(logging.Handler):
+    def handle(self, record):
+        if record.name.startswith('flamingo'):
+            self.rpc.worker_pool.run_sync(
+                self.rpc.notify,
+                'log',
+                {
+                    'time': str(datetime.fromtimestamp(record.created)),
+                    'name': record.name,
+                    'level': record.levelname,
+                    'message': record.getMessage(),
+                },
+                wait=False,
+            )
+
+
+# parse command line
+parser = gen_default_parser()
+
+parser.add_argument('--port', type=int, default=8080)
+parser.add_argument('--host', type=str, default='localhost')
+parser.add_argument('--shell', action='store_true')
+
+namespace, settings = parse_args(parser)
+
+# setup rpc
+loop = asyncio.get_event_loop()
+rpc = JsonRpc(loop=loop, max_workers=4)
+worker_pool = rpc.worker_pool
+
+rpc.add_topics(
+    ('status',),
+    ('log',)
+)
+
+handler = RPCHandler()
+handler.rpc = rpc
+
+logging.getLogger().addHandler(handler)
+
+
+# rpc methods
+async def toggle_index(request):
+    global content_exporter
+
+    content_exporter.show_index = not content_exporter.show_index
+
+    return content_exporter.show_index
+
+
+async def rebuild(request):
+    global context, settings
+
+    settings.CONTENT_PATHS = []
+
+    context = Context(settings)
+    context.build()
+
+    await request.rpc.notify('status', {
+        'changed_paths': ['*'],
+    })
+
+rpc.add_methods(
+    ('', toggle_index),
+    ('', rebuild),
+)
+
+
+# initial build
+context = Context(settings)
+
+context.build()
+
+# setup watcher
+watcher = RecursiveWatcher(settings.CONTENT_ROOT, loop=loop)
+loop.run_until_complete(watcher.setup())
+
+
+async def watcher_task():
+    global context
+
+    while True:
+        path = await watcher.get_file()
+        path = os.path.relpath(path, settings.CONTENT_ROOT)
+
+        settings.CONTENT_PATHS = [path]
+
+        context = Context(settings)
+        context.build(clean=False)
+
+        if not context.contents:
+            continue
+
+        changed_paths = [os.path.join('/', context.contents[0]['output'])]
+
+        if changed_paths[0].endswith('index.html'):
+            changed_paths.append(os.path.dirname(changed_paths[0]))
+            changed_paths.append(changed_paths[-1] + '/',)
+
+        await rpc.notify('status', {
+            'changed_paths': changed_paths,
+        })
+
+loop.create_task(watcher_task())
+
+# setup server
+app = Application(loop=loop)
+content_exporter = Exporter(settings.OUTPUT_ROOT)
+
+app.router.add_route('*', '/live-server/rpc/', rpc)
+
+app.router.add_route('*', '/live-server/{path_info:.*}',
+                          Exporter(SERVER_STATIC_ROOT, prefix='/live-server'))
+
+app.router.add_route('*', '/{path_info:.*}', content_exporter)
+
+# run
+print('starting server on http://{}:{}/live-server/'.format(namespace.host,
+                                                            namespace.port))
+
+if namespace.shell:
+    print('starting shell')
+
+    def start_shell():
+        try:
+            import IPython
+
+            return IPython.embed()
+
+        except ImportError:
+            pass
+
+        import code
+
+        return code.interact(local=globals())
+
+    loop.run_until_complete(
+        loop.create_server(
+            app.make_handler(), namespace.host, namespace.port
+        )
+    )
+
+    loop.run_until_complete(worker_pool.run(start_shell))
+
+else:
+    run_app(app=app, host=namespace.host, port=namespace.port,
+            print=lambda *args, **kwargs: None)

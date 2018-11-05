@@ -1,0 +1,9 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from flamingo.core.utils.cli import parse_args
+from flamingo.core.context import Context
+
+namespace, settings = parse_args()
+
+Context(settings).build()

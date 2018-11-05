@@ -1,0 +1,94 @@
+html,
+body,
+#main-grid {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    color: white;
+}
+
+body {
+    font-size: 16px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+}
+
+/* main grid */
+#main-grid {
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: 1.5em auto 20%;
+}
+
+/* main grid top */
+#main-grid #top {
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 1;
+    grid-row-end: 1;
+
+    background: rgba(5, 5, 5, 0.75);
+    padding: 0.1em 0.2em;
+}
+
+#main-grid #top #logo {
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#main-grid #top #url-input,
+#main-grid #top #url-input:focus {
+    outline: None;
+    background: none;
+    border: none;
+    width: 75%;
+    color: white;
+}
+
+#main-grid iframe {
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 2;
+    grid-row-end: 4;
+
+    border: 0;
+    height: 100%;
+    width: 100%;
+}
+
+/* overlay */
+#overlay {
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 2;
+    grid-row-end: 3;
+    display: none;
+
+    padding: 0em 1em;
+    background: rgba(5, 5, 5, 0.75);
+    font-weight: bold;
+    overflow-y: scroll;
+}
+
+#main-grid.overlay #overlay {
+    display: block;
+}
+
+#overlay #controls {
+    text-align: right;
+}
+
+#overlay h1 {
+    margin-top: 0 !important;
+}
+
+/* log */
+pre.log {
+    font-weight: normal;
+    font-size: 14px;
+    line-heigth: 1ex;
+}
+
+pre.log span.ERROR {
+    color: red;
+}

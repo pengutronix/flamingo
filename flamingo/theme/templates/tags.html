@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Tags</h1>
+  {% for tag in content.tags %}
+    <ul>
+      {% with tag_page = context.contents.get(tag=tag, lang=content.lang) %}
+        <li><a href="{{ tag_page.url }}">{{ tag_page.tag }}</a></li>
+      {% endwith %}
+    </ul>
+  {% endfor %}
+{% endblock %}
