@@ -11,7 +11,7 @@ setup(
     author='Florian Scherf',
     url='https://github.com/pengutronix/flamingo',
     author_email='python@pengutronix.de',
-    license='',
+    license='Apache License 2.0',
     packages=find_packages(),
     install_requires=[
         'jinja2',
