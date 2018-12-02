@@ -1,3 +1,7 @@
+.. image:: https://img.shields.io/travis/pengutronix/flamingo/master.svg
+   :alt: Travis (.org) branch
+   :target: https://travis-ci.org/pengutronix/flamingo
+
 flamingo
 ========
 
