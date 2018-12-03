@@ -6,11 +6,15 @@ from docutils.nodes import raw
 from flamingo.core.parser import ContentParser
 
 
-def parse_rst(rst_input):
+def parse_rst_parts(rst_input):
     if not isinstance(rst_input, str):
         rst_input = '\n'.join(rst_input)
 
-    parts = publish_parts(writer=Writer(), source=rst_input)
+    return publish_parts(writer=Writer(), source=rst_input)
+
+
+def parse_rst(rst_input):
+    parts = parse_rst_parts(rst_input)
     html_output = ''
 
     if parts['title']:
@@ -24,8 +28,13 @@ def parse_rst(rst_input):
 class RSTParser(ContentParser):
     FILE_EXTENSIONS = ['rst']
 
-    def parse_content(self, fp):
-        return parse_rst(fp.read())
+    def parse(self, fp, content):
+        self.parse_meta_data(fp, content)
+
+        parts = parse_rst_parts(fp.read())
+
+        content['content_body'] = parts['body']
+        content['content_title'] = parts['title']
 
 
 class NestedDirective(Directive):

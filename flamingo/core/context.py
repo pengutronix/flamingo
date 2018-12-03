@@ -37,7 +37,7 @@ class Context:
 
         # parse contents
         self.contents = ContentSet()
-        self.content_data = None
+        self.content = None
 
         self._media = []  # FIXME: this should be part of Content()
 
@@ -45,14 +45,14 @@ class Context:
             self.logger.debug("reading %s ", path)
 
             try:
-                content = Content()
-                content['path'] = os.path.relpath(path, settings.CONTENT_ROOT)
+                self.content = Content(
+                    path=os.path.relpath(path, settings.CONTENT_ROOT))
 
-                self.parser.parse(path, content)
+                self.parser.parse(path, self.content)
 
-                self.run_plugin_hook('content_parsed', content)
+                self.run_plugin_hook('content_parsed', self.content)
 
-                self.contents.add(content)
+                self.contents.add(self.content)
 
             except ParsingError as e:
                 self.logger.error('%s: %s', path, e)
@@ -61,7 +61,7 @@ class Context:
                 self.logger.error('exception occoured while reading %s',
                                   path, exc_info=True)
 
-        del self.content_data
+        del self.content
         self.run_plugin_hook('contents_parsed')
 
         # setup templating engine
