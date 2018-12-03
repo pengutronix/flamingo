@@ -15,7 +15,7 @@ class ContentParser:
     def __init__(self):
         self.configparser = ConfigParser(interpolation=None)
 
-    def parse_meta_data(self, fp):
+    def parse_meta_data(self, fp, content):
         meta_data_buffer = StringIO('[meta]\n')
         meta_data_buffer.read()
 
@@ -43,19 +43,13 @@ class ContentParser:
         self.configparser.clear()
         self.configparser.read_file(meta_data_buffer)
 
-        meta = {k: self.configparser.get('meta', k)
-                for k in self.configparser.options('meta')}
+        for option in self.configparser.options('meta'):
+            content[option] = self.configparser.get('meta', option)
 
-        return meta
+    def parse(self, fp, content):
+        self.parse_meta_data(fp, content)
 
-    def parse_content(self, fp):
-        return fp.read().strip()
-
-    def parse(self, fp):
-        meta = self.parse_meta_data(fp)
-        content = self.parse_content(fp)
-
-        return meta, content
+        content['content_body'] = fp.read().strip()
 
 
 class FileParser:
@@ -73,7 +67,7 @@ class FileParser:
     def get_extensions(self):
         return sum([i.FILE_EXTENSIONS for i in self._parsers], [])
 
-    def parse(self, path):
+    def parse(self, path, content):
         extension = os.path.splitext(path)[1][1:]
         parser = self.find_parser(extension)
 
@@ -82,7 +76,7 @@ class FileParser:
                 "file extension '{}' is not supported".format(extension))
 
         try:
-            return parser.parse(open(path, 'r'))  # FIXME: chardet
+            parser.parse(open(path, 'r'), content)  # FIXME: chardet
 
         except ConfigParserError:
             raise ParsingError('Metadata seem to be broken')

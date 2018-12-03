@@ -45,23 +45,14 @@ class Context:
             self.logger.debug("reading %s ", path)
 
             try:
-                # setup current state
-                self.content_data = {
-                    'path': os.path.relpath(path, settings.CONTENT_ROOT),
-                }
+                content = Content()
+                content['path'] = os.path.relpath(path, settings.CONTENT_ROOT)
 
-                # parse content
-                meta, content = self.parser.parse(path)
+                self.parser.parse(path, content)
 
-                # setup Content object from state and parse results
-                content_object = Content(**{
-                    'content': content,
-                    **self.content_data,
-                    **meta,
-                })
+                self.run_plugin_hook('content_parsed', content)
 
-                self.run_plugin_hook('content_parsed', content_object)
-                self.contents.add(content_object)
+                self.contents.add(content)
 
             except ParsingError as e:
                 self.logger.error('%s: %s', path, e)

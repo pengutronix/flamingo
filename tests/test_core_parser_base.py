@@ -6,8 +6,9 @@ def test_meta_data_parsing():
     from io import StringIO
 
     from flamingo.core.parser import ContentParser
+    from flamingo.core.data_model import Content
 
-    content = StringIO("""
+    raw_content = StringIO("""
     a: content of a
     b: content of b
     c:
@@ -18,18 +19,20 @@ def test_meta_data_parsing():
     """)
 
     parser = ContentParser()
-    meta_data, content = parser.parse(content)
+    content = Content()
 
-    assert sorted(list(meta_data.keys())) == ['a', 'b', 'c']
+    parser.parse(raw_content, content)
 
-    assert meta_data['a'] == 'content of a'
-    assert meta_data['b'] == 'content of b'
-    assert meta_data['c'].strip() == 'a, b, c'
+    assert sorted(list(content.data.keys())) == ['a', 'b', 'c', 'content_body']
 
-    assert content == 'content'
+    assert content['a'] == 'content of a'
+    assert content['b'] == 'content of b'
+    assert content['c'].strip() == 'a, b, c'
+
+    assert content['content_body'] == 'content'
 
     # test with whitespaces
-    content = StringIO("""
+    raw_content = StringIO("""
     a: content of a
     b: content of b
     c:
@@ -40,12 +43,14 @@ def test_meta_data_parsing():
     """)  # NOQA
 
     parser = ContentParser()
-    meta_data, content = parser.parse(content)
+    content = Content()
 
-    assert sorted(list(meta_data.keys())) == ['a', 'b', 'c']
+    parser.parse(raw_content, content)
 
-    assert meta_data['a'] == 'content of a'
-    assert meta_data['b'] == 'content of b'
-    assert meta_data['c'].strip() == 'a, b, c'
+    assert sorted(list(content.data.keys())) == ['a', 'b', 'c', 'content_body']
 
-    assert content == 'content'
+    assert content['a'] == 'content of a'
+    assert content['b'] == 'content of b'
+    assert content['c'].strip() == 'a, b, c'
+
+    assert content['content_body'] == 'content'
