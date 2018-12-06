@@ -101,6 +101,8 @@ async def watcher_task():
         path = await watcher.get_file()
         path = os.path.relpath(path, settings.CONTENT_ROOT)
 
+        logging.info('%s changed', path)
+
         settings.CONTENT_PATHS = [path]
 
         context = Context(settings)
