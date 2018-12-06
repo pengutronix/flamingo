@@ -182,7 +182,7 @@ class Context:
                 os.makedirs(dirname)
 
         # remove previous artifacts
-        if clean:
+        if clean and os.path.exists(self.settings.OUTPUT_ROOT):
             self.logger.debug('rm -rf %s', self.settings.OUTPUT_ROOT)
             shutil.rmtree(self.settings.OUTPUT_ROOT)
 
