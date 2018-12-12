@@ -8,5 +8,5 @@
 flamingo
 ========
 
-Flamingo is a python3 based, `pelican <https://blog.getpelican.com/>`_ inspired
-static-site-generator.
+Flamingo is a python3-based, `pelican <https://blog.getpelican.com/>`_-inspired
+static site generator.
