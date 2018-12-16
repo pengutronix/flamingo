@@ -1,3 +1,5 @@
+from io import StringIO
+
 from docutils.writers.html4css1 import Writer
 from docutils.parsers.rst import Directive
 from docutils.core import publish_parts
@@ -10,7 +12,18 @@ def parse_rst_parts(rst_input):
     if not isinstance(rst_input, str):
         rst_input = '\n'.join(rst_input)
 
-    return publish_parts(writer=Writer(), source=rst_input)
+    settings_overrides = {
+        'initial_header_level': '2',
+        'traceback': True,
+        'warning_stream': StringIO(),
+        'embed_stylesheet': False,
+    }
+
+    return publish_parts(
+        settings_overrides=settings_overrides,
+        writer=Writer(),
+        source=rst_input,
+    )
 
 
 def parse_rst(rst_input):
