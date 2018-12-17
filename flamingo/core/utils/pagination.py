@@ -1,4 +1,9 @@
 def paginate(l, context):
+    """
+    yields: page, page_index, total_pages
+
+    """
+
     DEFAULT_PAGINATION = getattr(context.settings, 'DEFAULT_PAGINATION')
     l_count = len(l)
 
