@@ -187,6 +187,14 @@ class ContentSet:
                 else:
                     return_values[-1] = return_values[-1][0]
 
+        if len(field_names) == 1:
+            dirty_return_values = return_values
+            return_values = []
+
+            for i in dirty_return_values:
+                if i not in return_values:
+                    return_values.append(i)
+
         return return_values
 
     def order_by(self, field_name):
