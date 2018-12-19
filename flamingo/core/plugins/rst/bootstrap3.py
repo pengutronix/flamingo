@@ -60,23 +60,49 @@ class BootstrapCol(NestedDirective):
         return nodes
 
 
-class Youtube(NestedDirective):
-    has_content = False
-    required_arguments = 1
+def youtube(context):
+    class Youtube(NestedDirective):
+        has_content = False
+        required_arguments = 1
 
-    template = """
-        <div class="embed-responsive embed-responsive-16by9">
-            <iframe class="embed-responsive-item" src="{url}"></iframe>
-        </div>
-    """
+        option_spec = {
+            'privacy-enhanced-mode': directives.unchanged,
+        }
 
-    def run(self):
-        url = 'https://www.youtube.com/embed/{}'.format(
-            self.arguments[0].strip())
+        template = """
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" src="{url}"></iframe>
+            </div>
+        """
 
-        return [
-            raw('', self.template.format(url=url), format='html')
-        ]
+        def run(self):
+            privacy_enhanced_mode = getattr(
+                context.settings,
+                'RSTBOOTSTRAP3_YOUTUBE_PRIVACY_ENHANCED_MODE',
+                True,
+            )
+
+            if 'privacy-enhanced-mode' in self.options:
+                _privacy_enhanced_mode = self.options.get(
+                    'privacy_enhanced_mode').strip().lower()
+
+                privacy_enhanced_mode = {
+                    'true': True,
+                    '1': True,
+                    'false': False,
+                    '0': False,
+                }[_privacy_enhanced_mode]
+
+            url = 'https://www.youtube{}.com/embed/{}'.format(
+                '-nocookie' if privacy_enhanced_mode else '',
+                self.arguments[0].strip(),
+            )
+
+            return [
+                raw('', self.template.format(url=url), format='html')
+            ]
+
+    return Youtube
 
 
 class Alert(NestedDirective):
@@ -104,5 +130,5 @@ class rstBootstrap3:
         directives.register_directive('div', Container)
         directives.register_directive('row', BootstrapRow)
         directives.register_directive('col', BootstrapCol)
-        directives.register_directive('youtube', Youtube)
+        directives.register_directive('youtube', youtube(context))
         directives.register_directive('alert', Alert)
