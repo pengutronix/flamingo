@@ -7,6 +7,37 @@ from flamingo.core.data_model import ContentSet, Content
 from flamingo.core.utils.imports import acquire
 
 
+def mkdir_p(context, path):
+    dirname = os.path.dirname(path)
+
+    if not os.path.exists(dirname):
+        context.logger.debug('mkdir -p %s', dirname)
+        os.makedirs(dirname)
+
+
+def rm_rf(context, path):
+    context.logger.debug('rm -rf %s', context.settings.OUTPUT_ROOT)
+    shutil.rmtree(path)
+
+
+def cp(context, source_path, destination_path, mkdir_p=mkdir_p):
+    mkdir_p(context, destination_path)
+    context.logger.debug('cp %s %s', source_path, destination_path)
+    shutil.copy(source_path, destination_path)
+
+
+def ln_s(context, source_path, destination_path, mkdir_p=mkdir_p):
+    mkdir_p(context, destination_path)
+    source_path = os.path.abspath(source_path)
+    context.logger.debug('ln -s %s %s', source_path, destination_path)
+
+    try:
+        os.symlink(source_path, destination_path)
+
+    except FileExistsError:
+        pass
+
+
 class Context:
     def __init__(self, settings):
         self.settings = settings
@@ -171,27 +202,19 @@ class Context:
 
         return source_path, destination_path, link
 
-    def build(self, clean=True):
+    def build(self, clean=True, mkdir_p=mkdir_p, cp=cp):
         self.run_plugin_hook('pre_build')
-
-        def makedirs(path):
-            dirname = os.path.dirname(path)
-
-            if not os.path.exists(dirname):
-                self.logger.debug('mkdir -p %s', dirname)
-                os.makedirs(dirname)
 
         # remove previous artifacts
         if clean and os.path.exists(self.settings.OUTPUT_ROOT):
-            self.logger.debug('rm -rf %s', self.settings.OUTPUT_ROOT)
-            shutil.rmtree(self.settings.OUTPUT_ROOT)
+            rm_rf(self, self.settings.OUTPUT_ROOT)
 
         # render contents
         for content in self.contents:
             output_path = os.path.join(self.settings.OUTPUT_ROOT,
                                        content['output'])
 
-            makedirs(output_path)
+            mkdir_p(self, output_path)
 
             # render and write content
             with open(output_path, 'w+') as f:
@@ -210,25 +233,20 @@ class Context:
 
         # copy media
         for source_path, destination_path in self._media:
-            makedirs(destination_path)
-            self.logger.debug('cp %s %s', source_path, destination_path)
-            shutil.copy(source_path, destination_path)
+            cp(self, source_path, destination_path, mkdir_p=mkdir_p)
 
         # copy static
         for static_dir in self.templating_engine.find_static_dirs():
             for root, dirs, files in os.walk(static_dir):
                 for f in files:
-                    src = os.path.join(root, f)
+                    source_path = os.path.join(root, f)
 
-                    dst = os.path.join(
+                    destination_path = os.path.join(
                         self.settings.STATIC_ROOT,
                         os.path.relpath(root, static_dir),
                         f,
                     )
 
-                    self.logger.debug('cp %s %s', src, dst)
-
-                    makedirs(dst)
-                    shutil.copy(src, dst)
+                    cp(self, source_path, destination_path, mkdir_p=mkdir_p)
 
         self.run_plugin_hook('post_build')

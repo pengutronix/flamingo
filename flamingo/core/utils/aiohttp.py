@@ -7,7 +7,8 @@ class Exporter:
     def __init__(self, path, prefix=''):
         self.path = path
         self.prefix = prefix
-        self.resource = StaticResource('', path, show_index=True)
+        self.resource = StaticResource('', path, show_index=True,
+                                       follow_symlinks=True)
         self.show_index = False
 
     async def __call__(self, request):

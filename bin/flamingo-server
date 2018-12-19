@@ -12,7 +12,7 @@ from aiohttp_json_rpc import JsonRpc
 from flamingo.core.utils.cli import gen_default_parser, parse_args
 from flamingo.core.utils.aionotify import RecursiveWatcher
 from flamingo.core.utils.aiohttp import Exporter
-from flamingo.core.context import Context
+from flamingo.core.context import Context, ln_s
 from flamingo import SERVER_STATIC_ROOT
 
 
@@ -72,7 +72,7 @@ async def rebuild(request):
     settings.CONTENT_PATHS = []
 
     context = Context(settings)
-    context.build()
+    context.build(cp=ln_s)
 
     await request.rpc.notify('status', {
         'changed_paths': ['*'],
@@ -87,7 +87,7 @@ rpc.add_methods(
 # initial build
 context = Context(settings)
 
-context.build()
+context.build(cp=ln_s)
 
 # setup watcher
 watcher = RecursiveWatcher(settings.CONTENT_ROOT, loop=loop)
