@@ -10,7 +10,7 @@ def img(context):
         def run(self):
             filename = self.arguments[0]
             _, _, link = context.copy_media(filename,
-                                            context.content_data['path'])
+                                            context.content['path'])
 
             return [
                 raw('', '<img src="{}">'.format(link), format='html'),

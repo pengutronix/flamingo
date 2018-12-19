@@ -1,7 +1,7 @@
 def test_rst_parsing():
     from io import StringIO
 
-    from flamingo.core.plugins.rst.base import RSTParser
+    from flamingo.plugins.rst.base import RSTParser
     from flamingo.core.data_model import Content
 
     raw_content = StringIO("""

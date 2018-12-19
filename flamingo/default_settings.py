@@ -6,10 +6,10 @@ CORE_PLUGINS = [
 ]
 
 DEFAULT_PLUGINS = [
-    'flamingo.core.plugins.HTML',
-    'flamingo.core.plugins.reStructuredText',
-    'flamingo.core.plugins.rstImage',
-    'flamingo.core.plugins.rstFile',
+    'flamingo.plugins.HTML',
+    'flamingo.plugins.reStructuredText',
+    'flamingo.plugins.rstImage',
+    'flamingo.plugins.rstFile',
 ]
 
 PLUGINS = []
