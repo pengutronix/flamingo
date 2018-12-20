@@ -28,6 +28,9 @@ class HTML5TimeTag:
 
         self.context = context
 
+    def strftime(self, *args, **kwargs):
+        return self.time_object.strftime(*args, **kwargs)
+
     def _comp(self, other, comp):
         if isinstance(other, self.__class__):
             return comp(self.time_object, other.time_object)
