@@ -19,6 +19,7 @@ setup(
         'aiohttp-json-rpc',
         'aionotify',
         'coloredlogs',
+        'pygments',
     ],
     scripts=[
         'bin/flamingo-build',
