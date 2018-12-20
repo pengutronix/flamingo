@@ -20,6 +20,7 @@ setup(
         'aionotify',
         'coloredlogs',
         'pygments',
+        'feedgen',
     ],
     scripts=[
         'bin/flamingo-build',
