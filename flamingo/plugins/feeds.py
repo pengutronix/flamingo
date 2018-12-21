@@ -43,7 +43,7 @@ class Feeds:
                     updated = feed_config['updated'](i)
 
                     if updated:
-                        fe.updated()
+                        fe.updated(updated)
 
                 if i['authors']:
                     for author in i['authors']:
