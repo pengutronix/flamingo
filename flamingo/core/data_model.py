@@ -20,79 +20,103 @@ LOGIC_FUNCTIONS = {
 }
 
 
-class Lookup:
-    def __init__(self, **raw_lookup):
-        if len(raw_lookup.keys()) > 1:
-            raise ValueError
+class F:
+    def __init__(self, name):
+        self.name = name
 
-        raw_field = list(raw_lookup.keys())[0]
-        self.value = raw_lookup[raw_field]
+    def __repr__(self):
+        return "F('{}')".format(self.name)
 
-        # parse field
-        raw_field = raw_field.split('__')
 
-        self.field_name = raw_field.pop(0)
+class Q:
+    def __init__(self, *qs, **lookups):
+        self.connector = 'AND'
+        self.negated = False
+        self.qs = None
+        self.lookups = None
 
-        # parse 'not'
-        if raw_field and raw_field[0] == 'not':
-            raw_field.pop(0)
-            self.negated = True
+        if not qs and not lookups:
+            raise TypeError('to few arguments')
+
+        if qs and lookups:
+            raise TypeError('to many arguments')
+
+        if qs:
+            self.qs = qs
+
+        if lookups:
+            self.lookups = lookups
+
+    def __repr__(self):
+        if self.qs:
+            repr_str = ', '.join([
+                repr(q) for q in self.qs
+            ])
+
+        elif self.lookups:
+            repr_str = ', '.join([
+                '{}={}'.format(k, repr(v)) for k, v in self.lookups.items()
+            ])
+
+        return '<{}{}({})>'.format(
+            'NOT ' if self.negated else '',
+            self.connector,
+            repr_str,
+        )
+
+    def __or__(self, other):
+        q = Q(self, other)
+        q.connector = 'OR'
+
+        return q
+
+    def __and__(self, other):
+        return Q(self, other)
+
+    def __invert__(self):
+        self.negated = not self.negated
+
+        return self
+
+    def check(self, obj):
+        results = []
+        end_result = None
+
+        if self.qs:
+            for q in self.qs:
+                results.append(q.check(obj))
+
+        elif self.lookups:
+            for field_name, value in self.lookups.items():
+                logic_function = 'eq'
+
+                if '__' in field_name:
+                    field_name, logic_function = field_name.split('__')
+
+                if isinstance(value, F):
+                    value = obj[value.name]
+
+                try:
+                    results.append(
+                        LOGIC_FUNCTIONS[logic_function](
+                            obj[field_name], value))
+
+                except TypeError:
+                    results.append(False)
+
+        if self.connector == 'AND':
+            end_result = all(results)
+
+        elif self.connector == 'OR':
+            end_result = any(results)
 
         else:
-            self.negated = False
-
-        # parse logic function
-        self.logic_function_name = 'eq'
-
-        if raw_field:
-            if raw_field[0] not in LOGIC_FUNCTIONS:
-                raise ValueError(
-                    'logic function "{}" unknown'.format(raw_field[0]))
-
-            self.logic_function_name = raw_field[0]
-
-        self.logic_function = LOGIC_FUNCTIONS[self.logic_function_name]
-
-    def __repr__(self):
-        lookup_name = self.field_name
+            raise ValueError("unknown connector '{}'".format(self.connector))
 
         if self.negated:
-            lookup_name += '__not'
+            end_result = not end_result
 
-        if self.logic_function_name != 'eq':
-            lookup_name += '__{}'.format(self.logic_function_name)
-
-        return '<Lookup({}={})>'.format(lookup_name, repr(self.value))
-
-    def check(self, obj):
-        try:
-            result = self.logic_function(obj[self.field_name], self.value)
-
-        except TypeError:
-            result = False
-
-        if self.negated:
-            result = not result
-
-        return result
-
-
-class LookupSet:
-    def __init__(self, **raw_lookups):
-        self.lookup_set = []
-
-        for k, v in raw_lookups.items():
-            self.lookup_set.append(Lookup(**{k: v}))
-
-    def check(self, obj):
-        for lookup in self.lookup_set:
-            if not lookup.check(obj):
-                return False
-
-        return True
-
-    def __repr__(self):
-        return '<LookupSet({})>'.format(repr(self.lookup_list)[1:-1])
+        return end_result
 
 
 class Content:
@@ -136,29 +160,29 @@ class ContentSet:
         if data:
             self.add(Content(**data))
 
-    def filter(self, **raw_lookups):
+    def filter(self, *args, **kwargs):
+        q = Q(*args, **kwargs)
         content_set = self.__class__()
-        lookup_set = LookupSet(**raw_lookups)
 
         for content in self.contents:
-            if lookup_set.check(content):
+            if q.check(content):
                 content_set.add(content)
 
         return content_set
 
-    def exclude(self, **raw_lookups):
+    def exclude(self, *args, **kwargs):
+        q = Q(*args, **kwargs)
         content_set = self.__class__()
-        lookup_set = LookupSet(**raw_lookups)
 
         for content in self.contents:
-            if not lookup_set.check(content):
+            if not q.check(content):
                 content_set.add(content)
 
         return content_set
 
-    def get(self, **raw_lookups):
-        if raw_lookups:
-            contents = self.filter(**raw_lookups)
+    def get(self, *args, **kwargs):
+        if args or kwargs:
+            contents = self.filter(*args, **kwargs)
 
         else:
             contents = self.contents
