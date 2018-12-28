@@ -59,3 +59,77 @@ def test_filter():
 
     assert cs.count() == 1
     assert cs[0]['a'] == 5
+
+
+def test_add():
+    from flamingo.core.data_model import ContentSet, Content
+
+    cs = ContentSet()
+    c1 = Content(a=1)
+    c2 = Content(a=2)
+
+    cs.add(c1)
+
+    assert c1 in cs
+    assert c2 not in cs
+
+    cs = cs + c2
+
+    assert c1 in cs
+    assert c2 in cs
+
+
+def test_iadd():
+    from flamingo.core.data_model import ContentSet, Content
+
+    cs = ContentSet()
+    c1 = Content(a=1)
+    c2 = Content(a=2)
+
+    cs.add(c1)
+
+    assert c1 in cs
+    assert c2 not in cs
+
+    cs += c2
+
+    assert c1 in cs
+    assert c2 in cs
+
+
+def test_sub():
+    from flamingo.core.data_model import ContentSet, Content
+
+    cs = ContentSet()
+    c1 = Content(a=1)
+    c2 = Content(a=2)
+
+    cs.add(c1)
+    cs.add(c2)
+
+    assert c1 in cs
+    assert c2 in cs
+
+    cs = cs - c2
+
+    assert c1 in cs
+    assert c2 not in cs
+
+
+def test_isub():
+    from flamingo.core.data_model import ContentSet, Content
+
+    cs = ContentSet()
+    c1 = Content(a=1)
+    c2 = Content(a=2)
+
+    cs.add(c1)
+    cs.add(c2)
+
+    assert c1 in cs
+    assert c2 in cs
+
+    cs -= c2
+
+    assert c1 in cs
+    assert c2 not in cs

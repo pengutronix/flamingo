@@ -262,3 +262,53 @@ class ContentSet:
 
     def __repr__(self):
         return '<ContentSet({})>'.format(repr(self.contents)[1:-1])
+
+    def __add__(self, other):
+        if not isinstance(other, (ContentSet, Content)):
+            raise TypeError("unsupported operand type(s) for '+'")
+
+        if isinstance(other, Content):
+            return ContentSet(contents=self.contents+[other])
+
+        else:
+            return ContentSet(contents=self.contents+other.contents)
+
+    def __iadd__(self, other):
+        if not isinstance(other, (ContentSet, Content)):
+            raise TypeError("unsupported operand type(s) for '+='")
+
+        if isinstance(other, Content):
+            self.add(other)
+
+        else:
+            self.add(other.contents)
+
+        return self
+
+    def __sub__(self, other):
+        if not isinstance(other, (ContentSet, Content)):
+            raise TypeError("unsupported operand type(s) for '-'")
+
+        content_set = ContentSet(contents=self.contents)
+
+        if isinstance(other, Content):
+            content_set.contents.remove(other)
+
+        else:
+            for content in other.contents:
+                content_set.contents.remove(content)
+
+        return content_set
+
+    def __isub__(self, other):
+        if not isinstance(other, (ContentSet, Content)):
+            raise TypeError("unsupported operand type(s) for '-='")
+
+        if isinstance(other, Content):
+            self.contents.remove(other)
+
+        else:
+            for content in other.contents:
+                self.contents.remove(content)
+
+        return self
