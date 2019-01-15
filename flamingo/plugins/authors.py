@@ -22,7 +22,7 @@ class Authors:
             output = os.path.join('authors/{}.html'.format(slugify(author)))
 
             context.contents.add(**{
-                content_key: '_authors/{}'.format(author),
+                content_key: '_author/{}'.format(author),
                 'output': output,
                 'url': '/' + output,
                 'author': author,
