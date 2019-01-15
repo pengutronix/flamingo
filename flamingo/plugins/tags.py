@@ -8,6 +8,9 @@ class Tags:
     def contents_parsed(self, context):
         content_key = getattr(context.settings, 'I18N_CONTENT_KEY', 'id')
 
+        GENERATE_PAGE_ZERO = \
+            getattr(context.settings, 'TAGS_GENERATE_PAGE_ZERO', True)
+
         # find tags
         for content in context.contents:
             if content['tags']:
@@ -43,3 +46,18 @@ class Tags:
                     'total_pages': total_pages,
                 }
             })
+
+            # generate a page "0" with url "/tags.html"
+            # this is for users typing the url in by hand only
+            if GENERATE_PAGE_ZERO and page == 1:
+                context.contents.add(**{
+                    content_key: '_tags/0',
+                    'output': 'tags.html'.format(page),
+                    'url': '/tags.html'.format(page),
+                    'tags': tags,
+                    'template': 'tags.html',
+                    'pagination': {
+                        'page': page,
+                        'total_pages': total_pages,
+                    }
+                })
