@@ -1,6 +1,8 @@
 import os
 from copy import copy
 
+from flamingo.core.data_model import Q
+
 INDEX_PAGE = """
 <!DOCTYPE html>
 <html>
@@ -58,10 +60,10 @@ class I18N:
             content['url'] = os.path.join('/', content['lang'],
                                           content['url'][1:])
 
-            content['translations'] = context.contents.filter(**{
-                content_key: content[content_key],
-                'lang__not': content['lang'],
-            })
+            content['translations'] = context.contents.filter(
+                Q(content_key=content[content_key]),
+                ~Q(lang=content['lang']),
+            )
 
         # enforce redirect
         if enforce_redirect:
