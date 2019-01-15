@@ -6,7 +6,7 @@ from flamingo.core.utils.pagination import paginate
 
 class Tags:
     def contents_parsed(self, context):
-        content_key = getattr(context.settings, 'I18N_CONTENT_KEY', 'id')
+        CONTENT_KEY = getattr(context.settings, 'I18N_CONTENT_KEY', 'id')
 
         GENERATE_PAGE_ZERO = \
             getattr(context.settings, 'TAGS_GENERATE_PAGE_ZERO', True)
@@ -26,7 +26,7 @@ class Tags:
             output = os.path.join('tags/{}.html'.format(slugify(tag)))
 
             context.contents.add(**{
-                content_key: '_tag/{}'.format(tag),
+                CONTENT_KEY: '_tag/{}'.format(tag),
                 'output': output,
                 'url': '/' + output,
                 'tag': tag,
@@ -36,7 +36,7 @@ class Tags:
         # gen tag list
         for tags, page, total_pages in paginate(tags, context):
             context.contents.add(**{
-                content_key: '_tags/{}'.format(page),
+                CONTENT_KEY: '_tags/{}'.format(page),
                 'output': 'tags/{}.html'.format(page),
                 'url': '/tags/{}.html'.format(page),
                 'tags': tags,
@@ -51,7 +51,7 @@ class Tags:
             # this is for users typing the url in by hand only
             if GENERATE_PAGE_ZERO and page == 1:
                 context.contents.add(**{
-                    content_key: '_tags/0',
+                    CONTENT_KEY: '_tags/0',
                     'output': 'tags.html'.format(page),
                     'url': '/tags.html'.format(page),
                     'tags': tags,
