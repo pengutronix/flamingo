@@ -1,3 +1,10 @@
+import operator
+
+AND = operator.and_
+NOT = operator.not_
+OR = operator.or_
+
+
 def _str(s):
     return str(s) if s is not None else ''
 

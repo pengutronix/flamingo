@@ -2,8 +2,8 @@ import logging
 import shutil
 import os
 
+from flamingo.core.data_model import ContentSet, Content, AND, NOT, OR, Q, F
 from flamingo.core.parser import FileParser, ParsingError
-from flamingo.core.data_model import ContentSet, Content
 from flamingo.core.utils.imports import acquire
 
 
@@ -157,6 +157,11 @@ class Context:
         template_context = {
             'content': content,
             'context': self,
+            'AND': AND,
+            'NOT': NOT,
+            'OR': OR,
+            'Q': Q,
+            'F': F,
         }
 
         return self.templating_engine.render(template_name, template_context)
