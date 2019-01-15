@@ -1,19 +1,17 @@
-import re
 import os
 
+from flamingo.core.utils.string import split, slugify
 from flamingo.core.utils.pagination import paginate
 
 
 class Tags:
-    TAGS_RE = re.compile(r'[^\s,]+')
-
     def contents_parsed(self, context):
         content_key = getattr(context.settings, 'I18N_CONTENT_KEY', 'id')
 
         # find tags
         for content in context.contents:
             if content['tags']:
-                content['tags'] = self.TAGS_RE.findall(content['tags'])
+                content['tags'] = split(content['tags'])
 
             else:
                 content['tags'] = []
@@ -22,7 +20,7 @@ class Tags:
 
         # gen tag pages
         for tag in tags:
-            output = os.path.join('tags/{}.html'.format(tag))
+            output = os.path.join('tags/{}.html'.format(slugify(tag)))
 
             context.contents.add(**{
                 content_key: '_tags/{}'.format(tag),
