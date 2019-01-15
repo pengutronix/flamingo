@@ -23,7 +23,7 @@ class Tags:
             output = os.path.join('tags/{}.html'.format(slugify(tag)))
 
             context.contents.add(**{
-                content_key: '_tags/{}'.format(tag),
+                content_key: '_tag/{}'.format(tag),
                 'output': output,
                 'url': '/' + output,
                 'tag': tag,
