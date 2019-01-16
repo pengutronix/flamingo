@@ -231,6 +231,8 @@ class Context:
                 else:
                     output = content['content']
 
+                output = output or ''
+
                 f.write(output)
 
         if self.settings.CONTENT_PATHS:
