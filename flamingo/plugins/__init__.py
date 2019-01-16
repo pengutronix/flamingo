@@ -3,6 +3,7 @@ from .rst.base import reStructuredText  # NOQA
 from .rst.pygments import rstPygments  # NOQA
 from .rst.image import rstImage  # NOQA
 from .rst.file import rstFile  # NOQA
+from .redirects import Redirects  # NOQA
 from .authors import Authors  # NOQA
 from .layers import Layers  # NOQA
 from .feeds import Feeds  # NOQA
