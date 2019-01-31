@@ -26,6 +26,6 @@ def slugify(string):
 
 def split(string, delimiter=','):
     string = WHITESPACE_RE.sub(' ', string.strip())
-    strings = [i for i in string.split(delimiter) if i]
+    strings = [i.strip() for i in string.split(delimiter) if i]
 
     return strings
