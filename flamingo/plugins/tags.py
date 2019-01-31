@@ -13,11 +13,13 @@ class Tags:
 
         # find tags
         for content in context.contents:
-            if content['tags']:
-                content['tags'] = split(content['tags'])
-
-            else:
+            if not content['tags']:
                 content['tags'] = []
+
+                continue
+
+            content['tag_names'] = split(content['tags'])
+            content['tags'] = [slugify(i) for i in content['tag_names']]
 
         tags = sorted(list(set(sum(context.contents.values('tags'), []))))
 
