@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from datetime import datetime
+from copy import deepcopy
 import asyncio
 import logging
 import os
@@ -12,8 +13,50 @@ from aiohttp_json_rpc import JsonRpc
 from flamingo.core.utils.cli import gen_default_parser, parse_args
 from flamingo.core.utils.aionotify import RecursiveWatcher
 from flamingo.core.utils.aiohttp import Exporter
+from flamingo.core.data_model import ContentSet
 from flamingo.core.context import Context, ln_s
 from flamingo import SERVER_STATIC_ROOT
+
+
+class IncrementalContext(Context):
+    def run_plugin_hook(self, name, *args, **kwargs):
+        if name in ('parser_setup'):
+            super().run_plugin_hook(name, *args, **kwargs)
+
+    def build(self, clean=True):
+        super().run_plugin_hook('contents_parsed')
+        super().run_plugin_hook('templating_engine_setup',
+                                self.templating_engine)
+        super().run_plugin_hook('context_setup')
+
+        super().build(clean=clean, cp=ln_s)
+
+
+class IncrementalBuildEnv:
+    def __init__(self, settings):
+        self.settings = settings
+        self.raw_contents = ContentSet()
+
+    def build(self, paths=[]):
+        if paths and not isinstance(paths, list):
+            paths = [paths]
+
+        if paths:
+            self.settings.CONTENT_PATHS = paths
+
+            context = IncrementalContext(
+                self.settings,
+                contents=self.raw_contents.exclude(path__in=paths),
+            )
+
+        else:
+            self.settings.CONTENT_PATHS = []
+            context = IncrementalContext(self.settings)
+
+        self.raw_contents = deepcopy(context.contents)
+        context.build(clean=not bool(paths))
+
+        return context
 
 
 class RPCHandler(logging.Handler):
@@ -56,6 +99,10 @@ handler.rpc = rpc
 
 logging.getLogger().addHandler(handler)
 
+# build
+build_env = IncrementalBuildEnv(settings)
+context = build_env.build()
+
 
 # rpc methods
 async def toggle_index(request):
@@ -67,12 +114,9 @@ async def toggle_index(request):
 
 
 async def rebuild(request):
-    global context, settings
+    global build_env, context
 
-    settings.CONTENT_PATHS = []
-
-    context = Context(settings)
-    context.build(cp=ln_s)
+    context = build_env.build()
 
     await request.rpc.notify('status', {
         'changed_paths': ['*'],
@@ -84,42 +128,36 @@ rpc.add_methods(
 )
 
 
-# initial build
-context = Context(settings)
-
-context.build(cp=ln_s)
-
 # setup watcher
 watcher = RecursiveWatcher(settings.CONTENT_ROOT, loop=loop)
 loop.run_until_complete(watcher.setup())
 
 
 async def watcher_task():
-    global context
+    global build_env, context
 
     while True:
-        path = await watcher.get_file()
-        path = os.path.relpath(path, settings.CONTENT_ROOT)
+        try:
+            path = await watcher.get_file()
+            path = os.path.relpath(path, settings.CONTENT_ROOT)
 
-        logging.info('%s changed', path)
+            logging.info('%s changed', path)
 
-        settings.CONTENT_PATHS = [path]
+            context = build_env.build(path)
 
-        context = Context(settings)
-        context.build(clean=False)
+            changed_paths = ['/' + context.contents.get(path=path)['output']]
 
-        if not context.contents:
-            continue
+            if changed_paths[0].endswith('index.html'):
+                changed_paths.append(os.path.dirname(changed_paths[0]))
+                changed_paths.append(changed_paths[-1] + '/')
 
-        changed_paths = [os.path.join('/', context.contents[0]['output'])]
+            await rpc.notify('status', {
+                'changed_paths': changed_paths,
+            })
 
-        if changed_paths[0].endswith('index.html'):
-            changed_paths.append(os.path.dirname(changed_paths[0]))
-            changed_paths.append(changed_paths[-1] + '/',)
+        except Exception as e:
+            logging.error(e, exc_info=True)
 
-        await rpc.notify('status', {
-            'changed_paths': changed_paths,
-        })
 
 loop.create_task(watcher_task())
 

@@ -133,3 +133,15 @@ def test_isub():
 
     assert c1 in cs
     assert c2 not in cs
+
+
+def test_copy():
+    from flamingo.core.data_model import ContentSet
+    from copy import deepcopy
+
+    cs1 = ContentSet()
+    cs1.add(a=1)
+    cs2 = deepcopy(cs1)
+
+    assert cs1[0]['a'] == cs2[0]['a']
+    assert cs1[0] is not cs2[0]

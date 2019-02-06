@@ -39,7 +39,7 @@ def ln_s(context, source_path, destination_path, mkdir_p=mkdir_p):
 
 
 class Context:
-    def __init__(self, settings):
+    def __init__(self, settings, contents=None):
         self.settings = settings
 
         # setup logging
@@ -67,7 +67,7 @@ class Context:
         self.run_plugin_hook('parser_setup')
 
         # parse contents
-        self.contents = ContentSet()
+        self.contents = contents or ContentSet()
         self.content = None
 
         self._media = []  # FIXME: this should be part of Content()
@@ -215,7 +215,14 @@ class Context:
             rm_rf(self, self.settings.OUTPUT_ROOT)
 
         # render contents
-        for content in self.contents:
+        if self.settings.CONTENT_PATHS:
+            contents = self.contents.filter(
+                path__in=self.settings.CONTENT_PATHS)
+
+        else:
+            contents = self.contents
+
+        for content in contents:
             output_path = os.path.join(self.settings.OUTPUT_ROOT,
                                        content['output'])
 
