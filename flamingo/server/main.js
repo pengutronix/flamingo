@@ -110,6 +110,8 @@ rpc.on('open', function(rpc) {
             }
         }
     });
+
+    iframe_reload();
 });
 
 function reconnect() {
