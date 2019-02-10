@@ -28,8 +28,9 @@ class IncrementalContext(Context):
         super().run_plugin_hook('templating_engine_setup',
                                 self.templating_engine)
         super().run_plugin_hook('context_setup')
-
+        super().run_plugin_hook('pre_build')
         super().build(clean=clean, cp=ln_s)
+        super().run_plugin_hook('post_build')
 
 
 class IncrementalBuildEnv:
