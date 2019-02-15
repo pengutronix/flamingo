@@ -1,0 +1,13 @@
+I18N
+====
+
+Installation
+------------
+
+.. code-block:: python
+
+    # settings.py
+
+    PLUGINS = [
+        'flamingo.plugins.I18N',
+    ]

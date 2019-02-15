@@ -1,0 +1,4 @@
+Writing a plugin
+================
+
+FIXME
