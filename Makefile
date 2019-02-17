@@ -17,6 +17,10 @@ test: env
 	. $(PYTHON_VENV)/bin/activate && \
     tox
 
+ci-test: env
+	. $(PYTHON_VENV)/bin/activate && \
+    JENKINS_URL=1 tox
+
 edit: env
 	. $(PYTHON_VENV)/bin/activate && \
 	$$EDITOR
