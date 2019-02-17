@@ -28,3 +28,7 @@ edit: env
 shell: env
 	. $(PYTHON_VENV)/bin/activate && \
 	ipython
+
+freeze: env
+	. $(PYTHON_VENV)/bin/activate && \
+	pip freeze

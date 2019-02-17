@@ -4,6 +4,30 @@
 from setuptools import setup, find_packages
 import flamingo
 
+EXTRAS_REQUIRE = {
+    'live-server': [
+        'aiohttp-json-rpc==0.12',
+        'aionotify==0.2.0',
+    ],
+    'chardet': [
+        'chardet',
+    ],
+    'pygments': [
+        'pygments',
+    ],
+    'feeds': [
+        'feedgen==0.7.0',
+    ],
+    'coloredlogs': [
+        'coloredlogs',
+    ],
+    'ipython': [
+        'ipython',
+    ]
+}
+
+EXTRAS_REQUIRE['full'] = sum([v for k, v in EXTRAS_REQUIRE.items()], [])
+
 setup(
     include_package_data=True,
     name='flamingo',
@@ -16,11 +40,6 @@ setup(
     install_requires=[
         'jinja2',
         'docutils',
-        'aiohttp-json-rpc',
-        'aionotify',
-        'coloredlogs',
-        'pygments',
-        'feedgen',
     ],
     scripts=[
         'bin/flamingo',
@@ -32,5 +51,6 @@ setup(
         'pytest11': [
             'flamingo = flamingo.pytest',
         ],
-    }
+    },
+    extras_require=EXTRAS_REQUIRE,
 )
