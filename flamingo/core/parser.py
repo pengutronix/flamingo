@@ -4,6 +4,10 @@ import os
 from flamingo.core.errors import FlamingoError
 
 
+def plain_read(path):
+    return open(path, 'r').read()
+
+
 class ParsingError(FlamingoError):
     pass
 
@@ -45,8 +49,24 @@ class ContentParser:
 
 
 class FileParser:
-    def __init__(self):
+    def __init__(self, context):
         self._parsers = []
+
+        if context.settings.USE_CHARDET:
+            try:
+                from flamingo.core.utils.chardet import chardet_read
+
+                self.read = chardet_read
+
+            except ImportError:
+                context.logger.error(
+                    'USE_CHARDET is set but chardet is not installed.'
+                    'Falling back to plain python read')
+
+                self.read = plain_read
+
+        else:
+            self.read = plain_read
 
     def add_parser(self, parser):
         self._parsers.append(parser)
@@ -67,4 +87,4 @@ class FileParser:
             raise ParsingError(
                 "file extension '{}' is not supported".format(extension))
 
-        parser.parse(open(path, 'r').read(), content)  # FIXME: chardet
+        parser.parse(self.read(path), content)

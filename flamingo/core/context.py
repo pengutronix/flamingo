@@ -63,7 +63,7 @@ class Context:
                 self.logger.error('plugin setup failed', exc_info=True)
 
         # setup parser
-        self.parser = FileParser()
+        self.parser = FileParser(context=self)
         self.run_plugin_hook('parser_setup')
 
         # parse contents

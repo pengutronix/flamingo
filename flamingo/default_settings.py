@@ -14,6 +14,9 @@ DEFAULT_PLUGINS = [
 
 PLUGINS = []
 
+# parsing
+USE_CHARDET = False
+
 # templating
 TEMPLATING_ENGINE = 'flamingo.core.templating.Jinja2'
 
