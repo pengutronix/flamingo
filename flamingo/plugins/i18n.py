@@ -61,7 +61,7 @@ class I18N:
                                           content['url'][1:])
 
             content['translations'] = context.contents.filter(
-                Q(content_key=content[content_key]),
+                Q(**{content_key: content[content_key]}),
                 ~Q(lang=content['lang']),
             )
 
