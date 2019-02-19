@@ -1,5 +1,6 @@
 import operator
 
+from flamingo.core.errors import MultipleObjectsReturned, ObjectDoesNotExist
 from flamingo.core.utils.string import truncate
 
 AND = operator.and_
@@ -154,8 +155,13 @@ class Content:
 
 
 class ContentSet:
-    def __init__(self, contents=None):
+    def __init__(self, contents=None, query=None):
         self.contents = contents or []
+        self._query = query
+
+    @property
+    def query(self):
+        return self._query
 
     def add(self, *contents, **data):
         if contents:
@@ -164,38 +170,39 @@ class ContentSet:
         if data:
             self.add(Content(**data))
 
-    def filter(self, *args, **kwargs):
-        q = Q(*args, **kwargs)
-        content_set = self.__class__()
+    def _filter(self, negated, *args, **kwargs):
+        query = Q(*args, **kwargs)
+
+        if negated:
+            query = ~query
+
+        content_set = self.__class__(
+            query=self.query & query if self.query else query)
 
         for content in self.contents:
-            if q.check(content):
+            if query.check(content):
                 content_set.add(content)
 
         return content_set
+
+    def filter(self, *args, **kwargs):
+        return self._filter(False, *args, **kwargs)
 
     def exclude(self, *args, **kwargs):
-        q = Q(*args, **kwargs)
-        content_set = self.__class__()
-
-        for content in self.contents:
-            if not q.check(content):
-                content_set.add(content)
-
-        return content_set
+        return self._filter(True, *args, **kwargs)
 
     def get(self, *args, **kwargs):
         if args or kwargs:
             contents = self.filter(*args, **kwargs)
 
         else:
-            contents = self.contents
+            contents = self
 
         if len(contents) > 1:
-            raise ValueError('Ambiguous query')
+            raise MultipleObjectsReturned(query=contents.query)
 
         if len(contents) < 1:
-            return None
+            raise ObjectDoesNotExist(query=contents.query)
 
         return contents[0]
 
