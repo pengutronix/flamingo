@@ -153,6 +153,9 @@ class Content:
     def __setitem__(self, key, item):
         return self.data.__setitem__(key, item)
 
+    def get(self, *args, **kwargs):
+        return self.data.get(*args, **kwargs)
+
 
 class ContentSet:
     def __init__(self, contents=None, query=None):
