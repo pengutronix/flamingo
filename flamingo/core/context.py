@@ -99,7 +99,9 @@ class Context:
         templating_engine_class = acquire(settings.TEMPLATING_ENGINE)
 
         self.templating_engine = templating_engine_class(
-            settings.THEME_PATHS + settings.CORE_THEME_PATHS
+            settings.THEME_PATHS +
+            sum([getattr(i, 'THEME_PATHS', []) for i in self.plugins], []) +
+            settings.CORE_THEME_PATHS
         )
 
         self.run_plugin_hook('templating_engine_setup', self.templating_engine)
