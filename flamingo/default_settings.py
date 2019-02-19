@@ -19,6 +19,7 @@ USE_CHARDET = False
 
 # templating
 TEMPLATING_ENGINE = 'flamingo.core.templating.Jinja2'
+EXTRA_CONTEXT = {}
 
 CORE_THEME_PATHS = [
     flamingo.THEME_ROOT,

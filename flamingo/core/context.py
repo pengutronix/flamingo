@@ -162,6 +162,7 @@ class Context:
             'OR': OR,
             'Q': Q,
             'F': F,
+            **self.settings.EXTRA_CONTEXT,
         }
 
         return self.templating_engine.render(template_name, template_context)
