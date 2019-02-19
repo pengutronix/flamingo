@@ -4,6 +4,8 @@ from flamingo.core.utils.string import split, slugify
 
 
 class Authors:
+    THEME_PATHS = [os.path.join(os.path.dirname(__file__), 'theme')]
+
     def contents_parsed(self, context):
         content_key = getattr(context.settings, 'I18N_CONTENT_KEY', 'id')
 
