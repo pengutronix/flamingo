@@ -1,5 +1,7 @@
 import operator
 
+from flamingo.core.utils.string import truncate
+
 AND = operator.and_
 NOT = operator.not_
 OR = operator.or_
@@ -25,6 +27,9 @@ LOGIC_FUNCTIONS = {
     'endswith': lambda a, b: _str(a).startswith(b),
     'passes': lambda a, b: b(a),
 }
+
+CONTENT_REPR_MAX_LEN = 500
+CONTENT_SET_REPR_MAX_LEN = 2500
 
 
 class F:
@@ -132,19 +137,11 @@ class Content:
 
     def __repr__(self):
         return '<Content({})>'.format(
-            ', '.join(
+            truncate(', '.join(
                 ['{}={}'.format(k, repr(v)) for k, v in self.data.items()
                  if k != 'content']
-            )
+            ), CONTENT_REPR_MAX_LEN)
         )
-
-    def __str__(self):
-        content = self['content']
-
-        if not content:
-            return ''
-
-        return str(content)
 
     def __getitem__(self, key):
         if key in self.data:
@@ -261,7 +258,8 @@ class ContentSet:
         return self.contents.__iter__()
 
     def __repr__(self):
-        return '<ContentSet({})>'.format(repr(self.contents)[1:-1])
+        return '<ContentSet({})>'.format(
+            truncate(repr(self.contents)[1:-1], CONTENT_SET_REPR_MAX_LEN))
 
     def __add__(self, other):
         if not isinstance(other, (ContentSet, Content)):
