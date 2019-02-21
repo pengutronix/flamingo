@@ -46,7 +46,7 @@ ractive.on({
 
         rpc.call('rebuild', undefined, function(data) {
             ractive.set('overlay_content', 'site rebuild successful');
-        
+
         },
         function(data) {
             ractive.set('overlay_content', 'rebuild failed');
@@ -101,7 +101,7 @@ rpc.on('open', function(rpc) {
         log = log.slice(-100);
         ractive.set('log', log);
 
-        for(index in ractive.get('log')) {
+        for(var index in ractive.get('log')) {
             if(log[index].level == 'ERROR' && ractive.get('overlay') < 0) {
                 ractive.set({
                     overlay: 1,
@@ -147,7 +147,7 @@ rpc.on('close', function(rpc) {
             overlay_reason: 'reconnect',
         });
     }
-    
+
     reconnect();
 });
 
