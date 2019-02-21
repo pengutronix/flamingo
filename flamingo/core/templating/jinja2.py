@@ -57,10 +57,7 @@ def link(context, path, name='', lang=''):
 
 class Jinja2(TemplatingEngine):
     def __init__(self, theme_paths):
-        if not isinstance(theme_paths, list):
-            theme_paths = [theme_paths]
-
-        self.theme_paths = theme_paths
+        super().__init__(theme_paths)
 
         self.env = Environment(
             loader=FileSystemLoader(
