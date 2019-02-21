@@ -184,14 +184,16 @@ if namespace.shell:
         try:
             import IPython
 
-            return IPython.embed()
+            IPython.embed()
+
+            return
 
         except ImportError:
             pass
 
         import code
 
-        return code.interact(local=globals())
+        code.interact(local=globals())
 
     loop.run_until_complete(
         loop.create_server(
