@@ -47,6 +47,12 @@ class HTML5TimeTag:
     def __gt__(self, other):
         return self._comp(other, lambda a, b: a > b)
 
+    def __le__(self, other):
+        return self._comp(other, lambda a, b: a <= b)
+
+    def __ge__(self, other):
+        return self._comp(other, lambda a, b: a >= b)
+
     def __str__(self):
         if isinstance(self.time_object, date):
             strftime_string = getattr(self.context.settings,
