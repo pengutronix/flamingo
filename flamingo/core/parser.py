@@ -1,5 +1,4 @@
 from configparser import ConfigParser, Error as ConfigParserError
-from io import StringIO
 import os
 
 from flamingo.core.errors import FlamingoError
@@ -15,41 +14,34 @@ class ContentParser:
     def __init__(self):
         self.configparser = ConfigParser(interpolation=None)
 
-    def parse_meta_data(self, fp, content):
-        meta_data_buffer = StringIO('[meta]\n')
-        meta_data_buffer.read()
+    def parse_meta_data(self, file_content, content):
+        if '\n\n\n' in file_content:
+            meta_data_string, markup_string = file_content.split('\n\n\n', 1)
 
-        empty_lines = 0
+        elif '\n\n' in file_content:
+            meta_data_string, markup_string = file_content.split('\n\n', 1)
 
-        while True:
-            line = fp.readline()
+        else:
+            return file_content
 
-            if not line:  # eof
-                break
+        try:
+            self.configparser.clear()
 
-            if not line.strip():
-                empty_lines += 1
+            self.configparser.read_string(
+                '[meta]\n{}'.format(meta_data_string))
 
-            else:
-                empty_lines = 0
+            for option in self.configparser.options('meta'):
+                content[option] = self.configparser.get('meta', option)
 
-            if empty_lines == 2:
-                break
+            return markup_string
 
-            meta_data_buffer.write(line)
+        except ConfigParserError:
+            return file_content
 
-        meta_data_buffer.seek(0)
+    def parse(self, file_content, content):
+        markup_string = self.parse_meta_data(file_content, content)
 
-        self.configparser.clear()
-        self.configparser.read_file(meta_data_buffer)
-
-        for option in self.configparser.options('meta'):
-            content[option] = self.configparser.get('meta', option)
-
-    def parse(self, fp, content):
-        self.parse_meta_data(fp, content)
-
-        content['content_body'] = fp.read().strip()
+        content['content_body'] = markup_string.strip()
 
 
 class FileParser:
@@ -75,8 +67,4 @@ class FileParser:
             raise ParsingError(
                 "file extension '{}' is not supported".format(extension))
 
-        try:
-            parser.parse(open(path, 'r'), content)  # FIXME: chardet
-
-        except ConfigParserError:
-            raise ParsingError('Metadata seem to be broken')
+        parser.parse(open(path, 'r').read(), content)  # FIXME: chardet

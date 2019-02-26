@@ -17,12 +17,12 @@ class RedirectRulesParser(ContentParser):
     FILE_EXTENSIONS = ['rr']
     RULE_RE = re.compile(r'^(?P<code>[0-9]+)(\s{1,})(?P<src>[^ ]+)(\s{1,})(?P<dst>[^ \n]+)$')  # NOQA
 
-    def parse(self, fp, content):
+    def parse(self, file_content, content):
         content['output'] = '/dev/null'
         content['type'] = 'redirect-rules'
         content['rules'] = []
 
-        for line in fp.readlines():
+        for line in file_content.splitlines():
             if not line or line.startswith('#'):
                 continue
 

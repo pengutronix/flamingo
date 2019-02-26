@@ -41,10 +41,10 @@ def parse_rst(rst_input):
 class RSTParser(ContentParser):
     FILE_EXTENSIONS = ['rst']
 
-    def parse(self, fp, content):
-        self.parse_meta_data(fp, content)
+    def parse(self, file_content, content):
+        markup_string = self.parse_meta_data(file_content, content)
 
-        parts = parse_rst_parts(fp.read())
+        parts = parse_rst_parts(markup_string)
 
         content['content_body'] = parts['body']
         content['content_title'] = parts['title']
