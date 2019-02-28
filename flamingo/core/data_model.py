@@ -54,6 +54,10 @@ class Q:
         if qs and lookups:
             raise TypeError('to many arguments')
 
+        if not lookups and len(qs) == 1 and isinstance(qs[0], dict):
+            lookups = qs[0]
+            qs = []
+
         if qs:
             self.qs = qs
 
@@ -166,15 +170,23 @@ class ContentSet:
     def query(self):
         return self._query
 
-    def add(self, *contents, **data):
-        if contents:
-            self.contents.extend(contents)
+    def add(self, *args, **kwargs):
+        for arg in args:
+            if isinstance(arg, Content):
+                self.contents.append(arg)
 
-        if data:
-            self.add(Content(**data))
+            elif isinstance(arg, dict):
+                self.contents.append(Content(**arg))
+
+        if kwargs:
+            self.contents.append(Content(**kwargs))
 
     def _filter(self, negated, *args, **kwargs):
-        query = Q(*args, **kwargs)
+        if not kwargs and len(args) == 1 and isinstance(args[0], dict):
+            query = Q(**args[0])
+
+        else:
+            query = Q(*args, **kwargs)
 
         if negated:
             query = ~query
