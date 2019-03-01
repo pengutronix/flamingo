@@ -27,4 +27,9 @@ setup(
         'bin/flamingo-server',
         'bin/flamingo-shell',
     ],
+    entry_points={
+        'pytest11': [
+            'flamingo = flamingo.pytest',
+        ],
+    }
 )
