@@ -7,4 +7,4 @@ class HTMLParser(ContentParser):
 
 class HTML:
     def parser_setup(self, context):
-        context.parser.add_parser(HTMLParser())
+        context.parser.add_parser(HTMLParser(context))

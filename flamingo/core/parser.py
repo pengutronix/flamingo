@@ -15,7 +15,8 @@ class ParsingError(FlamingoError):
 class ContentParser:
     FILE_EXTENSIONS = []
 
-    def __init__(self):
+    def __init__(self, context):
+        self.context = context
         self.configparser = ConfigParser(interpolation=None)
 
     def parse_meta_data(self, file_content, content):

@@ -2,7 +2,7 @@ def test_base_parser_import():
     from flamingo.core.parser import ContentParser  # NOQA
 
 
-def test_basic_meta_data_parsing():
+def test_basic_meta_data_parsing(dummy_context):
     from flamingo.core.parser import ContentParser
     from flamingo.core.data_model import Content
 
@@ -16,7 +16,7 @@ def test_basic_meta_data_parsing():
     content
     """
 
-    parser = ContentParser()
+    parser = ContentParser(dummy_context)
     content = Content()
 
     parser.parse(raw_content, content)
@@ -40,7 +40,7 @@ def test_basic_meta_data_parsing():
     content
     """  # NOQA
 
-    parser = ContentParser()
+    parser = ContentParser(dummy_context)
     content = Content()
 
     parser.parse(raw_content, content)
@@ -54,7 +54,7 @@ def test_basic_meta_data_parsing():
     assert content['content_body'] == 'content'
 
 
-def test_meta_data_blocks():
+def test_meta_data_blocks(dummy_context):
     from flamingo.core.parser import ContentParser
     from flamingo.core.data_model import Content
 
@@ -69,7 +69,7 @@ def test_meta_data_blocks():
     content
     """
 
-    parser = ContentParser()
+    parser = ContentParser(dummy_context)
     content = Content()
 
     parser.parse(raw_content, content)
@@ -90,7 +90,7 @@ def test_meta_data_blocks():
     content
     """
 
-    parser = ContentParser()
+    parser = ContentParser(dummy_context)
     content = Content()
 
     parser.parse(raw_content, content)
@@ -111,7 +111,7 @@ def test_meta_data_blocks():
     real content
     """
 
-    parser = ContentParser()
+    parser = ContentParser(dummy_context)
     content = Content()
 
     parser.parse(raw_content, content)
@@ -129,7 +129,7 @@ def test_meta_data_blocks():
     real content2
     """
 
-    parser = ContentParser()
+    parser = ContentParser(dummy_context)
     content = Content()
 
     parser.parse(raw_content, content)
@@ -144,7 +144,7 @@ def test_meta_data_blocks():
     real content2
     """
 
-    parser = ContentParser()
+    parser = ContentParser(dummy_context)
     content = Content()
 
     parser.parse(raw_content, content)
@@ -160,7 +160,7 @@ def test_meta_data_blocks():
     real content2
     """
 
-    parser = ContentParser()
+    parser = ContentParser(dummy_context)
     content = Content()
 
     parser.parse(raw_content, content)

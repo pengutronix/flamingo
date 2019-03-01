@@ -40,7 +40,7 @@ class RedirectRulesParser(ContentParser):
 
 class Redirects:
     def parser_setup(self, context):
-        context.parser.add_parser(RedirectRulesParser())
+        context.parser.add_parser(RedirectRulesParser(context))
 
     def contents_parsed(self, context):
         rules = sum(

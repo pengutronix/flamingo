@@ -1,4 +1,4 @@
-def test_rst_parsing():
+def test_rst_parsing(dummy_context):
     from flamingo.plugins.rst.base import RSTParser
     from flamingo.core.data_model import Content
 
@@ -11,7 +11,7 @@ bar
 
 foobar"""
 
-    parser = RSTParser()
+    parser = RSTParser(dummy_context)
     content = Content()
 
     parser.parse(raw_content, content)

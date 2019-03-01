@@ -63,4 +63,4 @@ class NestedDirective(Directive):
 
 class reStructuredText:
     def parser_setup(self, context):
-        context.parser.add_parser(RSTParser())
+        context.parser.add_parser(RSTParser(context))
