@@ -220,7 +220,9 @@ class Context:
         # render contents
         if self.settings.CONTENT_PATHS:
             contents = self.contents.filter(
-                path__in=self.settings.CONTENT_PATHS)
+                Q(path__in=self.settings.CONTENT_PATHS) |
+                Q(i18n_path__in=self.settings.CONTENT_PATHS),
+            )
 
         else:
             contents = self.contents

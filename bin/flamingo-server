@@ -12,8 +12,8 @@ from aiohttp_json_rpc import JsonRpc
 
 from flamingo.core.utils.cli import gen_default_parser, parse_args
 from flamingo.core.utils.aionotify import RecursiveWatcher
+from flamingo.core.data_model import ContentSet, Q
 from flamingo.core.utils.aiohttp import Exporter
-from flamingo.core.data_model import ContentSet
 from flamingo.core.context import Context, ln_s
 from flamingo import SERVER_STATIC_ROOT
 
@@ -146,11 +146,16 @@ async def watcher_task():
 
             context = build_env.build(path)
 
-            changed_paths = ['/' + context.contents.get(path=path)['output']]
+            changed_paths = [
+                '/' + i for i in context.contents.filter(
+                    Q(path=path) | Q(i18n_path=path)
+                ).values('output')
+            ]
 
-            if changed_paths[0].endswith('index.html'):
-                changed_paths.append(os.path.dirname(changed_paths[0]))
-                changed_paths.append(changed_paths[-1] + '/')
+            for path in changed_paths[::]:
+                if path.endswith('index.html'):
+                    changed_paths.append(os.path.dirname(changed_paths[0]))
+                    changed_paths.append(changed_paths[-1] + '/')
 
             await rpc.notify('status', {
                 'changed_paths': changed_paths,

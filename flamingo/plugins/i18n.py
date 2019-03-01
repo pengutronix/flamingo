@@ -45,6 +45,7 @@ class I18N:
                     content_data = copy(content.data)
 
                     if 'path' in content_data:
+                        content_data['i18n_path'] = content_data['path']
                         del content_data['path']
 
                     content_data['lang'] = l
