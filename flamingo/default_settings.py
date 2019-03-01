@@ -16,6 +16,7 @@ PLUGINS = []
 
 # parsing
 USE_CHARDET = False
+TYPE_EVALUATION = True
 
 # templating
 TEMPLATING_ENGINE = 'flamingo.core.templating.Jinja2'

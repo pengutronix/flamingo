@@ -35,8 +35,41 @@ class ContentParser:
             self.configparser.read_string(
                 '[meta]\n{}'.format(meta_data_string))
 
-            for option in self.configparser.options('meta'):
-                content[option] = self.configparser.get('meta', option)
+            # type evalutation
+            if self.context.settings.TYPE_EVALUATION:
+                for option in self.configparser.options('meta'):
+                    # float
+                    try:
+                        attr = self.configparser.getfloat('meta', option)
+
+                        # int
+                        if '.' in self.configparser.get('meta', option):
+                            attr = int(attr)
+
+                        content[option] = attr
+
+                        continue
+
+                    except ValueError:
+                        pass
+
+                    # bool
+                    try:
+                        content[option] = self.configparser.getboolean('meta',
+                                                                       option)
+
+                        continue
+
+                    except ValueError:
+                        pass
+
+                    # string (fallback)
+                    content[option] = self.configparser.get('meta', option)
+
+            # base get
+            else:
+                for option in self.configparser.options('meta'):
+                    content[option] = self.configparser.get('meta', option)
 
             return markup_string
 
