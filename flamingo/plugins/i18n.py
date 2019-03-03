@@ -26,7 +26,10 @@ class I18N:
         enforce_redirect = getattr(context.settings, 'I18N_ENFORCE_REDIRECT',
                                    True)
 
-        for content in context.contents:
+        ignore = getattr(context.settings, 'I18N_IGNORE',
+                         {'i18n_ignore__isnull': False})
+
+        for content in context.contents.exclude(ignore):
             # set lang tag if not set
             if not content['lang']:
                 content['lang'] = default_language
@@ -54,7 +57,7 @@ class I18N:
 
         # set output and url according to lang code
         # set translations
-        for content in context.contents:
+        for content in context.contents.exclude(ignore):
             content['output'] = os.path.join(content['lang'],
                                              content['output'])
 
