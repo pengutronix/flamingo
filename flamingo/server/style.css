@@ -37,15 +37,6 @@ body {
     cursor: pointer;
 }
 
-#main-grid #top #url-input,
-#main-grid #top #url-input:focus {
-    outline: None;
-    background: none;
-    border: none;
-    width: 75%;
-    color: white;
-}
-
 #main-grid iframe {
     grid-column-start: 1;
     grid-column-end: 1;

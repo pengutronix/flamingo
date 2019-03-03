@@ -1,10 +1,49 @@
+function iframe_onload(iframe) {
+    // url
+    ractive.set('iframe_pathname', iframe.contentWindow.location.pathname);
+    document.location.hash = iframe.contentWindow.location.pathname;
+
+    // title
+    document.title = iframe.contentDocument.title;
+
+    // favicon
+    var nodes = iframe.contentDocument.getElementsByTagName('link');
+
+    for(var index = 0; index < nodes.length; index++) {
+        if((nodes[index].getAttribute('rel') == 'icon') || (nodes[index].getAttribute('rel') == 'shortcut icon')) {
+            document.querySelector("link[rel='shortcut icon']").href = nodes[index].getAttribute('href');
+        }
+    }
+}
+
 function iframe_set_url(url) {
     var iframe = document.getElementsByTagName('iframe')[0];
 
     if(url == '') {
         ractive.set('iframe_pathname', '/');
+
     } else {
         iframe.contentWindow.location = url;
+
+    }
+}
+
+function get_hash() {
+    var hash = document.location.hash;
+
+    if(!hash) {
+        return '/';
+
+    }
+
+    return hash.substring(1);
+}
+
+function onhashchange() {
+    var hash = get_hash();
+
+    if(hash != ractive.get('iframe_pathname')) {
+        iframe_set_url(hash);
     }
 }
 
@@ -63,7 +102,8 @@ var ractive = Ractive({
     target: '#ractive',
     template: '#main',
     data: {
-        iframe_pathname: '/',
+        iframe_pathname: get_hash(),
+        iframe_initial_pathname: get_hash(),
         overlay: -1,
         overlay_reason: '',
         overlay_heading: '',

@@ -1,16 +1,16 @@
 <html>
   <head>
     <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="shortcut icon" href="" />
   </head>
-  <body>
+  <body onhashchange="onhashchange();">
     <div id="ractive"></div>
     <script id="main" type="text/html">
       <div id="main-grid" {{#if overlay > 0}} class="overlay"{{/if}}>
         <div id="top">
           <span id="logo" on-click="toggle_overlay">Flamingo</span>
-          <input id="url-input" type="text" value="{{iframe_pathname}}" onChange="iframe_set_url(this.value);" />
         </div>
-        <iframe src="/" onLoad="ractive.set('iframe_pathname', this.contentWindow.location.pathname);"></iframe>
+        <iframe src="{{iframe_initial_pathname}}" onLoad="iframe_onload(this);"></iframe>
         <div id="overlay">
           <div id="controls">
             <button on-click="reload">Reload</button>
