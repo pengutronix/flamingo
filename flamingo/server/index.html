@@ -23,6 +23,11 @@
             <pre class="log">{{#log}}{{#if .level == 'ERROR'}}<span class="{{.level}}">{{.time}} {{.name}} {{.level}}: {{.message}}</span>
 {{/if}}{{/log}}</pre>{{/if}}
         </div>
+        <div id="messages">
+          {{#messages}}
+            <span class="message" on-click="@.fire('hide_message', id)">{{{.message}}}</span><br/>
+          {{/}}
+        </div>
       </div>
     </script>
     <script src="lib/ractive.min.js"></script>

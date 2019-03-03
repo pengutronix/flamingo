@@ -92,7 +92,8 @@ worker_pool = rpc.worker_pool
 
 rpc.add_topics(
     ('status',),
-    ('log',)
+    ('log',),
+    ('messages',),
 )
 
 handler = RPCHandler()
@@ -144,7 +145,17 @@ async def watcher_task():
 
             logging.info('%s changed', path)
 
+            await rpc.notify(
+                'messages',
+                '<span class="important">{}</span> changed. Rebuilding...'.format(path),  # NOQA
+            )
+
             context = build_env.build(path)
+
+            await rpc.notify(
+                'messages',
+                '<span class="important">{}</span> rebuild successful'.format(path),  # NOQA
+            )
 
             changed_paths = [
                 '/' + i for i in context.contents.filter(

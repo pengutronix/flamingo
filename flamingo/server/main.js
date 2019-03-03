@@ -14,7 +14,50 @@ function iframe_reload() {
     iframe.contentWindow.location.reload(true);
 }
 
+function hide_message(id) {
+    var messages = ractive.get('messages');
+
+    for(var index in messages) {
+        if(messages[index].id == id) {
+            messages.splice(index, 1);
+            ractive.set('messages', messages);
+
+            return;
+        }
+    }
+}
+
+function show_message(message, timeout) {
+    var messages = ractive.get('messages');
+
+    for(var index in messages) {
+        if(messages[index].message == message) {
+            return;
+        }
+    }
+
+    var id = message_id;
+    message_id = id + 1;
+
+    messages.push({
+        id: id,
+        message: message,
+    });
+
+    ractive.set('messages', messages);
+
+    if(timeout != undefined) {
+        setTimeout(function() {
+            hide_message(id);
+        }, timeout);
+
+    }
+
+    return id;
+}
+
 var rpc = new RPC('ws://' + window.location.host + '/live-server/rpc/');
+var message_id = 1;
 
 var ractive = Ractive({
     target: '#ractive',
@@ -26,6 +69,7 @@ var ractive = Ractive({
         overlay_heading: '',
         overlay_content: '',
         log: [],
+        messages: [],
     }
 });
 
@@ -64,7 +108,9 @@ ractive.on({
 
         });
     },
-
+    hide_message: function(event, id) {
+        hide_message(id);
+    },
 });
 
 rpc.on('open', function(rpc) {
@@ -109,6 +155,10 @@ rpc.on('open', function(rpc) {
                 });
             }
         }
+    });
+
+    rpc.subscribe('messages', function(data) {
+        show_message(data, 2000);
     });
 
     iframe_reload();

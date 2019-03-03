@@ -69,6 +69,7 @@ body {
     background: rgba(5, 5, 5, 0.75);
     font-weight: bold;
     overflow-y: scroll;
+    z-index: 1000;
 }
 
 #main-grid.overlay #overlay {
@@ -92,4 +93,28 @@ pre.log {
 
 pre.log span.ERROR {
     color: red;
+}
+
+
+/* messages */
+#messages {
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 2;
+    grid-row-end: 4;
+
+    padding-top: 0.5em;
+    pointer-events:none;        
+}
+
+#messages .message {
+    background: rgba(5, 5, 5, 0.75);
+    padding: 0 0.2em;
+    line-height: normal;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+#messages .important {
+    color: #E96D79;
 }
