@@ -63,17 +63,6 @@ def test_f():
     assert not q.check(Content(a=1, b=2))
 
 
-def test_add():
-    from flamingo.core.data_model import ContentSet, Content
-
-    cs = ContentSet()
-    c = Content(a=1)
-
-    cs.add(c)
-
-    assert c in cs
-
-
 def test_filter():
     from flamingo.core.data_model import ContentSet
 
