@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block title %}{{ context.settings.PROJECT_NAME }} - {% if content.title %}{{ content.title }}{% else %}{{ content.content_title }}{% endif %}{% endblock %}
+
+{% block content %}
+  <h1>{{ content.content_title }}</h1>
+  {{ render(content.content_body) }}
+{% endblock %}

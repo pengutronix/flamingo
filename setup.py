@@ -44,6 +44,7 @@ setup(
     ],
     scripts=[
         'bin/flamingo',
+        'bin/_flamingo-init',
         'bin/_flamingo-build',
         'bin/_flamingo-server',
         'bin/_flamingo-shell',

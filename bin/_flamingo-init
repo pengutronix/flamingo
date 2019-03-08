@@ -1,0 +1,130 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+from configparser import ConfigParser
+import shutil
+import os
+
+from jinja2 import Template
+
+from flamingo.core.utils.cli import get_raw_parser
+import flamingo
+
+
+class SaveConfigParser(ConfigParser):
+    def save_get(self, section, option, default=None):
+        try:
+            return super().get(section, option)
+
+        except Exception:
+            return default
+
+
+def parse_config(config_string):
+    parser = ConfigParser()
+
+    try:
+        parser.read_string('[config]\n{}'.format(config_string))
+
+        return {option: parser.get('config', option)
+                for option in parser.options('config')}
+
+    except Exception:
+        return {}
+
+
+# data
+data = SaveConfigParser()
+data.read_file(open(flamingo.PROJECT_TEMPLATES_DATA_PATH, 'r'))
+
+# args
+parser = get_raw_parser(prog='flamingo init')
+
+parser.add_argument('variables', nargs='*', default='.')
+
+parser.add_argument('-t', '--project-template',
+                    default=data.get('config', 'default_template'))
+
+parser.add_argument('-l', '--list-templates', action='store_true')
+
+
+args = parser.parse_args()
+
+# checks
+PROJECT_TEMPLATE_PATH = os.path.join(flamingo.PROJECT_TEMPLATES_ROOT,
+                                     args.project_template)
+
+if not os.path.exists(PROJECT_TEMPLATE_PATH):
+    exit("no such project template '{}'".format(args.project_template))
+
+# list templates
+if args.list_templates:
+    for template in os.listdir(flamingo.PROJECT_TEMPLATES_ROOT):
+        if not os.path.isdir(os.path.join(flamingo.PROJECT_TEMPLATES_ROOT,
+                                          template)):
+            continue
+
+        if data.get('config', 'default_template') == template:
+            is_default = True
+
+        else:
+            is_default = False
+
+        print('{}{}'.format(template, ' (default)' if is_default else ''))
+
+        for line in data.get(template, 'description').strip().splitlines():
+            print('    {}'.format(line.strip()))
+
+        print()
+
+    exit()
+
+# render template
+variables = args.variables or '.'
+
+if not isinstance(variables, list):
+    variables = [variables]
+
+if '=' not in variables[0]:
+    output = variables[0]
+    variables = variables[1:]
+
+else:
+    output = '.'
+
+template_context = {
+    'flamingo': flamingo,
+    **parse_config(data.save_get(args.project_template, 'variables', '')),
+    **parse_config('\n'.join(variables))
+}
+
+try:
+    if not os.path.exists(output):
+        os.makedirs(output)
+
+    for root, dirs, files in os.walk(PROJECT_TEMPLATE_PATH):
+        for f in files:
+            source_path = os.path.join(root, f)
+
+            destination_path = os.path.join(
+                output,
+                os.path.relpath(source_path, PROJECT_TEMPLATE_PATH),
+            )
+
+            dirname = os.path.dirname(destination_path)
+
+            if not os.path.exists(dirname):
+                os.makedirs(dirname)
+
+            if os.path.splitext(source_path)[1] == '.template':
+                destination_path = os.path.splitext(destination_path)[0]
+                template = Template(open(source_path, 'r').read())
+
+                with open(destination_path, 'w+') as f:
+                    f.write(template.render(**template_context))
+
+            else:
+                shutil.copy(source_path, destination_path)
+
+except Exception as e:
+    exit(str(e))

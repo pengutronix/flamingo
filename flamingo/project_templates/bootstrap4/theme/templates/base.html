@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="/static/bootstrap-4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/custom.css">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <title>{% block title %}{% endblock %}</title>
+  </head>
+  <body>
+    <main>
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="/">{{ context.settings.PROJECT_NAME }}</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            {% include "simple_menu/bootstrap4.html" %}
+          </ul>
+        </div>
+      </nav>
+      <div id="content">
+        {% block content %}{% endblock %}
+      </div>
+    </main>
+    <footer class="border-top">
+      <div class="float-right">
+        <div id="flamingo">Powered by <a href="flamingo-web.org">Flamingo</a></div>
+      </div>
+    </footer>
+    <script src="/static/jquery/jquery-3.3.1.min.js"></script>
+    <script src="/static/bootstrap-4.3.1/js/bootstrap.min.js"></script>
+  </body>
+</html>

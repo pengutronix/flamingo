@@ -1,0 +1,31 @@
+PROJECT_NAME = '{{ project_name }}'
+
+CONTENT_ROOT = 'content'
+OUTPUT_ROOT = 'output'
+
+THEME_PATHS = [
+    'theme',
+]
+
+PLUGINS = [
+    'flamingo.plugins.Layers',
+    'flamingo.plugins.SimpleMenu',
+
+    'plugins/example.py::ExamplePlugin',
+]
+
+LAYERS = [
+    'overlay',
+]
+
+MENU = [
+    ['Home', 'home.rst'],
+    ['Category 1', [
+        ['Page 1', 'category-1/page-1.rst'],
+        ['Page 2', 'category-1/page-2.rst'],
+    ]],
+    ['Category 2', [
+        ['Page 3', 'category-2/page-3.rst'],
+        ['Page 4', 'category-2/page-4.rst'],
+    ]],
+]

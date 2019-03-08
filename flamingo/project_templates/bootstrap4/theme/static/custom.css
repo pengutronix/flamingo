@@ -1,0 +1,32 @@
+html {
+    min-height: 100%;
+}
+
+body {
+    height: 100%
+}
+
+main {
+    max-width: 70em;
+    margin: 0 auto;
+    padding-top: 1em;
+    min-height: 75%;
+}
+
+footer {
+    max-width: 70em;
+    margin: 0 auto;
+}
+
+footer #flamingo {
+    font-size: 70%;
+}
+
+main h1,
+main h2,
+main h3,
+main h4,
+main h5 {
+    margin-top: 0.5em;
+}
+

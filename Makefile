@@ -32,3 +32,12 @@ shell: env
 freeze: env
 	. $(PYTHON_VENV)/bin/activate && \
 	pip freeze
+
+test-site: env
+	. $(PYTHON_VENV)/bin/activate && \
+	rm -rf test-site && \
+	flamingo init test-site debug=True
+
+server: test-site
+	cd test-site && \
+	make server
