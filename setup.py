@@ -23,9 +23,10 @@ setup(
         'feedgen',
     ],
     scripts=[
-        'bin/flamingo-build',
-        'bin/flamingo-server',
-        'bin/flamingo-shell',
+        'bin/flamingo',
+        'bin/_flamingo-build',
+        'bin/_flamingo-server',
+        'bin/_flamingo-shell',
     ],
     entry_points={
         'pytest11': [

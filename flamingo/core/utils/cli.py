@@ -1,16 +1,43 @@
-import argparse
+from argparse import ArgumentParser, RawTextHelpFormatter
 import logging
 import os
 
 import coloredlogs
 
 from flamingo.core.settings import Settings
+import flamingo
 
 logger = logging.getLogger('flamingo')
 
+VERSION = 'v{}'.format(flamingo.VERSION_STRING)
+DESCRIPTION_HEADER = r"""
+  _        __ _                 _
+ ^-)      / _| |               (_)
+  (.._   | |_| | __ _ _ __ ___  _ _ __   __ _  ___
+   \`\\  |  _| |/ _` | '_ ` _ \| | '_ \ / _` |/ _ \
+    |>   | | | | (_| | | | | | | | | | | (_| | (_) |
+   /|    |_| |_|\__,_|_| |_| |_|_|_| |_|\__, |\___/
+                                         __/ |
+{}{} |___/
 
-def gen_default_parser(*parser_args, **parser_kwargs):
-    parser = argparse.ArgumentParser(*parser_args, **parser_kwargs)
+  https://github.com/pengutronix/flamingo
+
+""".format(' ' * (39 - len(VERSION)), VERSION)
+
+
+def get_raw_parser(*parser_args, description='', **parser_kwargs):
+    description = '{}\n{}'.format(DESCRIPTION_HEADER, description)
+
+    parser = ArgumentParser(*parser_args, description=description,
+                            formatter_class=RawTextHelpFormatter,
+                            **parser_kwargs)
+
+    return parser
+
+
+def gen_default_parser(*parser_args, description='', **parser_kwargs):
+    parser = get_raw_parser(*parser_args, description=description,
+                            **parser_kwargs)
 
     parser.add_argument('-s', '--settings', nargs='+')
     parser.add_argument('-c', '--content-root', type=str)

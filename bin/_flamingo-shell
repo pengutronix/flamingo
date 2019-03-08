@@ -1,0 +1,14 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import IPython
+
+from flamingo.core.utils.cli import gen_default_parser, parse_args
+from flamingo.core.context import Context
+
+parser = gen_default_parser(prog='flamingo-shell')
+namespace, settings = parse_args(parser)
+
+context = Context(settings)
+
+IPython.embed()

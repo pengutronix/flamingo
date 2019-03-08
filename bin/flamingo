@@ -1,0 +1,24 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+import runpy
+import sys
+import os
+
+from flamingo.core.utils.cli import get_raw_parser
+
+PREFIX = '_flamingo-'
+PATH = os.path.dirname(sys.argv[0])
+
+scripts = {
+    i[len(PREFIX):]: os.path.join(PATH, i)
+    for i in os.listdir(PATH) if i.startswith(PREFIX)
+}
+
+parser = get_raw_parser(prog='flamingo')
+parser.add_argument('command', choices=list(scripts.keys()))
+args = parser.parse_args(sys.argv[1:2])
+
+sys.argv = [sys.argv[0]] + sys.argv[2:]
+
+runpy.run_path(scripts[args.command])
