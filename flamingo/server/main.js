@@ -14,10 +14,28 @@ function iframe_onload(iframe) {
             document.querySelector("link[rel='shortcut icon']").href = nodes[index].getAttribute('href');
         }
     }
+
+    // page offset
+    if(ractive.get('iframe_set_offset')) {
+        var offset = ractive.get('iframe_offset');
+
+        iframe.contentWindow.scrollTo(offset[0], offset[1]);
+        ractive.set('iframe_set_offset', false);
+
+    } else {
+        ractive.set('iframe_offset', [0, 0]);
+
+    }
+
+    iframe.contentWindow.onscroll = function(event) {
+        ractive.set('iframe_offset', [this.scrollX, this.scrollY]);
+    }
 }
 
 function iframe_set_url(url) {
     var iframe = document.getElementsByTagName('iframe')[0];
+
+    ractive.set('iframe_set_offset', false);
 
     if(url == '') {
         ractive.set('iframe_pathname', '/');
@@ -50,6 +68,7 @@ function onhashchange() {
 function iframe_reload() {
     var iframe = document.getElementsByTagName('iframe')[0];
 
+    ractive.set('iframe_set_offset', true);
     iframe.contentWindow.location.reload(true);
 }
 
@@ -104,6 +123,8 @@ var ractive = Ractive({
     data: {
         iframe_pathname: get_hash(),
         iframe_initial_pathname: get_hash(),
+        iframe_set_offset: false,
+        iframe_offset: [0, 0],
         overlay: -1,
         overlay_reason: '',
         overlay_heading: '',
