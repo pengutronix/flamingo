@@ -141,6 +141,10 @@ async def watcher_task():
     while True:
         try:
             path = await watcher.get_file()
+
+            if not path:  # KeyboardInterrupt
+                return
+
             path = os.path.relpath(path, settings.CONTENT_ROOT)
 
             logging.info('%s changed', path)

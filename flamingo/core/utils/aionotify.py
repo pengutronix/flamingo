@@ -62,17 +62,21 @@ class RecursiveWatcher:
         return True
 
     async def get_file(self):
-        while True:
-            event = await self.watcher.get_event()
-            path = os.path.join(event.alias, event.name)
-            flags = aionotify.Flags.parse(event.flags)
+        try:
+            while True:
+                event = await self.watcher.get_event()
+                path = os.path.join(event.alias, event.name)
+                flags = aionotify.Flags.parse(event.flags)
 
-            if aionotify.Flags.ISDIR in flags:
-                if aionotify.Flags.CREATE in flags:
-                    self.watch(path)
+                if aionotify.Flags.ISDIR in flags:
+                    if aionotify.Flags.CREATE in flags:
+                        self.watch(path)
 
-                elif aionotify.Flags.DELETE in flags:
-                    self.unwatch(path)
+                    elif aionotify.Flags.DELETE in flags:
+                        self.unwatch(path)
 
-            elif self.path_is_valid(path):
-                return path
+                elif self.path_is_valid(path):
+                    return path
+
+        except asyncio.CancelledError:  # FIXME
+            return ''
