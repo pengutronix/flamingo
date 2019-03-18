@@ -41,26 +41,11 @@ For example: If you want your site to have login for editing or comments or
 even the current time, flamingo is the wrong tool.
 
 Basically flamingo is a fancy converter, that turns RST code into HTML code.
-It doesn't provides an editor, user management or a backup solution like a CMS
-like `WordPress <https://wordpress.org/>`_.
+It doesn't provides an editor, user management or a backup solution like a CMS.
 
 **Any part of flamingo is designed to be easy, not to be fast!**
 
-For instance the data model is made to look and feel like
-`Django  <https://www.djangoproject.com/>`_ model API, because it is a very
-intuitive way to filter and manipulate huge amounts of objects with various
-attributes.
-Django models are very efficient, because their API is an abstraction for well
-designed SQL statements on fast databases like Postgres or MySQL.
-
-The flamingo data model API is an abstraction of python-looping over fancy
-lists, comparing dict like objects.
-
-While flamingo runs, all objects are stored in RAM.
-
-**Anything is a plugin**
-
-If you think flamingo lacks of features, don't patch flamingo, write a plugin!
+Flamingo is full python and all operations run on python objects stored in RAM.
 
 
 Getting Started
