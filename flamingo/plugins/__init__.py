@@ -11,3 +11,4 @@ from .html import HTML  # NOQA
 from .i18n import I18N  # NOQA
 from .tags import Tags  # NOQA
 from .time import Time  # NOQA
+from .metaFile import MetaFile  # NOQA
