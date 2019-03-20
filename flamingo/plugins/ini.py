@@ -1,8 +1,8 @@
 from flamingo.core.parser import ContentParser
 
 
-class MetaParser(ContentParser):
-    FILE_EXTENSIONS = ['meta']
+class INIParser(ContentParser):
+    FILE_EXTENSIONS = ['ini']
 
     """
     This parser can be used to load files that do not contain a content part
@@ -26,6 +26,6 @@ class MetaParser(ContentParser):
         self.parse_meta_data(file_content, content)
 
 
-class MetaFile:
+class INI:
     def parser_setup(self, context):
-        context.parser.add_parser(MetaParser(context))
+        context.parser.add_parser(INIParser(context))
