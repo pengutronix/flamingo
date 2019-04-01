@@ -1,8 +1,9 @@
 import flamingo
 
-# plugins
+# plugins / hooks
 CORE_PLUGINS = [
     'flamingo.core.plugins.MetaDataProcessor',
+    'flamingo.core.plugins.Hooks',
 ]
 
 DEFAULT_PLUGINS = [
@@ -14,6 +15,7 @@ DEFAULT_PLUGINS = [
 ]
 
 PLUGINS = []
+CACHE_HOOKS = True
 
 # parsing
 USE_CHARDET = False
