@@ -13,3 +13,88 @@ def dummy_context():
             self.contents = contents or ContentSet()
 
     return DummyContext(settings=Settings())
+
+
+@pytest.fixture
+def tmp_build_env():
+    from tempfile import TemporaryDirectory
+    import os
+
+    from flamingo.core.settings import Settings
+    from flamingo.core.context import Context
+
+    class TempBuildEnv:
+        def __init__(self, path):
+            self.path = path
+            self.context = None
+
+            # setup settings
+            self.settings = Settings()
+
+            self.settings.DEDENT_INPUT = True
+
+            self.settings.CONTENT_ROOT = os.path.join(
+                path, self.settings.CONTENT_ROOT)
+
+            self.settings.OUTPUT_ROOT = os.path.join(
+                path, self.settings.OUTPUT_ROOT)
+
+            self.settings.MEDIA_ROOT = os.path.join(
+                path, self.settings.MEDIA_ROOT)
+
+            self.settings.STATIC_ROOT = os.path.join(
+                path, self.settings.STATIC_ROOT)
+
+            # setup machine readable theme
+            self.settings.THEME_PATHS = [
+                os.path.join(path, 'theme'),
+            ]
+
+            self.write(
+                '/theme/templates/page.html',
+                '{{ content.content_title }}\n{{ render(content.content_body) }}'  # NOQA
+            )
+
+        def setup(self, context_class=Context):
+            if not os.path.exists(self.settings.CONTENT_ROOT):
+                os.makedirs(self.settings.CONTENT_ROOT)
+
+            if not os.path.exists(self.settings.OUTPUT_ROOT):
+                os.makedirs(self.settings.OUTPUT_ROOT)
+
+            if not os.path.exists(self.settings.MEDIA_ROOT):
+                os.makedirs(self.settings.MEDIA_ROOT)
+
+            if not os.path.exists(self.settings.STATIC_ROOT):
+                os.makedirs(self.settings.STATIC_ROOT)
+
+            self.context = context_class(self.settings)
+
+        def build(self, *args, **kwargs):
+            if not self.context:
+                self.setup()
+
+            self.context.build()
+
+        def gen_path(self, path):
+            assert path.startswith('/'), 'path should be absolute'
+
+            return os.path.join(self.path, path[1:])
+
+        def read(self, path, *args, mode='r', **kwargs):
+            return open(self.gen_path(path), *args, mode=mode, **kwargs).read()
+
+        def write(self, path, text, *args, mode='w+', **kwargs):
+            path = self.gen_path(path)
+            dirname = os.path.dirname(path)
+
+            if not os.path.exists(dirname):
+                os.makedirs(dirname)
+
+            return open(path, *args, mode=mode, **kwargs).write(text)
+
+        def exists(self, path):
+            return os.path.exists(self.gen_path(path))
+
+    with TemporaryDirectory() as tmp_dir:
+        yield TempBuildEnv(tmp_dir)
