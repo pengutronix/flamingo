@@ -129,8 +129,10 @@ class Context:
                 yield path
 
         else:
-            self.logger.debug("searching content recursive in %s",
-                              self.settings.CONTENT_ROOT)
+            self.logger.debug(
+                "searching content with extension %s recursive in %s",
+                repr(supported_extensions), self.settings.CONTENT_ROOT,
+            )
 
             for root, dirs, files in os.walk(self.settings.CONTENT_ROOT):
                 for name in files:
