@@ -1,4 +1,5 @@
 from configparser import ConfigParser, Error as ConfigParserError
+from textwrap import dedent
 import os
 
 from flamingo.core.errors import FlamingoError
@@ -84,6 +85,7 @@ class ContentParser:
 
 class FileParser:
     def __init__(self, context):
+        self.context = context
         self._parsers = []
 
         if context.settings.USE_CHARDET:
@@ -121,4 +123,9 @@ class FileParser:
             raise ParsingError(
                 "file extension '{}' is not supported".format(extension))
 
-        parser.parse(self.read(path), content)
+        file_content = self.read(path)
+
+        if self.context.settings.DEDENT_INPUT:
+            file_content = dedent(file_content)
+
+        parser.parse(file_content, content)

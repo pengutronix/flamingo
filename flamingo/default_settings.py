@@ -17,6 +17,7 @@ PLUGINS = []
 
 # parsing
 USE_CHARDET = False
+DEDENT_INPUT = False
 TYPE_EVALUATION = True
 
 # templating
