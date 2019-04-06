@@ -2,6 +2,7 @@ import os
 
 from jinja2 import Environment, FileSystemLoader, contextfunction
 
+from flamingo.core.errors import ObjectDoesNotExist
 from .base import TemplatingEngine
 
 
@@ -28,8 +29,13 @@ def render(context, template_string):
 
 @contextfunction
 def link(context, path, name='', lang=''):
-    content = context['context'].contents.get(path=path)
     i18n = 'flamingo.plugins.I18N' in context['context'].settings.PLUGINS
+
+    try:
+        content = context['context'].contents.get(path=path)
+
+    except ObjectDoesNotExist:
+        content = None
 
     if content and i18n:
         lang = lang or context['content']['lang']
