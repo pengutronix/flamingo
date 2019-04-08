@@ -1,7 +1,7 @@
 import operator
 
 from flamingo.core.errors import MultipleObjectsReturned, ObjectDoesNotExist
-from flamingo.core.utils.string import truncate
+from textwrap import shorten
 
 AND = operator.and_
 NOT = operator.not_
@@ -142,10 +142,10 @@ class Content:
 
     def __repr__(self):
         return '<Content({})>'.format(
-            truncate(', '.join(
+            shorten(', '.join(
                 ['{}={}'.format(k, repr(v)) for k, v in self.data.items()
                  if k != 'content']
-            ), CONTENT_REPR_MAX_LEN)
+            ), width=CONTENT_REPR_MAX_LEN)
         )
 
     def __getitem__(self, key):
@@ -281,7 +281,7 @@ class ContentSet:
 
     def __repr__(self):
         return '<ContentSet({})>'.format(
-            truncate(repr(self.contents)[1:-1], CONTENT_SET_REPR_MAX_LEN))
+            shorten(repr(self.contents)[1:-1], width=CONTENT_SET_REPR_MAX_LEN))
 
     def __add__(self, other):
         if not isinstance(other, (ContentSet, Content)):

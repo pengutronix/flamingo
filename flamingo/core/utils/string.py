@@ -29,10 +29,3 @@ def split(string, delimiter=','):
     strings = [i.strip() for i in string.split(delimiter) if i]
 
     return strings
-
-
-def truncate(string, max_length, truncate_string='...'):
-    if len(string) <= max_length:
-        return string
-
-    return string[0:max_length-len(truncate_string)] + truncate_string
