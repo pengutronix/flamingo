@@ -40,6 +40,7 @@ setup(
     install_requires=[
         'jinja2',
         'docutils',
+        'pyyaml',
     ],
     scripts=[
         'bin/flamingo',

@@ -8,7 +8,7 @@ CORE_PLUGINS = [
 
 DEFAULT_PLUGINS = [
     'flamingo.plugins.HTML',
-    'flamingo.plugins.INI',
+    'flamingo.plugins.Yaml',
     'flamingo.plugins.reStructuredText',
     'flamingo.plugins.rstImage',
     'flamingo.plugins.rstFile',

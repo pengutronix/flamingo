@@ -9,7 +9,7 @@ from .html import HTML  # NOQA
 from .i18n import I18N  # NOQA
 from .tags import Tags  # NOQA
 from .time import Time  # NOQA
-from .ini import INI  # NOQA
+from .yaml import Yaml  # NOQA
 
 try:
     from .rst.pygments import rstPygments  # NOQA

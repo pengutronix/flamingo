@@ -1,5 +1,5 @@
-from configparser import ConfigParser, Error as ConfigParserError
 from textwrap import dedent
+from yaml import safe_load
 import os
 
 from flamingo.core.errors import FlamingoError
@@ -18,7 +18,6 @@ class ContentParser:
 
     def __init__(self, context):
         self.context = context
-        self.configparser = ConfigParser(interpolation=None)
 
     def parse_meta_data(self, file_content, content):
         if '\n\n\n' in file_content:
@@ -31,50 +30,14 @@ class ContentParser:
             return file_content
 
         try:
-            self.configparser.clear()
+            meta = safe_load(meta_data_string)
 
-            self.configparser.read_string(
-                '[meta]\n{}'.format(meta_data_string))
-
-            # type evalutation
-            if self.context.settings.TYPE_EVALUATION:
-                for option in self.configparser.options('meta'):
-                    # float
-                    try:
-                        attr = self.configparser.getfloat('meta', option)
-
-                        # int
-                        if '.' in self.configparser.get('meta', option):
-                            attr = int(attr)
-
-                        content[option] = attr
-
-                        continue
-
-                    except ValueError:
-                        pass
-
-                    # bool
-                    try:
-                        content[option] = self.configparser.getboolean('meta',
-                                                                       option)
-
-                        continue
-
-                    except ValueError:
-                        pass
-
-                    # string (fallback)
-                    content[option] = self.configparser.get('meta', option)
-
-            # base get
-            else:
-                for option in self.configparser.options('meta'):
-                    content[option] = self.configparser.get('meta', option)
+            for key, value in meta.items():
+                content[key] = value
 
             return markup_string
 
-        except ConfigParserError:
+        except Exception:
             return file_content
 
     def parse(self, file_content, content):

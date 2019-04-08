@@ -1,8 +1,8 @@
 from flamingo.core.parser import ContentParser
 
 
-class INIParser(ContentParser):
-    FILE_EXTENSIONS = ['ini']
+class YamlParser(ContentParser):
+    FILE_EXTENSIONS = ['yaml']
 
     """
     This parser can be used to load files that do not contain a content part
@@ -26,6 +26,6 @@ class INIParser(ContentParser):
         self.parse_meta_data(file_content, content)
 
 
-class INI:
+class Yaml:
     def parser_setup(self, context):
-        context.parser.add_parser(INIParser(context))
+        context.parser.add_parser(YamlParser(context))
