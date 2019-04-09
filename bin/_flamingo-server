@@ -12,8 +12,8 @@ from aiohttp_json_rpc import JsonRpc
 
 from flamingo.core.utils.cli import gen_default_parser, parse_args
 from flamingo.core.utils.aionotify import RecursiveWatcher
+from flamingo.core.utils.aiohttp import DirectoryExporter
 from flamingo.core.data_model import ContentSet, Q
-from flamingo.core.utils.aiohttp import Exporter
 from flamingo.core.context import Context, ln_s
 from flamingo import SERVER_STATIC_ROOT
 
@@ -184,13 +184,13 @@ loop.create_task(watcher_task())
 
 # setup server
 app = Application(loop=loop)
-content_exporter = Exporter(settings.OUTPUT_ROOT)
+content_exporter = DirectoryExporter(settings.OUTPUT_ROOT)
+
+live_server_exporter = DirectoryExporter(SERVER_STATIC_ROOT,
+                                         prefix='/live-server')
 
 app.router.add_route('*', '/live-server/rpc/', rpc)
-
-app.router.add_route('*', '/live-server/{path_info:.*}',
-                          Exporter(SERVER_STATIC_ROOT, prefix='/live-server'))
-
+app.router.add_route('*', '/live-server/{path_info:.*}', live_server_exporter)
 app.router.add_route('*', '/{path_info:.*}', content_exporter)
 
 # run

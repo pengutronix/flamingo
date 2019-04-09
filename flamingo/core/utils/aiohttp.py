@@ -3,7 +3,7 @@ import os
 from aiohttp.web import StaticResource
 
 
-class Exporter:
+class DirectoryExporter:
     def __init__(self, path, prefix=''):
         self.path = path
         self.prefix = prefix
