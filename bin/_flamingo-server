@@ -224,5 +224,9 @@ if namespace.shell:
     loop.run_until_complete(worker_pool.run(start_shell))
 
 else:
-    run_app(app=app, host=namespace.host, port=namespace.port,
-            print=lambda *args, **kwargs: None)
+    try:
+        run_app(app=app, host=namespace.host, port=namespace.port,
+                print=lambda *args, **kwargs: None)
+
+    except OSError:
+        exit('ERROR: can not bind to port {}'.format(namespace.port))
