@@ -2,7 +2,7 @@ def test_base_parser_import():
     from flamingo.core.parser import ContentParser  # NOQA
 
 
-def test_basic_meta_data_parsing(dummy_context):
+def test_basic_meta_data_parsing(flamingo_dummy_context):
     from flamingo.core.parser import ContentParser
     from flamingo.core.data_model import Content
 
@@ -16,7 +16,7 @@ def test_basic_meta_data_parsing(dummy_context):
     content
     """
 
-    parser = ContentParser(dummy_context)
+    parser = ContentParser(flamingo_dummy_context)
     content = Content()
 
     parser.parse(raw_content, content)
@@ -40,7 +40,7 @@ def test_basic_meta_data_parsing(dummy_context):
     content
     """  # NOQA
 
-    parser = ContentParser(dummy_context)
+    parser = ContentParser(flamingo_dummy_context)
     content = Content()
 
     parser.parse(raw_content, content)
@@ -54,7 +54,7 @@ def test_basic_meta_data_parsing(dummy_context):
     assert content['content_body'] == 'content'
 
 
-def test_meta_data_blocks(dummy_context):
+def test_meta_data_blocks(flamingo_dummy_context):
     from flamingo.core.parser import ContentParser
     from flamingo.core.data_model import Content
 
@@ -69,7 +69,7 @@ def test_meta_data_blocks(dummy_context):
     content
     """
 
-    parser = ContentParser(dummy_context)
+    parser = ContentParser(flamingo_dummy_context)
     content = Content()
 
     parser.parse(raw_content, content)
@@ -90,7 +90,7 @@ def test_meta_data_blocks(dummy_context):
     content
     """
 
-    parser = ContentParser(dummy_context)
+    parser = ContentParser(flamingo_dummy_context)
     content = Content()
 
     parser.parse(raw_content, content)
@@ -111,7 +111,7 @@ def test_meta_data_blocks(dummy_context):
     real content
     """
 
-    parser = ContentParser(dummy_context)
+    parser = ContentParser(flamingo_dummy_context)
     content = Content()
 
     parser.parse(raw_content, content)
@@ -129,7 +129,7 @@ def test_meta_data_blocks(dummy_context):
     real content2
     """
 
-    parser = ContentParser(dummy_context)
+    parser = ContentParser(flamingo_dummy_context)
     content = Content()
 
     parser.parse(raw_content, content)
@@ -144,7 +144,7 @@ def test_meta_data_blocks(dummy_context):
     real content2
     """
 
-    parser = ContentParser(dummy_context)
+    parser = ContentParser(flamingo_dummy_context)
     content = Content()
 
     parser.parse(raw_content, content)
@@ -160,7 +160,7 @@ def test_meta_data_blocks(dummy_context):
     real content2
     """
 
-    parser = ContentParser(dummy_context)
+    parser = ContentParser(flamingo_dummy_context)
     content = Content()
 
     parser.parse(raw_content, content)

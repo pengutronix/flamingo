@@ -2,7 +2,7 @@ import pytest
 
 
 @pytest.fixture
-def dummy_context():
+def flamingo_dummy_context():
     from flamingo.core.data_model import ContentSet
     from flamingo.core.settings import Settings
     from flamingo.core.context import Context
@@ -16,7 +16,7 @@ def dummy_context():
 
 
 @pytest.fixture
-def tmp_build_env():
+def flamingo_env():
     from tempfile import TemporaryDirectory
     import os
 
