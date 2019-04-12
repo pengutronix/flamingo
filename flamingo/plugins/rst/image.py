@@ -1,6 +1,8 @@
 from docutils.parsers.rst import Directive, directives
 from docutils.nodes import raw
 
+from flamingo.core.plugins.media import add_media
+
 
 def img(context):
     class Image(Directive):
@@ -8,12 +10,10 @@ def img(context):
         has_content = False
 
         def run(self):
-            filename = self.arguments[0]
-            _, _, link = context.copy_media(filename,
-                                            context.content['path'])
+            media = add_media(context, context.content, self.arguments[0])
 
             return [
-                raw('', '<img src="{}">'.format(link), format='html'),
+                raw('', '<img src="{}">'.format(media['link']), format='html'),
             ]
 
     return Image

@@ -1,5 +1,7 @@
 from bs4 import BeautifulSoup
 
+from flamingo.core.plugins.media import add_media
+
 
 class TitleNotFoundError(Exception):
     pass
@@ -33,5 +35,5 @@ def process_media_links(context, content, html):
         html = BeautifulSoup(html, 'html.parser')
 
     for img in html.find_all('img'):
-        _, _, link = context.copy_media(img['src'], content['path'])
-        img['src'] = link
+        media_content = add_media(context, content, img['src'])
+        img['src'] = media_content['link']

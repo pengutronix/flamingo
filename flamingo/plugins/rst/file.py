@@ -1,23 +1,20 @@
 from docutils.parsers.rst import Directive, directives
 from docutils.nodes import raw
 
-from .base import parse_rst
+from flamingo.core.plugins.media import add_media
 
 
 def file(context):
     class File(Directive):
-        required_arguments = 1
-        has_content = True
+        required_arguments = 2
+        has_content = False
 
         def run(self):
-            filename = self.arguments[0]
-            _, _, link = context.copy_media(filename,
-                                            context.content['path'])
-
-            content = parse_rst(self.content)
+            media = add_media(context, context.content, self.arguments[0])
 
             return [
-                raw('', '<a href="{}">{}</a>'.format(link, content),
+                raw('', '<a href="{}">{}</a>'.format(media['link'],
+                                                     self.arguments[1]),
                     format='html'),
             ]
 

@@ -4,6 +4,7 @@ import flamingo
 CORE_PLUGINS = [
     'flamingo.core.plugins.MetaDataProcessor',
     'flamingo.core.plugins.Hooks',
+    'flamingo.core.plugins.Media',
 ]
 
 DEFAULT_PLUGINS = [

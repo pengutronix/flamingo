@@ -70,7 +70,6 @@ class Context:
         # parse contents
         self.contents = contents or ContentSet()
         self.content = None
-        self._media = []  # FIXME: this should be part of Content()
 
         for path in self.get_source_paths():
             self.contents.add(
@@ -203,47 +202,6 @@ class Context:
 
         return output, template_context
 
-    def copy_media(self, filename, content_source_path):
-        # gen source_path
-        if filename.startswith('/'):
-            source_path = os.path.join(
-                self.settings.CONTENT_ROOT, filename[1:])
-
-        else:
-            source_path = os.path.join(
-                os.path.dirname(
-                    os.path.join(self.settings.CONTENT_ROOT,
-                                 content_source_path)
-                ),
-                filename,
-            )
-
-        source_path = os.path.normpath(source_path)
-
-        # gen destination_path
-        destination_path = os.path.join(
-            self.settings.MEDIA_ROOT,
-            os.path.relpath(source_path, self.settings.CONTENT_ROOT),
-        )
-
-        # gen link
-        link = os.path.join(
-            '/media',
-            os.path.relpath(destination_path, self.settings.MEDIA_ROOT),
-        )
-
-        # check if media exists
-        if not os.path.exists(source_path):
-            self.logger.critical(
-                "media '%s' does not exist (used as '%s' in '%s')",
-                source_path, filename, content_source_path,
-            )
-
-        else:
-            self._media.append((source_path, destination_path, ))
-
-        return source_path, destination_path, link
-
     def build(self, clean=True, mkdir_p=mkdir_p, cp=cp):
         self.run_plugin_hook('pre_build')
 
@@ -284,10 +242,6 @@ class Context:
 
         if self.settings.CONTENT_PATHS:
             return
-
-        # copy media
-        for source_path, destination_path in self._media:
-            cp(self, source_path, destination_path, mkdir_p=mkdir_p)
 
         # copy static
         for static_dir in self.templating_engine.find_static_dirs():
