@@ -1,3 +1,4 @@
+from .simple_menu.simple_menu import SimpleMenu  # NOQA
 from .rst.bootstrap3 import rstBootstrap3  # NOQA
 from .rst.base import reStructuredText  # NOQA
 from .rst.image import rstImage  # NOQA

@@ -1,0 +1,27 @@
+{% if not level %}
+  {% set level=0 %}
+{% endif %}
+{% if not menu %}
+  {% set menu=context.settings.MENU.main %}
+{% endif %}
+{% if is_dict(menu) %}
+  {% set menu=menu.main %}
+{% endif %}
+{% for name, item in menu %}
+  {% if is_list(item) %}
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ name }}</a>
+      <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+        {% with menu=item, level=level+1 %}
+          {% include "simple_menu/bootstrap4.html" %}
+        {% endwith %}
+      </div>
+    </li>
+  {% else %}
+    {% if level == 0 %}
+      <a class="nav-link" href="{{ item.url }}">{{ name }}</a>
+    {% else %}
+      <a class="dropdown-item" href="{{ item.url }}">{{ name }}</a>
+    {% endif %}
+  {% endif %}
+{% endfor %}
