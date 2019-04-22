@@ -43,7 +43,13 @@ function iframe_onload(iframe) {
     iframe.contentWindow.onscroll = function(event) {
         ractive.set('iframe_offset', [this.scrollX, this.scrollY]);
     }
+
+    // keyboard shortcuts
+    iframe.contentDocument.addEventListener('keydown', function(event) {
+        handle_keydown(event);
+    });
 }
+
 
 function iframe_set_url(url) {
     var iframe = document.getElementsByTagName('iframe')[0];
@@ -313,3 +319,42 @@ rpc.on('close', function(rpc) {
 });
 
 rpc.connect();
+
+// keyboard shortcuts
+function handle_keydown(event) {
+    function set_tab(name) {
+        if(ractive.get('overlay') > 0) {
+            ractive.set('overlay_tab', name);
+        }
+    }
+
+    if(!ractive.get('settings.keyboard_shortcuts')) {
+        return;
+    }
+
+    switch(event.keyCode) {
+        case 27:  // ESC
+            ractive.fire('toggle_overlay');
+            break;
+
+        case 49:  // 1
+            set_tab('meta-data');
+            break;
+
+        case 50:  // 2
+            set_tab('template-context');
+            break;
+
+        case 51:  // 3
+            set_tab('project-settings');
+            break;
+
+        case 52:  // 4
+            set_tab('log');
+            break;
+    }
+}
+
+document.addEventListener('keydown', function(event) {
+    handle_keydown(event);
+});
