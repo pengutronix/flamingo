@@ -5,6 +5,8 @@ from flamingo.core.utils.pagination import paginate
 
 
 class Tags:
+    THEME_PATHS = [os.path.join(os.path.dirname(__file__), 'theme')]
+
     def contents_parsed(self, context):
         CONTENT_KEY = getattr(context.settings, 'I18N_CONTENT_KEY', 'id')
 
