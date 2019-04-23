@@ -169,7 +169,9 @@ class Context:
             **self.settings.EXTRA_CONTEXT,
         }
 
-        return self.templating_engine.render(template_name, template_context)
+        output = self.templating_engine.render(template_name, template_context)
+
+        return output, template_context
 
     def copy_media(self, filename, content_source_path):
         # gen source_path
@@ -240,7 +242,8 @@ class Context:
                 self.logger.debug("writing '%s'...", output_path)
 
                 if content['template']:
-                    output = self.render(content)
+                    output, template_context = self.render(content)
+                    content['template_context'] = template_context
 
                 else:
                     output = content['content']
