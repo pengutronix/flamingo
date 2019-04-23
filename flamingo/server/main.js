@@ -1,4 +1,17 @@
 function iframe_onload(iframe) {
+    // get content meta data
+    rpc.call(
+        'get_meta_data',
+        iframe.contentWindow.location.pathname,
+        function(data) {
+            ractive.set({
+                content_meta_data: data.meta_data,
+                content_template_context: data.template_context,
+                content_settings: data.settings,
+            });
+        }
+    )
+
     // url
     ractive.set('iframe_pathname', iframe.contentWindow.location.pathname);
     document.location.hash = iframe.contentWindow.location.pathname;
@@ -129,8 +142,43 @@ var ractive = Ractive({
         overlay_reason: '',
         overlay_heading: '',
         overlay_content: '',
+        overlay_tab: 'meta-data',
         log: [],
+        log_level: {
+            debug: false,
+            info: false,
+            error: true,
+            critical: true,
+        },
+        content_meta_data: {},
         messages: [],
+        settings: {
+            keyboard_shortcuts: true,
+        },
+    },
+    computed: {
+        selected_log_level: function() {
+            var selected_log_level = [];
+            var log_level = this.get('log_level')
+
+            if(log_level.debug) {
+                selected_log_level.push('DEBUG');
+            }
+
+            if(log_level.info) {
+                selected_log_level.push('INFO');
+            }
+
+            if(log_level.error) {
+                selected_log_level.push('ERROR');
+            }
+
+            if(log_level.critical) {
+                selected_log_level.push('CRITICAL');
+            }
+
+            return selected_log_level;
+        }
     }
 });
 
@@ -213,6 +261,7 @@ rpc.on('open', function(rpc) {
                 ractive.set({
                     overlay: 1,
                     overlay_reason: 'log',
+                    overlay_tab: 'log',
                 });
             }
         }
@@ -250,6 +299,7 @@ rpc.on('close', function(rpc) {
     ractive.set({
         overlay_heading: 'Connection lost',
         log: [],
+        overlay_tab: 'none',
     });
 
     if(ractive.get('overlay') < 0) {

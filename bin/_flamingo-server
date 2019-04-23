@@ -124,9 +124,63 @@ async def rebuild(request):
         'changed_paths': ['*'],
     })
 
+
+def get_meta_data(url):
+    global context
+    ignore_keys = ('content', 'content_body', 'template_context')
+
+    meta_data = {
+        'meta_data': [],
+        'template_context': [],
+        'settings': [],
+    }
+
+    try:
+        content = context.contents.get(url=url)
+
+    except Exception:
+        content = None
+
+    if not content:
+        url = os.path.join(url, 'index.html')
+
+        try:
+            content = context.contents.get(url=url)
+
+        except Exception:
+            return {
+                'meta_data': [],
+                'template_context': [],
+                'settings': [],
+            }
+
+    meta_data['meta_data'] = [
+        {'key': k, 'value': repr(v), 'type': type(v).__name__}
+        for k, v in content.data.items() if k not in ignore_keys
+    ]
+
+    meta_data['template_context'] = [
+        {'key': k, 'value': repr(v), 'type': type(v).__name__}
+        for k, v in (content['template_context'] or {}).items()
+    ]
+
+    for name in dir(context.settings):
+        if name.startswith('_') or name in ('add', ):
+            continue
+
+        attr = getattr(context.settings, name)
+
+        meta_data['settings'].append(
+            {'key': name, 'value': repr(attr), 'type': type(attr).__name__}
+        )
+
+    return meta_data
+
+
 rpc.add_methods(
     ('', toggle_index),
     ('', rebuild),
+    ('', get_meta_data),
 )
 
 
