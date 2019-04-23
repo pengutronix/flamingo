@@ -1,1 +1,2 @@
 flamingo/server/lib/* linguist-vendored
+flamingo/plugins/*/theme/* linguist-vendored
