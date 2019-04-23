@@ -44,4 +44,4 @@ class Settings:
             raise
 
     def __dir__(self):
-        return super().__dir__() + list(self._values.keys())
+        return list(set(super().__dir__() + list(self._values.keys())))
