@@ -1,5 +1,7 @@
-Redirects
-=========
+
+
+Authors
+=======
 
 Installation
 ------------
@@ -9,5 +11,5 @@ Installation
     # settings.py
 
     PLUGINS = [
-        'flamingo.plugins.Redirects',
+        'flamingo.plugins.Authors',
     ]

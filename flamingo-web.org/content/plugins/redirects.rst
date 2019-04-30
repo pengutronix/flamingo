@@ -1,5 +1,7 @@
-rstPygments
-===========
+
+
+Redirects
+=========
 
 Installation
 ------------
@@ -9,5 +11,5 @@ Installation
     # settings.py
 
     PLUGINS = [
-        'flamingo.plugins.rstPygments',
+        'flamingo.plugins.Redirects',
     ]

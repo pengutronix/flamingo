@@ -1,5 +1,7 @@
-Tags
-====
+
+
+Markdown
+========
 
 Installation
 ------------
@@ -9,5 +11,5 @@ Installation
     # settings.py
 
     PLUGINS = [
-        'flamingo.plugins.Tags',
+        'flamingo.plugins.Markdown',
     ]

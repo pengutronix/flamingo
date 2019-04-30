@@ -1,0 +1,49 @@
+
+
+I18N
+====
+
+I18N is a plugin for internationalisation
+
+Installation
+------------
+
+.. code-block:: python
+
+    # settings.py
+
+    PLUGINS = [
+        'flamingo.plugins.I18N',
+    ]
+
+Settings
+--------
+
+.. data::
+
+    I18N_CONTENT_KEY = 'id'
+
+    Controls which meta data key I18N should use to associate contents
+
+.. data::
+
+    I18N_LANGUAGES = ['en', 'de']
+
+    List of all available languages as language codes
+
+.. data::
+
+    I18N_DEFAULT_LANGUAGE = 'en'
+
+    Lang code of the default language
+
+.. data::
+
+    I18N_ENFORCE_REDIRECT = True
+
+.. data::
+
+    I18N_IGNORE = {'i18n_ignore__isnull': False}
+
+I18N finds translations of contents that share the same ``CONTENT_KEY``, and
+links them together.

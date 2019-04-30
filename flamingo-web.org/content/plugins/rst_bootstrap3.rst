@@ -1,5 +1,7 @@
-Layers
-======
+
+
+rstBootstrap3
+=============
 
 Installation
 ------------
@@ -9,5 +11,5 @@ Installation
     # settings.py
 
     PLUGINS = [
-        'flamingo.plugins.Layers',
+        'flamingo.plugins.rstBootstrap3',
     ]

@@ -1,5 +1,7 @@
-rstBootstrap3
-=============
+
+
+Time
+====
 
 Installation
 ------------
@@ -9,5 +11,5 @@ Installation
     # settings.py
 
     PLUGINS = [
-        'flamingo.plugins.rstBootstrap3',
+        'flamingo.plugins.Time',
     ]

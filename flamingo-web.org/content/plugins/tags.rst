@@ -1,4 +1,6 @@
-I18N
+
+
+Tags
 ====
 
 Installation
@@ -9,5 +11,5 @@ Installation
     # settings.py
 
     PLUGINS = [
-        'flamingo.plugins.I18N',
+        'flamingo.plugins.Tags',
     ]

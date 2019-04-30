@@ -1,7 +1,9 @@
+
+
 flamingo
 ========
 
-.. image:: doc/static/flamingo.svg
+.. image:: flamingo-web.org/theme/static/flamingo.svg
     :height: 128px
     :width: 128px
 
@@ -40,8 +42,9 @@ that doesn't require a dynamic backend, while users visit your site.
 For example: If you want your site to have login for editing or comments or
 even the current time, flamingo is the wrong tool.
 
-Basically flamingo is a fancy converter, that turns RST code into HTML code.
-It doesn't provides an editor, user management or a backup solution like a CMS.
+Basically flamingo is a fancy converter, that turns RST, MD or HTML code into
+HTML code.  It doesn't provides an editor, user management or a backup solution
+like a CMS.
 
 **Any part of flamingo is designed to be easy, not to be fast!**
 
@@ -51,40 +54,59 @@ Flamingo is full python and all operations run on python objects stored in RAM.
 Getting Started
 ---------------
 
-FIXME
+The simplest way to bootstrap a flamingo project is to use ``flamingo init``.
+Flamingo does not enforce a specific project structure but comes with a number
+of project templates.
 
+A list of available project templates, their descriptions and variables is
+available by running ``flamingo init -l``.
 
-Topics
-------
+.. code-block:: text
 
-- `Recipes for usage and optimization <doc/recipes.rst>`_
-- `Settings <doc/settings.rst>`_
-- `Data model <doc/data_model.rst>`_
-- `Writing content <doc/writing_content.rst>`_
-- `Writing themes <doc/writing_themes.rst>`_
-- `Writing plugins <doc/writing_plugins.rst>`_
-- `Using the Live-Server <doc/live-server.rst>`_
-- `Using an interactive shell <doc/interactive-shell.rst>`_
-- `Contributing and testing <doc/contributing.rst>`_
-- `Changelog <CHANGELOG.rst>`_
+    $ pip install flamingo
+    $ flamingo init wobsite project_name="Wobsite"
+    $ cd wobsite/
+    $ make html
 
+The content of ``wobsite`` will look like this:
 
-Available plugins
------------------
+.. code-block:: text
 
-- `Authors <doc/plugins/authors.rst>`_
-- `Tags <doc/plugins/tags.rst>`_
-- `I18N <doc/plugins/i18n.rst>`_
-- `Layers <doc/plugins/layers.rst>`_
-- `Redirects <doc/plugins/redirects.rst>`_
-- `Feeds <doc/plugins/feeds.rst>`_
-- `Time <doc/plugins/time.rst>`_
-- `rstBootstrap3 <doc/plugins/rst_bootstrap3.rst>`_
-- `rstPygments <doc/plugins/rst_pygments.rst>`_
+    wobsite/
+    ├── content/          # flamingo will search for content here recursively
+    ├── Makefile
+    ├── overlay/          # here you can place files like a robots.txt or a
+    │                       favicon.ico
+    ├── plugins/          # place your plugins here
+    ├── README.rst
+    ├── REQUIREMENTS.txt  # list of all python dependencies
+    ├── settings.py       # all settings are stored here
+    └── theme/            # root of all HTML templates, CSS- and JS files
 
+The new project comes with a
+`gnu make <https://www.gnu.org/software/make/>`_ file, that handles flamingo
+dependencies in a python virtualenv, setting the right python version and holds
+command line options for building.
 
-Helpful links
--------------
+To build the project run ``make html``.
 
-- `reStructuredText quick-reference <http://docutils.sourceforge.net/docs/user/rst/quickref.html>`_
-- `Django / Making queries <https://docs.djangoproject.com/en/2.1/topics/db/queries/>`_
+Flamingo comes with a interactive webserver for writing content and debugging.
+Run ``make server`` and go to ``localhost:8080/live-server/`` with your
+browser. Let server and browser run while writing your content. Flamingo
+tracks file operations in ``content/``, rebuilds updated files and
+refreshes the browser tab if needed.
+
+Next Steps
+----------
+
+`Writing Content <flamingo-web.org/doc/writing_content.html>`_
+
+`Setup Markdown parser <flamingo-web.org/plugins/markdown.html>`_
+
+`Setup redirects to maintain historic links <flamingo-web.org/plugins/redirects.html>`_
+
+`Setup Internationalisation <flamingo-web.org/plugins/i18n.html>`_
+
+`Setup Tags <flamingo-web.org/plugins/tags.html>`_
+
+`Setup Author Pages <flamingo-web.org/plugins/authors.html>`_

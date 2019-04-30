@@ -1,5 +1,7 @@
-Time
-====
+
+
+Layers
+======
 
 Installation
 ------------
@@ -9,5 +11,5 @@ Installation
     # settings.py
 
     PLUGINS = [
-        'flamingo.plugins.Time',
+        'flamingo.plugins.Layers',
     ]

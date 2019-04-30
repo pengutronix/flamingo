@@ -1,4 +1,0 @@
-Writing a plugin
-================
-
-FIXME

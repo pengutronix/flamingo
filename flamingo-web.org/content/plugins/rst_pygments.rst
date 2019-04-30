@@ -1,5 +1,7 @@
-Authors
-=======
+
+
+rstPygments
+===========
 
 Installation
 ------------
@@ -9,5 +11,5 @@ Installation
     # settings.py
 
     PLUGINS = [
-        'flamingo.plugins.Authors',
+        'flamingo.plugins.rstPygments',
     ]
