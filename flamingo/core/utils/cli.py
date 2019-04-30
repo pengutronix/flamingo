@@ -2,7 +2,13 @@ from argparse import ArgumentParser, RawTextHelpFormatter
 import logging
 import os
 
-import coloredlogs
+try:
+    import coloredlogs
+
+    COLOREDLOGS = True
+
+except ImportError:
+    COLOREDLOGS = False
 
 from flamingo.core.settings import Settings
 import flamingo
@@ -78,7 +84,9 @@ def parse_args(parser=None):
             log_level = logging.DEBUG
 
         logging.basicConfig(level=log_level)
-        coloredlogs.install(level=log_level)
+
+        if COLOREDLOGS:
+            coloredlogs.install(level=log_level)
 
     # project root
     if namespace.project_root:
