@@ -2,7 +2,7 @@ import logging
 import shutil
 import os
 
-from flamingo.core.data_model import ContentSet, Content, AND, NOT, OR, Q, F
+from flamingo.core.data_model import ContentSet, AND, NOT, OR, Q, F
 from flamingo.core.parser import FileParser, ParsingError
 from flamingo.core.utils.imports import acquire
 
@@ -70,34 +70,20 @@ class Context:
         # parse contents
         self.contents = contents or ContentSet()
         self.content = None
-
         self._media = []  # FIXME: this should be part of Content()
 
         for path in self.get_source_paths():
-            self.logger.debug("reading %s ", path)
+            self.contents.add(
+                path=os.path.relpath(path, settings.CONTENT_ROOT))
 
-            try:
-                self.content = Content(
-                    path=os.path.relpath(path, settings.CONTENT_ROOT))
+        for content in self.contents:
+            if content['content_body']:
+                continue
 
-                self.parser.parse(path, self.content)
+            self.parse(content)
 
-                self.run_plugin_hook('content_parsed', self.content)
+        self.content = None
 
-                self.contents.add(self.content)
-
-            except ParsingError as e:
-                self.errors.append(e)
-
-                self.logger.error('%s: %s', path, e)
-
-            except Exception as e:
-                self.errors.append(e)
-
-                self.logger.error('exception occoured while reading %s',
-                                  path, exc_info=True)
-
-        del self.content
         self.run_plugin_hook('contents_parsed')
 
         # setup templating engine
@@ -111,6 +97,32 @@ class Context:
 
         self.run_plugin_hook('templating_engine_setup', self.templating_engine)
         self.run_plugin_hook('context_setup')
+
+    def parse(self, content):
+        previous_content = self.content
+        self.content = content
+        path = os.path.join(self.settings.CONTENT_ROOT, content['path'])
+
+        self.logger.debug("reading %s ", path)
+
+        try:
+            self.parser.parse(path, content)
+
+            self.run_plugin_hook('content_parsed', content)
+
+        except ParsingError as e:
+            self.errors.append(e)
+
+            self.logger.error('%s: %s', path, e)
+
+        except Exception as e:
+            self.errors.append(e)
+
+            self.logger.error('exception occoured while reading %s',
+                              content['abspath'], exc_info=True)
+
+        finally:
+            self.content = previous_content
 
     def get_source_paths(self):
         self.logger.debug('searching for content')
