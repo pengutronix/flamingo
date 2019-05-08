@@ -25,3 +25,10 @@ try:
 
 except ImportError:
     pass
+
+
+try:
+    from .md import Markdown  # NOQA
+
+except ImportError:
+    pass

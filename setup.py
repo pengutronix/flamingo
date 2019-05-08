@@ -24,6 +24,9 @@ EXTRAS_REQUIRE = {
     'pygments': [
         'pygments',
     ],
+    'markdown': [
+        'markdown',
+    ],
     'feeds': [
         'feedgen==0.7.0',
     ],
