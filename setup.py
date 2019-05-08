@@ -41,6 +41,7 @@ setup(
         'jinja2',
         'docutils',
         'pyyaml',
+        'beautifulsoup4',
     ],
     scripts=[
         'bin/flamingo',
