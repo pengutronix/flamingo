@@ -85,3 +85,49 @@ def test_error_while_parsing_error():
         parse_rst_parts('.. foo::', system_message_re=None)
 
     assert 'Unknown directive type "foo"' in exc_info.value.args[0]
+
+
+def test_includes(flamingo_env):
+    flamingo_env.write('/content/a.rst', """
+    AAA
+    ===
+
+    .. inc:: c.rst
+        :title: Foo Bar
+
+    """)
+
+    flamingo_env.write('/content/b.rst', """
+    BBB
+    ===
+
+    no content
+
+    """)
+
+    flamingo_env.write('/content/c.rst', """
+    CCC
+    ===
+
+    .. inc:: d.rst
+        :title: Foo Bar
+
+    """)
+
+    flamingo_env.write('/content/d.rst', """
+    DDD
+    ===
+
+    Foo Bar
+    -------
+
+    actual content
+
+    """)
+
+    # the CONTENT_PATHS get set by hand to enforce the rigth order
+    flamingo_env.settings.CONTENT_PATHS = ['a.rst', 'b.rst', 'c.rst', 'd.rst']
+
+    flamingo_env.build()
+
+    assert 'actual content' in flamingo_env.read('/output/a.html')

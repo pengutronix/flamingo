@@ -10,6 +10,7 @@ DEFAULT_PLUGINS = [
     'flamingo.plugins.HTML',
     'flamingo.plugins.Yaml',
     'flamingo.plugins.reStructuredText',
+    'flamingo.plugins.rstInclude',
     'flamingo.plugins.rstImage',
     'flamingo.plugins.rstFile',
 ]

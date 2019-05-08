@@ -1,6 +1,20 @@
 from bs4 import BeautifulSoup
 
 
+class TitleNotFoundError(Exception):
+    pass
+
+
+def extract_section_by_title(html, title, tag='h2'):
+    soup = BeautifulSoup(html, 'html.parser')
+    html = soup.find(name=tag, text=title)
+
+    if not html:
+        raise TitleNotFoundError
+
+    return str(html.parent)
+
+
 def extract_title(html):
     if isinstance(html, str):
         html = BeautifulSoup(html, 'html.parser')
