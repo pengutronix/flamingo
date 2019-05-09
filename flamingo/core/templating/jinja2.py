@@ -14,20 +14,6 @@ def silent_none(value):
 
 
 @contextfunction
-def render(context, template_string):
-    if not template_string:
-        return ''
-
-    if '{' not in template_string:
-        return template_string
-
-    template = context['context'].templating_engine.env.from_string(
-        template_string)
-
-    return template.render(**context)
-
-
-@contextfunction
 def link(context, path, name='', lang=''):
     i18n = 'flamingo.plugins.I18N' in context['context'].settings.PLUGINS
 
@@ -71,8 +57,15 @@ class Jinja2(TemplatingEngine):
             finalize=silent_none,
         )
 
-        self.env.globals['render'] = render
         self.env.globals['link'] = link
 
     def render(self, template_name, template_context):
         return self.env.get_template(template_name).render(**template_context)
+
+    def render_string(self, string, template_context):
+        if not string or '{' not in string:
+            return string
+
+        template = self.env.from_string(string)
+
+        return template.render(**template_context)

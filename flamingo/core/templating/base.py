@@ -18,3 +18,6 @@ class TemplatingEngine:
 
     def render(self, template_name, template_context):
         raise NotImplementedError
+
+    def render_string(self, string, template_context):
+        raise NotImplementedError

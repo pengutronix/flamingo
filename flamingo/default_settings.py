@@ -25,6 +25,7 @@ TYPE_EVALUATION = True
 
 # templating
 TEMPLATING_ENGINE = 'flamingo.core.templating.Jinja2'
+PRE_RENDER_CONTENT = True
 EXTRA_CONTEXT = {}
 
 CORE_THEME_PATHS = [

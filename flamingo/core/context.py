@@ -186,6 +186,10 @@ class Context:
             **self.settings.EXTRA_CONTEXT,
         }
 
+        if self.settings.PRE_RENDER_CONTENT:
+            content['content_body'] = self.templating_engine.render_string(
+                content['content_body'], template_context)
+
         output = self.templating_engine.render(template_name, template_context)
 
         return output, template_context

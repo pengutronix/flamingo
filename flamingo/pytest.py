@@ -52,7 +52,7 @@ def flamingo_env():
 
             self.write(
                 '/theme/templates/page.html',
-                '{{ content.content_title }}\n{{ render(content.content_body) }}'  # NOQA
+                '{{ content.content_title }}\n{{ content.content_body }}'
             )
 
         def setup(self, context_class=Context):
