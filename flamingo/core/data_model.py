@@ -144,7 +144,7 @@ class Content:
         return '<Content({})>'.format(
             shorten(', '.join(
                 ['{}={}'.format(k, repr(v)) for k, v in self.data.items()
-                 if k != 'content']
+                 if k != 'content_body']
             ), width=CONTENT_REPR_MAX_LEN)
         )
 
