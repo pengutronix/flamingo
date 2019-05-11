@@ -76,14 +76,17 @@ def parse_rst_parts(rst_input, system_message_re=SYSTEM_MESSAGE_RE,
 
 def parse_rst(rst_input):
     parts = parse_rst_parts(rst_input)
-    html_output = ''
+    html = ''
 
-    if parts['title']:
-        html_output += '<h1>{}</h1>'.format(parts['title'])
+    if parts['html_title']:
+        html += parts['html_title']
 
-    html_output += parts['body']
+    if parts['html_subtitle']:
+        html += parts['html_subtitle']
 
-    return html_output
+    html += parts['body']
+
+    return html
 
 
 class RSTParser(ContentParser):
@@ -91,11 +94,15 @@ class RSTParser(ContentParser):
 
     def parse(self, file_content, content):
         markup_string = self.parse_meta_data(file_content, content)
-
         parts = parse_rst_parts(markup_string)
 
-        content['content_body'] = parts['body']
         content['content_title'] = parts['title']
+        content['content_body'] = ''
+
+        if parts['html_subtitle']:
+            content['content_body'] += parts['html_subtitle']
+
+        content['content_body'] += parts['body']
 
 
 class NestedDirective(Directive):
