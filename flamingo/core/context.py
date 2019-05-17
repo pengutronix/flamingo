@@ -41,6 +41,7 @@ def ln_s(context, source_path, destination_path, mkdir_p=mkdir_p):
 class Context:
     def __init__(self, settings, contents=None):
         self.settings = settings
+        self.errors = []
 
         # setup logging
         self.logger = logging.getLogger('flamingo')
@@ -86,9 +87,13 @@ class Context:
                 self.contents.add(self.content)
 
             except ParsingError as e:
+                self.errors.append(e)
+
                 self.logger.error('%s: %s', path, e)
 
-            except Exception:
+            except Exception as e:
+                self.errors.append(e)
+
                 self.logger.error('exception occoured while reading %s',
                                   path, exc_info=True)
 
