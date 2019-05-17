@@ -215,7 +215,7 @@ def test_content_offsets(flamingo_env):
     flamingo_env.build()
     contents = flamingo_env.context.contents
 
-    assert contents.get(path='a.rst')['content_offset'] == 3
-    assert contents.get(path='b.rst')['content_offset'] == 3
+    assert contents.get(path='a.rst')['content_offset'] == 4
+    assert contents.get(path='b.rst')['content_offset'] == 5
     assert contents.get(path='c.rst')['content_offset'] == 0
     assert contents.get(path='d.rst')['content_offset'] == 0
