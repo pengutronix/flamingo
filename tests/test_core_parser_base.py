@@ -21,7 +21,8 @@ def test_basic_meta_data_parsing(flamingo_dummy_context):
 
     parser.parse(raw_content, content)
 
-    assert sorted(list(content.data.keys())) == ['a', 'b', 'c', 'content_body']
+    assert sorted(list(content.data.keys())) == ['a', 'b', 'c', 'content_body',
+                                                 'content_offset']
 
     assert content['a'] == 'content of a'
     assert content['b'] == 'content of b'
@@ -45,7 +46,8 @@ def test_basic_meta_data_parsing(flamingo_dummy_context):
 
     parser.parse(raw_content, content)
 
-    assert sorted(list(content.data.keys())) == ['a', 'b', 'c', 'content_body']
+    assert sorted(list(content.data.keys())) == ['a', 'b', 'c', 'content_body',
+                                                 'content_offset']
 
     assert content['a'] == 'content of a'
     assert content['b'] == 'content of b'
@@ -74,7 +76,8 @@ def test_meta_data_blocks(flamingo_dummy_context):
 
     parser.parse(raw_content, content)
 
-    assert sorted(list(content.data.keys())) == ['a', 'b', 'c', 'content_body']
+    assert sorted(list(content.data.keys())) == ['a', 'b', 'c', 'content_body',
+                                                 'content_offset']
 
     assert content['a'] == 'content of a'
     assert content['b'] == 'content of b'
@@ -95,7 +98,8 @@ def test_meta_data_blocks(flamingo_dummy_context):
 
     parser.parse(raw_content, content)
 
-    assert sorted(list(content.data.keys())) == ['a', 'b', 'c', 'content_body']
+    assert sorted(list(content.data.keys())) == ['a', 'b', 'c', 'content_body',
+                                                 'content_offset']
 
     assert content['a'] == 'content of a'
     assert content['b'] == 'content of b'
@@ -116,7 +120,8 @@ def test_meta_data_blocks(flamingo_dummy_context):
 
     parser.parse(raw_content, content)
 
-    assert sorted(list(content.data.keys())) == ['a', 'b', 'content_body']
+    assert sorted(list(content.data.keys())) == ['a', 'b', 'content_body',
+                                                 'content_offset']
 
     assert content['a'] == 'content of a'
     assert content['b'] == 'content of b'
@@ -134,7 +139,9 @@ def test_meta_data_blocks(flamingo_dummy_context):
 
     parser.parse(raw_content, content)
 
-    assert list(content.data.keys()) == ['content_body']
+    assert sorted(list(content.data.keys())) == ['content_body',
+                                                 'content_offset']
+
     assert content['content_body'].startswith('real content1')
     assert content['content_body'].endswith('real content2')
 
@@ -149,7 +156,9 @@ def test_meta_data_blocks(flamingo_dummy_context):
 
     parser.parse(raw_content, content)
 
-    assert list(content.data.keys()) == ['content_body']
+    assert sorted(list(content.data.keys())) == ['content_body',
+                                                 'content_offset']
+
     assert content['content_body'].startswith('real content1')
     assert content['content_body'].endswith('real content2')
 
@@ -165,6 +174,48 @@ def test_meta_data_blocks(flamingo_dummy_context):
 
     parser.parse(raw_content, content)
 
-    assert list(content.data.keys()) == ['content_body']
+    assert sorted(list(content.data.keys())) == ['content_body',
+                                                 'content_offset']
+
     assert content['content_body'].startswith('real content1')
     assert content['content_body'].endswith('real content2')
+
+
+def test_content_offsets(flamingo_env):
+    flamingo_env.write('/content/a.rst', """
+    a: 1
+    b: 2
+
+    foo
+    ===
+    """)
+
+    flamingo_env.write('/content/b.rst', """
+    a: 1
+    b: 2
+
+
+    foo
+    ===
+    """)
+
+    flamingo_env.write('/content/c.rst', """
+    foo
+    ===
+    """)
+
+    flamingo_env.write('/content/d.rst', """
+    foo
+
+
+    foo
+    ===
+    """)
+
+    flamingo_env.build()
+    contents = flamingo_env.context.contents
+
+    assert contents.get(path='a.rst')['content_offset'] == 3
+    assert contents.get(path='b.rst')['content_offset'] == 3
+    assert contents.get(path='c.rst')['content_offset'] == 0
+    assert contents.get(path='d.rst')['content_offset'] == 0

@@ -21,12 +21,16 @@ class ContentParser:
 
     def parse_meta_data(self, file_content, content):
         if '\n\n\n' in file_content:
+            content['content_offset'] = 2
             meta_data_string, markup_string = file_content.split('\n\n\n', 1)
 
         elif '\n\n' in file_content:
+            content['content_offset'] = 1
             meta_data_string, markup_string = file_content.split('\n\n', 1)
 
         else:
+            content['content_offset'] = 0
+
             return file_content
 
         try:
@@ -35,9 +39,13 @@ class ContentParser:
             for key, value in meta.items():
                 content[key] = value
 
+            content['content_offset'] += len(meta_data_string.splitlines())
+
             return markup_string
 
         except Exception:
+            content['content_offset'] = 0
+
             return file_content
 
     def parse(self, file_content, content):
