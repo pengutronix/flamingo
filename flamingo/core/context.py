@@ -113,7 +113,16 @@ class Context:
         except ParsingError as e:
             self.errors.append(e)
 
-            self.logger.error('%s: %s', path, e)
+            if hasattr(e, 'line'):
+                line = e.line
+
+                if content['content_offset']:
+                    line += content['content_offset']
+
+                self.logger.error('%s:%s: %s', path, line, e)
+
+            else:
+                self.logger.error('%s: %s', path, e)
 
         except Exception as e:
             self.errors.append(e)
