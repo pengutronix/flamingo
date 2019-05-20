@@ -7,4 +7,11 @@ from flamingo.core.context import Context
 parser = gen_default_parser(prog='flamingo-build')
 namespace, settings = parse_args(parser)
 
-Context(settings).build()
+context = Context(settings)
+
+context.build()
+
+if context.errors:
+    exit(1)
+
+exit(0)
