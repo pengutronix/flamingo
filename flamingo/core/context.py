@@ -1,41 +1,10 @@
 import logging
-import shutil
 import os
 
 from flamingo.core.data_model import ContentSet, AND, NOT, OR, Q, F
 from flamingo.core.parser import FileParser, ParsingError
+from flamingo.core.utils.files import mkdir_p, rm_rf, cp
 from flamingo.core.utils.imports import acquire
-
-
-def mkdir_p(context, path):
-    dirname = os.path.dirname(path)
-
-    if not os.path.exists(dirname):
-        context.logger.debug('mkdir -p %s', dirname)
-        os.makedirs(dirname)
-
-
-def rm_rf(context, path):
-    context.logger.debug('rm -rf %s', context.settings.OUTPUT_ROOT)
-    shutil.rmtree(path)
-
-
-def cp(context, source_path, destination_path, mkdir_p=mkdir_p):
-    mkdir_p(context, destination_path)
-    context.logger.debug('cp %s %s', source_path, destination_path)
-    shutil.copy(source_path, destination_path)
-
-
-def ln_s(context, source_path, destination_path, mkdir_p=mkdir_p):
-    mkdir_p(context, destination_path)
-    source_path = os.path.abspath(source_path)
-    context.logger.debug('ln -s %s %s', source_path, destination_path)
-
-    try:
-        os.symlink(source_path, destination_path)
-
-    except FileExistsError:
-        pass
 
 
 class Context:
