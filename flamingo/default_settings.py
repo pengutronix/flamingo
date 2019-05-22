@@ -5,6 +5,7 @@ CORE_PLUGINS = [
     'flamingo.core.plugins.MetaDataProcessor',
     'flamingo.core.plugins.Hooks',
     'flamingo.core.plugins.Media',
+    'flamingo.core.plugins.Static',
 ]
 
 DEFAULT_PLUGINS = [

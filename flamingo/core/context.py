@@ -240,21 +240,4 @@ class Context:
 
                 f.write(output)
 
-        if self.settings.CONTENT_PATHS:
-            return
-
-        # copy static
-        for static_dir in self.templating_engine.find_static_dirs():
-            for root, dirs, files in os.walk(static_dir):
-                for f in files:
-                    source_path = os.path.join(root, f)
-
-                    destination_path = os.path.join(
-                        self.settings.STATIC_ROOT,
-                        os.path.relpath(root, static_dir),
-                        f,
-                    )
-
-                    cp(self, source_path, destination_path, mkdir_p=mkdir_p)
-
         self.run_plugin_hook('post_build')
