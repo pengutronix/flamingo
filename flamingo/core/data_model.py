@@ -224,6 +224,24 @@ class ContentSet:
 
         return contents[0]
 
+    def exists(self):
+        if len(self.contents) > 0:
+            return True
+
+        return False
+
+    def first(self):
+        if len(self.contents) < 1:
+            raise ObjectDoesNotExist(query=self.query)
+
+        return self.contents[0]
+
+    def last(self):
+        if len(self.contents) < 1:
+            raise ObjectDoesNotExist(query=self.query)
+
+        return self.contents[-1]
+
     def values(self, *field_names):
         return_values = []
 
