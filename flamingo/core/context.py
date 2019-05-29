@@ -128,7 +128,7 @@ class Context:
             self.errors.append(e)
 
             self.logger.error('exception occoured while reading %s',
-                              content['abspath'], exc_info=True)
+                              content['path'], exc_info=True)
 
         finally:
             self.content = previous_content
