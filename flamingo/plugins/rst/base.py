@@ -10,7 +10,7 @@ from docutils.nodes import raw
 
 from flamingo.core.parser import ContentParser, ParsingError
 
-SYSTEM_MESSAGE_RE = re.compile(r'^(?P<name>[^:]+):(?P<line>\d+): \((?P<level_name>[^/)]+)/(?P<level>\d+)\) (?P<short_description>[^.]+)\.')  # NOQA
+SYSTEM_MESSAGE_RE = re.compile(r'^(?P<name>[^:]+):(?P<line>\d+): \((?P<level_name>[^/)]+)/(?P<level>\d+)\) (?P<short_description>[^\t\n]+)(?P<long_description>.*)?$', re.DOTALL)  # NOQA
 logger = logging.getLogger('flamingo.plugins.rst.reStructuredText')
 
 
@@ -54,10 +54,16 @@ def parse_rst_parts(rst_input, system_message_re=SYSTEM_MESSAGE_RE,
     # on parsing error
     try:
         result = system_message_re.search(rst_error.args[0])
-        groupdict = result.groupdict()
+        result = result.groupdict()
 
-        groupdict['level'] = int(groupdict['level'])
-        groupdict['line'] = int(groupdict['line'])
+        result['level'] = int(result['level'])
+        result['line'] = int(result['line'])
+
+        if result['short_description'][-1] == '.':
+            result['short_description'] = result['short_description'][:-1]
+
+        if 'long_description' not in result:
+            result['long_description'] = ''
 
     except Exception as e:
         parsing_error = e
@@ -68,14 +74,14 @@ def parse_rst_parts(rst_input, system_message_re=SYSTEM_MESSAGE_RE,
     if parsing_error:
         raise rst_error
 
-    raise reStructuredTextError(groupdict['short_description'], **{
+    raise reStructuredTextError(result['short_description'], **{
         'system_message': rst_error,
-        **groupdict,
+        **result,
     })
 
 
-def parse_rst(rst_input):
-    parts = parse_rst_parts(rst_input)
+def parse_rst(*args, **kwargs):
+    parts = parse_rst_parts(*args, **kwargs)
     html = ''
 
     if parts['html_title']:
