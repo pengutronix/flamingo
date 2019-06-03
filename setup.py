@@ -2,7 +2,16 @@
 # -*- coding: utf-8 -*-
 
 from setuptools import setup, find_packages
+import os
+
 import flamingo
+
+INSTALL_REQUIRES = [
+    'jinja2',
+    'docutils',
+    'pyyaml',
+    'beautifulsoup4',
+]
 
 EXTRAS_REQUIRE = {
     'live-server': [
@@ -28,6 +37,9 @@ EXTRAS_REQUIRE = {
 
 EXTRAS_REQUIRE['full'] = sum([v for k, v in EXTRAS_REQUIRE.items()], [])
 
+if 'FLAMINGO_TEST' in os.environ:
+    INSTALL_REQUIRES = INSTALL_REQUIRES + EXTRAS_REQUIRE['full']
+
 setup(
     include_package_data=True,
     name='flamingo',
@@ -37,12 +49,8 @@ setup(
     author_email='python@pengutronix.de',
     license='Apache License 2.0',
     packages=find_packages(),
-    install_requires=[
-        'jinja2',
-        'docutils',
-        'pyyaml',
-        'beautifulsoup4',
-    ],
+    install_requires=INSTALL_REQUIRES,
+    extras_require=EXTRAS_REQUIRE,
     scripts=[
         'bin/flamingo',
         'bin/_flamingo-init',
@@ -55,5 +63,4 @@ setup(
             'flamingo = flamingo.pytest',
         ],
     },
-    extras_require=EXTRAS_REQUIRE,
 )
