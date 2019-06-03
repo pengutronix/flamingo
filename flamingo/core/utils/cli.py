@@ -35,7 +35,9 @@ def get_raw_parser(*parser_args, description='', **parser_kwargs):
     return parser
 
 
-def gen_default_parser(*parser_args, description='', **parser_kwargs):
+def gen_default_parser(*parser_args, description='', setup_logging=True,
+                       **parser_kwargs):
+
     parser = get_raw_parser(*parser_args, description=description,
                             **parser_kwargs)
 
@@ -44,13 +46,14 @@ def gen_default_parser(*parser_args, description='', **parser_kwargs):
     parser.add_argument('-p', '--project-root', type=str)
     parser.add_argument('--content-paths', type=str, nargs='+')
 
-    parser.add_argument(
-        '-l', '--log-level',
-        choices=['DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL'],
-        default='INFO',
-    )
+    if setup_logging:
+        parser.add_argument(
+            '-l', '--log-level',
+            choices=['DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL'],
+            default='INFO',
+        )
 
-    parser.add_argument('-d', '--debug', action='store_true')
+        parser.add_argument('-d', '--debug', action='store_true')
 
     return parser
 
@@ -61,20 +64,21 @@ def parse_args(parser=None):
     settings = Settings()
 
     # loglevel / debug mode
-    log_level = {
-        'DEBUG': logging.DEBUG,
-        'INFO': logging.INFO,
-        'WARN': logging.WARN,
-        'ERROR': logging.ERROR,
-        'FATAL': logging.FATAL,
-    }[namespace.log_level]
+    if 'log_level' in namespace:
+        log_level = {
+            'DEBUG': logging.DEBUG,
+            'INFO': logging.INFO,
+            'WARN': logging.WARN,
+            'ERROR': logging.ERROR,
+            'FATAL': logging.FATAL,
+        }[namespace.log_level]
 
-    if namespace.debug:
-        settings.DEBUG = True
-        log_level = logging.DEBUG
+        if namespace.debug:
+            settings.DEBUG = True
+            log_level = logging.DEBUG
 
-    logging.basicConfig(level=log_level)
-    coloredlogs.install(level=log_level)
+        logging.basicConfig(level=log_level)
+        coloredlogs.install(level=log_level)
 
     # project root
     if namespace.project_root:
