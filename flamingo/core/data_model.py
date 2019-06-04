@@ -157,6 +157,9 @@ class Content:
     def __setitem__(self, key, item):
         return self.data.__setitem__(key, item)
 
+    def __contains__(self, key):
+        return key in self.data
+
     def get(self, *args, **kwargs):
         return self.data.get(*args, **kwargs)
 
