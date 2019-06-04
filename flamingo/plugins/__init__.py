@@ -1,3 +1,4 @@
+from .bootstrap.plugins import Bootstrap3, Bootstrap4  # NOQA
 from .simple_menu.simple_menu import SimpleMenu  # NOQA
 from .rst.bootstrap3 import rstBootstrap3  # NOQA
 from .rst.base import reStructuredText  # NOQA
