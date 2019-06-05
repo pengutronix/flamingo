@@ -10,9 +10,9 @@ flamingo
 .. image:: https://img.shields.io/pypi/l/flamingo.svg
     :alt: pypi.org
     :target: https://pypi.org/project/flamingo
-.. image:: https://img.shields.io/travis/pengutronix/flamingo/master.svg
-    :alt: Travis (.org) branch
-    :target: https://travis-ci.org/pengutronix/flamingo
+.. image:: https://img.shields.io/travis/com/pengutronix/flamingo/master.svg
+    :alt: Travis branch
+    :target: https://travis-ci.com/pengutronix/flamingo
 .. image:: https://img.shields.io/pypi/pyversions/flamingo.svg
     :alt: pypi.org
     :target: https://pypi.org/project/flamingo
