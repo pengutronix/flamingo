@@ -2,6 +2,8 @@ def test_basic_parsing(flamingo_env):
     flamingo_env.settings.PLUGINS = ['flamingo.plugins.Markdown']
 
     flamingo_env.write('/content/index.md', """
+
+
     # Hello World
 
     """)
@@ -15,6 +17,8 @@ def test_second_stage_templating(flamingo_env):
     flamingo_env.settings.PLUGINS = ['flamingo.plugins.Markdown']
 
     flamingo_env.write('/content/index.md', """
+
+
     # index
 
     <p>{{ 1 + 1 }}</p>
@@ -33,6 +37,8 @@ def test_images(flamingo_env):
     flamingo_env.write('/content/home-2.png', '2')
 
     flamingo_env.write('/content/home.md', """
+
+
     # Home
 
     Hello world

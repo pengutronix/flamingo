@@ -24,6 +24,8 @@ def test_add_media(flamingo_dummy_context, flamingo_env):
     flamingo_env.write('/content/foo.jpg', '1')
 
     flamingo_env.write('/content/index.rst', """
+
+
     Hello World
     ===========
 

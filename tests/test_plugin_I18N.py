@@ -8,6 +8,7 @@ def test_translations(flamingo_env):
     id: home
     tag: a
 
+
     home (en)
     """)
 
@@ -15,6 +16,7 @@ def test_translations(flamingo_env):
     lang: de
     id: home
     tag: b
+
 
     home (en)
     """)

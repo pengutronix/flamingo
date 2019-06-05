@@ -63,6 +63,7 @@ def test_parsing_error_while_building(flamingo_env):
     a: 1
     b: 2
 
+
     .. foo::
     """)
 
@@ -89,6 +90,8 @@ def test_error_while_parsing_error():
 
 def test_includes(flamingo_env):
     flamingo_env.write('/content/a.rst', """
+
+
     AAA
     ===
 
@@ -98,6 +101,8 @@ def test_includes(flamingo_env):
     """)
 
     flamingo_env.write('/content/b.rst', """
+
+
     BBB
     ===
 
@@ -106,6 +111,8 @@ def test_includes(flamingo_env):
     """)
 
     flamingo_env.write('/content/c.rst', """
+
+
     CCC
     ===
 
@@ -115,6 +122,8 @@ def test_includes(flamingo_env):
     """)
 
     flamingo_env.write('/content/d.rst', """
+
+
     DDD
     ===
 

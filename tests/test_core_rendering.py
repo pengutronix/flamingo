@@ -1,28 +1,49 @@
 def test_second_stage_templating(flamingo_env):
-    flamingo_env.write('/content/index.html', '({{ 1 + 1 }})')
+    flamingo_env.write('/content/index.html', """
+
+
+    ({{ 1 + 1 }})
+    """)
+
     flamingo_env.build()
 
-    assert flamingo_env.read('/output/index.html').endswith('(2)')
+    assert flamingo_env.read('/output/index.html').strip().endswith('(2)')
 
 
 def test_link(flamingo_env):
-    flamingo_env.write('/content/index.html', '')
+    flamingo_env.write('/content/index.html', """
 
-    flamingo_env.write('/content/page.html',
-                       "{{ link('index.html', 'foo') }}")
 
-    flamingo_env.write('/content/page2.html',
-                       "{{ link('index.html') }}")
+    index
+    """)
 
-    flamingo_env.write('/content/page3.html', "{{ link('foo') }}")
+    flamingo_env.write('/content/page.html', """
+
+
+    {{ link('index.html', 'foo') }}
+    """)
+
+    flamingo_env.write('/content/page2.html', """
+
+
+    {{ link('index.html') }}
+    """)
+
+    flamingo_env.write('/content/page3.html', """
+
+
+    {{ link('foo') }}
+    """)
 
     flamingo_env.build()
 
-    assert flamingo_env.read('/output/page.html').endswith(
+    assert flamingo_env.read('/output/page.html').strip().endswith(
         '<a href="/index.html">foo</a>')
 
-    assert flamingo_env.read('/output/page2.html').endswith('/index.html')
-    assert flamingo_env.read('/output/page3.html').endswith('\n')
+    assert flamingo_env.read('/output/page2.html').strip().endswith(
+        '/index.html')
+
+    assert not flamingo_env.read('/output/page3.html').strip()
 
 
 def test_I18N_link(flamingo_env):
@@ -34,6 +55,7 @@ def test_I18N_link(flamingo_env):
     id: index
     lang: de
 
+
     foo
     """)
 
@@ -41,17 +63,20 @@ def test_I18N_link(flamingo_env):
     id: index
     lang: en
 
+
     bar
     """)
 
     flamingo_env.write('/content/page.html', """
     lang: de
 
+
     {{ link('index_en.html') }}
     """)
 
     flamingo_env.write('/content/page2.html', """
     lang: de
+
 
     {{ link('index_en.html', lang='en') }}
     """)

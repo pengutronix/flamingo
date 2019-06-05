@@ -35,8 +35,12 @@ def test_basic_build(flamingo_env):
 def test_chardet(flamingo_env):
     flamingo_env.settings.USE_CHARDET = True
 
-    flamingo_env.write('/content/home.html', 'index')
+    flamingo_env.write('/content/home.html', """
+
+
+    index
+    """)
 
     flamingo_env.build()
 
-    assert flamingo_env.read('/output/home.html') == '\nindex'
+    assert flamingo_env.read('/output/home.html').strip() == 'index'
