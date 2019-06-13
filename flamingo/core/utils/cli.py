@@ -37,6 +37,7 @@ def get_raw_parser(*parser_args, description='', **parser_kwargs):
     parser = ArgumentParser(*parser_args, description=description,
                             formatter_class=RawTextHelpFormatter,
                             **parser_kwargs)
+    parser.add_argument('--version', action='version', version=VERSION)
 
     return parser
 
