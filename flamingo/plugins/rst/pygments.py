@@ -2,7 +2,7 @@ from docutils.parsers.rst import Directive, directives
 from docutils.nodes import raw
 
 from pygments.formatters import HtmlFormatter
-from pygments.lexers import get_lexer_by_name
+from pygments.lexers import get_lexer_by_name, guess_lexer
 from pygments.util import ClassNotFound
 from pygments import highlight
 
@@ -14,7 +14,11 @@ def code_block(context):
 
         def run(self):
             try:
-                lexer = get_lexer_by_name(self.arguments[0])
+                if self.arguments:
+                    lexer = get_lexer_by_name(self.arguments[0])
+
+                else:
+                    lexer = guess_lexer('\n'.join(self.content))
 
             except (ClassNotFound, IndexError):
                 lexer = get_lexer_by_name('text')
