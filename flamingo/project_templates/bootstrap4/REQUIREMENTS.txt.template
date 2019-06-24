@@ -1,5 +1,5 @@
 {%- if debug -%}
     -e ..[full]
 {%- else -%}
-    flamingo=={{flamingo.VERSION_STRING}}[full]
+    flamingo[full]=={{flamingo.VERSION_STRING}}
 {%- endif -%}

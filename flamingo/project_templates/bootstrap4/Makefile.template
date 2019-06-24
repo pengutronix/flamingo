@@ -9,6 +9,7 @@ $(PYTHON_VENV)/.created: REQUIREMENTS.txt
 	rm -rf $(PYTHON_VENV) && \
 	$(PYTHON) -m venv $(PYTHON_VENV) && \
 	. $(PYTHON_VENV)/bin/activate && \
+	pip install --upgrade pip && \
 	pip install -r ./REQUIREMENTS.txt && \
 	date > $(PYTHON_VENV)/.created
 
