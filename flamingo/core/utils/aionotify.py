@@ -18,7 +18,7 @@ class RecursiveWatcher:
 
     def watch(self, path):
         # FIXME: this should not be necessary
-        if path in self.watcher.requests:
+        if path in self.watcher.requests:  # pragma: no cover
             return
 
         self.logger.debug('watch %s', path)
@@ -78,5 +78,5 @@ class RecursiveWatcher:
                 elif self.path_is_valid(path):
                     return flags, path
 
-        except asyncio.CancelledError:  # FIXME
+        except asyncio.CancelledError:  # pragma: no cover, FIXME
             return [], ''
