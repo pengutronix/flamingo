@@ -76,7 +76,7 @@ class RecursiveWatcher:
                         self.unwatch(path)
 
                 elif self.path_is_valid(path):
-                    return path
+                    return flags, path
 
         except asyncio.CancelledError:  # FIXME
-            return ''
+            return [], ''

@@ -195,7 +195,7 @@ async def watcher_task():
 
     while True:
         try:
-            path = await watcher.get_file()
+            flags, path = await watcher.get_file()
 
             if not path:  # KeyboardInterrupt
                 return
