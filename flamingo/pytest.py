@@ -98,3 +98,34 @@ def flamingo_env():
 
     with TemporaryDirectory() as tmp_dir:
         yield TempBuildEnv(tmp_dir)
+
+
+@pytest.fixture
+def run():
+    from subprocess import check_output, CalledProcessError, STDOUT
+    import logging
+    import os
+
+    def _run(command, cwd=None, logger=logging):
+        logger.debug("running '%s' in '%s'", command, cwd)
+
+        returncode = 0
+        cwd = cwd or os.getcwd()
+
+        try:
+            output = check_output(
+                command,
+                shell=True,
+                stderr=STDOUT,
+                cwd=cwd,
+            ).decode()
+
+        except CalledProcessError as e:  # pragma: no cover
+            returncode = e.returncode
+            output = e.output.decode()
+
+            logger.error('returncode: %s output: \n%s', returncode, output)
+
+        return returncode, output
+
+    return _run
