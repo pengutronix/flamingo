@@ -120,7 +120,11 @@ def parse_args(parser=None):
     # settings
     if namespace.settings:
         for module in namespace.settings:
-            settings.add(module)
+            try:
+                settings.add(module)
+
+            except ImportError:
+                exit('import error: {}'.format(module))
 
     # content
     if namespace.content_root:
