@@ -7,7 +7,7 @@ try:
 
     COLOREDLOGS = True
 
-except ImportError:
+except ImportError:  # pragma: no cover
     COLOREDLOGS = False
 
 from flamingo.core.settings import Settings
@@ -85,7 +85,7 @@ def parse_args(parser=None):
 
         logging.basicConfig(level=log_level)
 
-        if COLOREDLOGS:
+        if COLOREDLOGS:  # pragma: no cover
             coloredlogs.install(level=log_level)
 
     # project root
