@@ -56,6 +56,7 @@ setup(
     extras_require=EXTRAS_REQUIRE,
     scripts=[
         'bin/flamingo',
+        'bin/_flamingo-args',
         'bin/_flamingo-init',
         'bin/_flamingo-build',
         'bin/_flamingo-server',
