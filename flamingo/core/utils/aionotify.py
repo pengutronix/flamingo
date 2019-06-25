@@ -72,7 +72,7 @@ class RecursiveWatcher:
                     if aionotify.Flags.CREATE in flags:
                         self.watch(path)
 
-                    elif aionotify.Flags.DELETE in flags:
+                    else:
                         self.unwatch(path)
 
                 elif self.path_is_valid(path):
