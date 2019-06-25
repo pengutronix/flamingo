@@ -45,3 +45,12 @@ class Settings:
 
     def __dir__(self):
         return list(set(super().__dir__() + list(self._values.keys())))
+
+    def __iter__(self):
+        ignore = ('add', )
+
+        for key in dir(self):
+            if key in ignore or key.startswith('_'):
+                continue
+
+            yield key, getattr(self, key)
