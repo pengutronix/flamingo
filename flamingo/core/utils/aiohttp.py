@@ -9,25 +9,21 @@ class DirectoryExporter:
         self.prefix = prefix
         self.resource = StaticResource('', path, show_index=True,
                                        follow_symlinks=True)
-        self.show_index = False
+        self.show_index = True
 
     async def __call__(self, request):
         path = request.path
 
         # remove prefix
         if self.prefix:
-            path = os.path.join('/',
-                                os.path.relpath(request.path, self.prefix))
+            path = os.path.join(
+                '/', os.path.relpath(request.path, self.prefix))
 
-        # directory listing / serving index
-        if not self.show_index:
-            test_path = path
+        # directory listing
+        if self.show_index:
+            test_path = os.path.join(self.path, path[1:])
 
-            if test_path.startswith('/'):
-                test_path = test_path[1:]
-
-            test_path = os.path.join(self.path, test_path)
-
+            # serve index.html if present
             if os.path.isdir(test_path):
                 test_path = os.path.join(test_path, 'index.html')
 
