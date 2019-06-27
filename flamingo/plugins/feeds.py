@@ -54,6 +54,9 @@ class Feeds:
                 if i['summary']:
                     fe.summary(str(i['summary']))
 
+                if i['title']:
+                    fe.title(i['title'])
+
             if feed_config['type'] == 'atom':
                 content['content'] = fg.atom_str().decode()
 
