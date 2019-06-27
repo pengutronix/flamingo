@@ -18,19 +18,19 @@ from .yaml import Yaml  # NOQA
 try:
     from .rst.pygments import rstPygments  # NOQA
 
-except ImportError:
+except ImportError:  # pragma: no cover
     pass
 
 
 try:
     from .feeds import Feeds  # NOQA
 
-except ImportError:
+except ImportError:  # pragma: no cover
     pass
 
 
 try:
     from .md import Markdown  # NOQA
 
-except ImportError:
+except ImportError:  # pragma: no cover
     pass
