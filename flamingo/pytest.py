@@ -120,7 +120,7 @@ def run():
                 cwd=cwd,
             ).decode()
 
-        except CalledProcessError as e:  # pragma: no cover
+        except CalledProcessError as e:
             returncode = e.returncode
             output = e.output.decode()
 
