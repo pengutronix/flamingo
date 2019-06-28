@@ -20,7 +20,7 @@ function RPC(host) {
 
             this._ws.send(JSON.stringify(response));
         }
-    }
+    };
 
     this.connect = function() {
         this._ws = new WebSocket(this._host);
@@ -28,21 +28,21 @@ function RPC(host) {
 
         // onopen
         this._ws.onopen = function(event) {
-            for(i in this._rpc._onopen_handler) {
+            for(var i in this._rpc._onopen_handler) {
                 this._rpc._onopen_handler[i](this._rpc);
             }
         };
 
         // onclose
         this._ws.onclose = function(event) {
-            for(i in this._rpc._onclose_handler) {
+            for(var i in this._rpc._onclose_handler) {
                 this._rpc._onclose_handler[i](this._rpc);
             }
         };
 
         // onmessage
         this._ws.onmessage = function(event) {
-            data = JSON.parse(event.data);
+            var data = JSON.parse(event.data);
 
             if (this._rpc.DEBUG) {
                 console.log('RPC <<', data);
