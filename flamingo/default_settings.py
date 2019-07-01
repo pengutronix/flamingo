@@ -24,6 +24,7 @@ CACHE_HOOKS = True
 USE_CHARDET = False
 DEDENT_INPUT = False
 FOLLOW_LINKS = True
+HTML_PARSER_RAW_HTML = False
 
 # templating
 TEMPLATING_ENGINE = 'flamingo.core.templating.Jinja2'

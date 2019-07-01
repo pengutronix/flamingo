@@ -11,11 +11,21 @@ class HTMLParser(ContentParser):
         markup_string = self.parse_meta_data(file_content, content)
         soup = BeautifulSoup(markup_string, 'html.parser')
 
-        title = extract_title(soup)
-        process_media_links(self.context, content, soup)
+        raw_html = (
+            self.context.settings.HTML_PARSER_RAW_HTML or
+            bool(content['raw_html'])
+        )
 
-        content['content_title'] = title
-        content['content_body'] = str(soup)
+        if raw_html:
+            content['content_title'] = ''
+            content['content_body'] = markup_string
+
+        else:
+            title = extract_title(soup)
+            process_media_links(self.context, content, soup)
+
+            content['content_title'] = title
+            content['content_body'] = str(soup)
 
 
 class HTML:
