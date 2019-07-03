@@ -58,9 +58,9 @@ def fix_documetation_links(context):
         soup = BeautifulSoup(content['content_body'], 'html.parser')
 
         for link in soup.find_all('a'):
-            if link['href'].startswith('flamingo-web.org/'):
+            if link['href'].startswith('flamingo-web.org/content/'):
                 path, ext = os.path.splitext(
-                    os.path.relpath(link['href'], 'flamingo-web.org/'))
+                    os.path.relpath(link['href'], 'flamingo-web.org/content/'))
 
                 link['href'] = '/{}.html'.format(path)
 
