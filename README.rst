@@ -99,14 +99,14 @@ refreshes the browser tab if needed.
 Next Steps
 ----------
 
-`Writing Content <flamingo-web.org/content/doc/writing_content.html>`_
+`Writing Content <flamingo-web.org/content/doc/writing_content.rst>`_
 
-`Setup Markdown parser <flamingo-web.org/content/plugins/markdown.html>`_
+`Setup Markdown parser <flamingo-web.org/content/plugins/markdown.rst>`_
 
-`Setup redirects to maintain historic links <flamingo-web.org/content/plugins/redirects.html>`_
+`Setup redirects to maintain historic links <flamingo-web.org/content/plugins/redirects.rst>`_
 
-`Setup Internationalisation <flamingo-web.org/content/plugins/i18n.html>`_
+`Setup Internationalisation <flamingo-web.org/content/plugins/i18n.rst>`_
 
-`Setup Tags <flamingo-web.org/content/plugins/tags.html>`_
+`Setup Tags <flamingo-web.org/content/plugins/tags.rst>`_
 
-`Setup Author Pages <flamingo-web.org/content/plugins/authors.html>`_
+`Setup Author Pages <flamingo-web.org/content/plugins/authors.rst>`_
