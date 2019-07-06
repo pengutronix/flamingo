@@ -1,10 +1,6 @@
-import logging
 import os
 
 from flamingo.core.data_model import ContentSet, Content
-from flamingo.core.utils.files import cp
-
-logger = logging.getLogger('flamingo.core.media')
 
 
 def add_media(context, content, name):
@@ -63,5 +59,5 @@ class Media:
                 continue
 
             for media in content['media']:
-                cp(context=context, source=media['source'],
-                   destination=media['destination'], logger=logger)
+                context.cp(source=media['source'],
+                           destination=media['destination'])

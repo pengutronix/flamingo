@@ -1,9 +1,9 @@
 import logging
+import shutil
 import os
 
 from flamingo.core.data_model import ContentSet, AND, NOT, OR, Q, F
 from flamingo.core.parser import FileParser, ParsingError
-from flamingo.core.utils.files import mkdir_p, rm_rf, cp
 from flamingo.core.utils.imports import acquire
 
 
@@ -174,12 +174,46 @@ class Context:
 
         return output, template_context
 
-    def build(self, clean=True, mkdir_p=mkdir_p, cp=cp):
+    def rm_rf(self, path, force=False):
+        if self.settings.SKIP_FILE_OPERATIONS and not force:
+            return
+
+        self.logger.debug('rm -rf %s', self.settings.OUTPUT_ROOT)
+        shutil.rmtree(path)
+
+    def mkdir_p(self, path, force=False):
+        if self.settings.SKIP_FILE_OPERATIONS and not force:
+            return
+
+        dirname = os.path.dirname(path)
+
+        if not os.path.exists(dirname):
+            self.logger.debug('mkdir -p %s', dirname)
+            os.makedirs(dirname)
+
+    def cp(self, source, destination, force=False):
+        if self.settings.SKIP_FILE_OPERATIONS and not force:
+            return
+
+        self.mkdir_p(destination)
+        self.logger.debug('cp %s %s', source, destination)
+        shutil.copy(source, destination)
+
+    def write(self, path, text, mode='w+', force=False):
+        if self.settings.SKIP_FILE_OPERATIONS and not force:
+            return
+
+        self.logger.debug("writing '%s", path)
+
+        with open(path, mode) as f:
+            f.write(text)
+
+    def build(self, clean=True):
         self.run_plugin_hook('pre_build')
 
         # remove previous artifacts
         if clean and os.path.exists(self.settings.OUTPUT_ROOT):
-            rm_rf(self, self.settings.OUTPUT_ROOT)
+            self.rm_rf(self.settings.OUTPUT_ROOT)
 
         # render contents
         if self.settings.CONTENT_PATHS:
@@ -195,21 +229,16 @@ class Context:
             output_path = os.path.join(self.settings.OUTPUT_ROOT,
                                        content['output'])
 
-            mkdir_p(self, output_path)
+            self.mkdir_p(output_path)
 
             # render and write content
-            with open(output_path, 'w+') as f:
-                self.logger.debug("writing '%s'...", output_path)
+            if content['template']:
+                output, template_context = self.render(content)
+                content['template_context'] = template_context
 
-                if content['template']:
-                    output, template_context = self.render(content)
-                    content['template_context'] = template_context
+            else:
+                output = content['content']
 
-                else:
-                    output = content['content']
-
-                output = output or ''
-
-                f.write(output)
+            self.write(output_path, output or '')
 
         self.run_plugin_hook('post_build')

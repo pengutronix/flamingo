@@ -14,7 +14,6 @@ from flamingo.core.utils.cli import gen_default_parser, parse_args
 from flamingo.core.utils.aionotify import RecursiveWatcher
 from flamingo.core.utils.aiohttp import DirectoryExporter
 from flamingo.core.data_model import ContentSet, Q
-from flamingo.core.utils.files import ln_s
 from flamingo.core.context import Context
 from flamingo import SERVER_STATIC_ROOT
 
@@ -30,7 +29,7 @@ class IncrementalContext(Context):
                                 self.templating_engine)
         super().run_plugin_hook('context_setup')
         super().run_plugin_hook('pre_build')
-        super().build(clean=clean, cp=ln_s)
+        super().build(clean=clean)
         super().run_plugin_hook('post_build')
 
 

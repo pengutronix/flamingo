@@ -1,9 +1,4 @@
-import logging
 import os
-
-from flamingo.core.utils.files import cp
-
-logger = logging.getLogger('flamingo.core.static')
 
 
 class Static:
@@ -22,5 +17,4 @@ class Static:
                         f,
                     )
 
-                    cp(context=context, source=source, destination=destination,
-                       logger=logger)
+                    context.cp(source=source, destination=destination)

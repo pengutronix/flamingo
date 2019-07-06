@@ -41,6 +41,9 @@ DEFAULT_TEMPLATE = 'page.html'
 
 DEFAULT_PAGINATION = 25
 
+# build
+SKIP_FILE_OPERATIONS = False
+
 # content
 CONTENT_ROOT = 'content'
 CONTENT_PATHS = []
