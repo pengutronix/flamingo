@@ -2,6 +2,7 @@ import flamingo
 
 # plugins / hooks
 CORE_PLUGINS_PRE = [
+    'flamingo.core.plugins.layers.PreBuildLayers',
     'flamingo.core.plugins.MetaDataProcessor',
     'flamingo.core.plugins.Hooks',
 ]
@@ -20,6 +21,7 @@ PLUGINS = []
 CORE_PLUGINS_POST = [
     'flamingo.core.plugins.Media',
     'flamingo.core.plugins.Static',
+    'flamingo.core.plugins.layers.PostBuildLayers',
 ]
 
 CACHE_HOOKS = True
@@ -56,3 +58,7 @@ CONTENT_PATHS = []
 OUTPUT_ROOT = 'output'
 MEDIA_ROOT = 'output/media'
 STATIC_ROOT = 'output/static'
+
+# layers
+PRE_BUILD_LAYERS = []
+POST_BUILD_LAYERS = []
