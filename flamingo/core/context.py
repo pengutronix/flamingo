@@ -18,9 +18,10 @@ class Context:
 
         # setup plugins
         self.plugins = []
-        plugins = (self.settings.CORE_PLUGINS +
+        plugins = (self.settings.CORE_PLUGINS_PRE +
                    self.settings.DEFAULT_PLUGINS +
-                   self.settings.PLUGINS)
+                   self.settings.PLUGINS +
+                   self.settings.CORE_PLUGINS_POST)
 
         for plugin in plugins:
             self.logger.debug("setting up plugin '%s' ", plugin)

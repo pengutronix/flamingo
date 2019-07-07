@@ -1,11 +1,9 @@
 import flamingo
 
 # plugins / hooks
-CORE_PLUGINS = [
+CORE_PLUGINS_PRE = [
     'flamingo.core.plugins.MetaDataProcessor',
     'flamingo.core.plugins.Hooks',
-    'flamingo.core.plugins.Media',
-    'flamingo.core.plugins.Static',
 ]
 
 DEFAULT_PLUGINS = [
@@ -18,6 +16,12 @@ DEFAULT_PLUGINS = [
 ]
 
 PLUGINS = []
+
+CORE_PLUGINS_POST = [
+    'flamingo.core.plugins.Media',
+    'flamingo.core.plugins.Static',
+]
+
 CACHE_HOOKS = True
 
 # parsing
