@@ -18,6 +18,8 @@ class Context:
 
         # setup plugins
         self.plugins = []
+        self.plugin_paths = []
+
         plugins = (self.settings.CORE_PLUGINS_PRE +
                    self.settings.DEFAULT_PLUGINS +
                    self.settings.PLUGINS +
@@ -27,11 +29,14 @@ class Context:
             self.logger.debug("setting up plugin '%s' ", plugin)
 
             try:
-                plugin_class, path = acquire(plugin)
+                plugin_class, plugin_path = acquire(plugin)
                 self.plugins.append(plugin_class())
+                self.plugin_paths.append(plugin_path)
 
             except Exception:
                 self.logger.error('plugin setup failed', exc_info=True)
+
+        self.plugin_paths = list(set(self.plugin_paths))
 
         # setup parser
         self.parser = FileParser(context=self)
