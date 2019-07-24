@@ -26,6 +26,7 @@ def acquire(item, types=None):
                     script, attr_name))
 
             item = values[attr_name]
+            path = script
 
         else:
             raise ValueError("invalid import string '{}'".format(item))

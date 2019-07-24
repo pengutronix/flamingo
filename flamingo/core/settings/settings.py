@@ -1,4 +1,5 @@
 from copy import deepcopy
+import importlib
 import runpy
 
 from . import defaults
@@ -7,7 +8,7 @@ from . import defaults
 class Settings:
     def __init__(self):
         self._values = {}
-        self._modules = []
+        self.modules = []
 
         for i in dir(defaults):
             attr = getattr(defaults, i)
@@ -22,14 +23,12 @@ class Settings:
                 self._values[i] = attr_copy
 
     def add(self, module):
-        self._modules.append(module)
+        if not (module.endswith('.py') or '/' in module):
+            module = importlib.import_module(module).__file__
 
-        if module.endswith('.py') or '/' in module:
-            values = runpy.run_path(module, init_globals=self._values)
+        values = runpy.run_path(module, init_globals=self._values)
 
-        else:
-            values = runpy.run_module(module, init_globals=self._values)
-
+        self.modules.append(module)
         self._values = {k: v for k, v in values.items()
                         if not k.startswith('_')}
 
