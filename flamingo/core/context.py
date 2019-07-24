@@ -39,21 +39,7 @@ class Context:
 
         # parse contents
         self.contents = contents or ContentSet()
-        self.content = None
-
-        for path in self.get_source_paths():
-            self.contents.add(
-                path=os.path.relpath(path, settings.CONTENT_ROOT))
-
-        for content in self.contents:
-            if content['content_body']:
-                continue
-
-            self.parse(content)
-
-        self.content = None
-
-        self.run_plugin_hook('contents_parsed')
+        self.parse_all()
 
         # setup templating engine
         templating_engine_class = acquire(settings.TEMPLATING_ENGINE)
@@ -101,6 +87,23 @@ class Context:
 
         finally:
             self.content = previous_content
+
+    def parse_all(self):
+        self.content = None
+
+        for path in self.get_source_paths():
+            self.contents.add(
+                path=os.path.relpath(path, self.settings.CONTENT_ROOT))
+
+        for content in self.contents:
+            if content['content_body']:
+                continue
+
+            self.parse(content)
+
+        self.content = None
+
+        self.run_plugin_hook('contents_parsed')
 
     def get_source_paths(self):
         self.logger.debug('searching for content')
