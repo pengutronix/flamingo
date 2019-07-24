@@ -1,7 +1,7 @@
 from copy import deepcopy
 import runpy
 
-from flamingo import default_settings
+from . import defaults
 
 
 class Settings:
@@ -9,8 +9,8 @@ class Settings:
         self._values = {}
         self._modules = []
 
-        for i in dir(default_settings):
-            attr = getattr(default_settings, i)
+        for i in dir(defaults):
+            attr = getattr(defaults, i)
 
             try:
                 attr_copy = deepcopy(attr)
