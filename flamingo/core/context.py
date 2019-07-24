@@ -27,7 +27,7 @@ class Context:
             self.logger.debug("setting up plugin '%s' ", plugin)
 
             try:
-                plugin_class = acquire(plugin)
+                plugin_class, path = acquire(plugin)
                 self.plugins.append(plugin_class())
 
             except Exception:
@@ -42,7 +42,7 @@ class Context:
         self.parse_all()
 
         # setup templating engine
-        templating_engine_class = acquire(settings.TEMPLATING_ENGINE)
+        templating_engine_class, path = acquire(settings.TEMPLATING_ENGINE)
 
         self.templating_engine = templating_engine_class(
             settings.THEME_PATHS +

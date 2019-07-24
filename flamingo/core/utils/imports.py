@@ -1,4 +1,5 @@
 import importlib
+import inspect
 import runpy
 import re
 
@@ -7,6 +8,8 @@ MODULE_RE = re.compile(r'^[a-zA-Z0-9_.]+$')
 
 
 def acquire(item, types=None):
+    path = item
+
     if types and not isinstance(types, tuple):
         types = (types, )
 
@@ -14,6 +17,7 @@ def acquire(item, types=None):
         if MODULE_RE.match(item):
             module_name, attr_name = item.rsplit('.', 1)
             module = importlib.import_module(module_name)
+            path = inspect.getfile(module)
 
             item = getattr(module, attr_name)
 
@@ -35,4 +39,4 @@ def acquire(item, types=None):
         raise ValueError("'{}' has wrong type. Allowed types: {}".format(
             attr_name, ', '.join([i.__name__ for i in types])))
 
-    return item
+    return item, path
