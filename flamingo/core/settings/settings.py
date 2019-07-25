@@ -3,15 +3,20 @@ import importlib
 import runpy
 
 from . import defaults
+from flamingo.core.types import OverlayObject
 
 
-class Settings:
+class Settings(OverlayObject):
     def __init__(self):
-        self._values = {}
+        super().__init__()
+
         self.modules = []
 
-        for i in dir(defaults):
-            attr = getattr(defaults, i)
+        for name in dir(defaults):
+            if name.startswith('_'):
+                continue
+
+            attr = getattr(defaults, name)
 
             try:
                 attr_copy = deepcopy(attr)
@@ -20,30 +25,17 @@ class Settings:
                 pass
 
             else:
-                self._values[i] = attr_copy
+                self._attrs[name] = attr_copy
 
     def add(self, module):
         if not (module.endswith('.py') or '/' in module):
             module = importlib.import_module(module).__file__
 
-        values = runpy.run_path(module, init_globals=self._values)
+        attrs = runpy.run_path(module, init_globals=self._attrs)
 
         self.modules.append(module)
-        self._values = {k: v for k, v in values.items()
-                        if not k.startswith('_')}
-
-    def __getattribute__(self, name):
-        try:
-            return super().__getattribute__(name)
-
-        except AttributeError:
-            if name in self._values:
-                return self._values[name]
-
-            raise
-
-    def __dir__(self):
-        return list(set(super().__dir__() + list(self._values.keys())))
+        self._attrs = {k: v for k, v in attrs.items()
+                       if not k.startswith('_')}
 
     def __iter__(self):
         ignore = ('add', )
