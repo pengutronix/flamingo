@@ -9,6 +9,8 @@ def flamingo_dummy_context():
 
     class DummyContext(Context):
         def __init__(self, settings, contents=None):
+            super().__init__(settings)
+
             self.settings = settings
             self.contents = contents or ContentSet()
 

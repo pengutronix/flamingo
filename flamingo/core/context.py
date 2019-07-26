@@ -5,10 +5,18 @@ import os
 from flamingo.core.data_model import ContentSet, AND, NOT, OR, Q, F
 from flamingo.core.parser import FileParser, ParsingError
 from flamingo.core.utils.imports import acquire
+from flamingo.core.types import OverlayObject
 
 
-class Context:
+class Context(OverlayObject):
+    __overlay_ignore_attributes = [
+        'content',
+        'contents',
+    ]
+
     def __init__(self, settings, contents=None):
+        super().__init__()
+
         self.settings = settings
         self.errors = []
 
