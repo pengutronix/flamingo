@@ -26,34 +26,31 @@ def hook(name):
 
 
 class Hooks:
-    def find_hooks(self, name, context):
-        def _find_hooks():
-            hooks = []
+    def __init__(self, context):
+        self._hooks = {
+            'parser_setup': [],
+            'content_parsed': [],
+            'contents_parsed': [],
+            'templating_engine_setup': [],
+            'context_setup': [],
+            'pre_build': [],
+            'post_build': [],
+        }
 
-            for attr_name in dir(context.settings):
-                attr = getattr(context.settings, attr_name)
+        for attr_name in dir(context.settings):
+            attr = getattr(context.settings, attr_name)
 
-                if(hasattr(attr, 'flamingo_hook_name') and
-                   attr.flamingo_hook_name == name):
+            if hasattr(attr, 'flamingo_hook_name'):
+                self._hooks[attr.flamingo_hook_name].append(attr)
 
-                    hooks.append(attr)
+        self._dir = super().__dir__()
 
-            return hooks
-
-        if context.settings.CACHE_HOOKS:
-            if not hasattr(self, 'cache'):
-                self.cache = {}
-
-            if name not in self.cache:
-                self.cache[name] = _find_hooks()
-
-            return self.cache[name]
-
-        else:
-            return _find_hooks()
+        for key in self._hooks.keys():
+            if not self._hooks[key]:
+                self._dir.remove(key)
 
     def run_hooks(self, name, context, *args):
-        for hook in self.find_hooks(name, context):
+        for hook in self._hooks[name]:
             logger.debug('%s: running %s', name, hook)
             hook(context, *args)
 
@@ -77,3 +74,6 @@ class Hooks:
 
     def post_build(self, context):
         self.run_hooks('post_build', context)
+
+    def __dir__(self):
+        return self._dir

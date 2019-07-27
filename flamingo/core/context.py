@@ -38,13 +38,48 @@ class Context(OverlayObject):
 
             try:
                 plugin_class, plugin_path = acquire(plugin)
-                self.plugins.append(plugin_class())
+
+                if plugin == 'flamingo.core.plugins.Hooks':
+                    self.plugins.append(plugin_class(self))
+
+                else:
+                    self.plugins.append(plugin_class())
+
                 self.plugin_paths.append(plugin_path)
 
             except Exception:
                 self.logger.error('plugin setup failed', exc_info=True)
 
         self.plugin_paths = list(set(self.plugin_paths))
+
+        # discover plugin hooks
+        self._plugin_hooks = {
+            'parser_setup': [],
+            'content_parsed': [],
+            'contents_parsed': [],
+            'templating_engine_setup': [],
+            'context_setup': [],
+            'pre_build': [],
+            'post_build': [],
+
+            # live-server hooks
+            'render_content': [],
+            'render_media_content': [],
+        }
+
+        hook_names = self._plugin_hooks.keys()
+
+        for plugin in self.plugins:
+            for hook_name in hook_names:
+                if hook_name not in dir(plugin):
+                    continue
+
+                hook = getattr(plugin, hook_name)
+
+                if hook:
+                    self._plugin_hooks[hook_name].append(
+                        (plugin.__class__.__name__, hook, )
+                    )
 
         # setup parser
         self.parser = FileParser(context=self)
@@ -158,16 +193,25 @@ class Context(OverlayObject):
                     yield os.path.join(root, name)
 
     def run_plugin_hook(self, name, *args, **kwargs):
+        if name in self.settings.SKIP_HOOKS:
+            return
+
+        if name not in self._plugin_hooks:
+            return
+
+        if not self._plugin_hooks[name]:
+            return
+
         self.logger.debug("running plugin hook '%s'", name)
 
-        for plugin in self.plugins:
-            hook = getattr(plugin, name, None)
+        for plugin_name, hook in self._plugin_hooks[name]:
+            self.logger.debug('running %s.%s', plugin_name, name)
 
-            if not hook:
-                continue
+            try:
+                hook(self, *args, **kwargs)
 
-            self.logger.debug('running %s.%s', plugin.__class__.__name__, name)
-            hook(self, *args, **kwargs)
+            except Exception as e:
+                self.logger.error(e, exc_info=True)
 
     def render(self, content, template_name=''):
         template_name = template_name or content['template']

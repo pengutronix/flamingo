@@ -24,7 +24,7 @@ CORE_PLUGINS_POST = [
     'flamingo.core.plugins.layers.PostBuildLayers',
 ]
 
-CACHE_HOOKS = True
+SKIP_HOOKS = []
 
 # parsing
 USE_CHARDET = False
