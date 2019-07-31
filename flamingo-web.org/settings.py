@@ -16,7 +16,6 @@ THEME_PATHS = [
 
 PLUGINS = [
     'flamingo.plugins.rstPygments',
-    'flamingo.plugins.Layers',
     'flamingo.plugins.SimpleMenu',
     'flamingo.plugins.Bootstrap4',
     'flamingo.plugins.jQuery3',
@@ -25,7 +24,7 @@ PLUGINS = [
     'plugins/table.py::rstTable',
 ]
 
-LAYERS = [
+POST_BUILD_LAYERS = [
     'overlay',
 ]
 

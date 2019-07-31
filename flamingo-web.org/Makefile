@@ -1,5 +1,4 @@
 FLAMINGO_SETTINGS=settings.py
-FLAMINGO_ARGS=--log-level=INFO
 FLAMINGO_SERVER_ARGS=--host=localhost --port=8080
 
 PYTHON=python3.6
