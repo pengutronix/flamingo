@@ -163,6 +163,10 @@ class Context(OverlayObject):
 
             for path in self.settings.CONTENT_PATHS:
                 path = os.path.join(self.settings.CONTENT_ROOT, path)
+
+                if not os.path.exists(path):
+                    continue
+
                 extension = os.path.splitext(path)[1][1:]
 
                 if extension not in supported_extensions:
@@ -216,6 +220,11 @@ class Context(OverlayObject):
     def render(self, content, template_name=''):
         template_name = template_name or content['template']
 
+        if not template_name:
+            content['template_context'] = {}
+
+            return content['content_body'] or ''
+
         template_context = {
             'content': content,
             'context': self,
@@ -232,8 +241,9 @@ class Context(OverlayObject):
                 content['content_body'], template_context)
 
         output = self.templating_engine.render(template_name, template_context)
+        content['template_context'] = template_context
 
-        return output, template_context
+        return output
 
     def rm_rf(self, path, force=False):
         if self.settings.SKIP_FILE_OPERATIONS and not force:
@@ -291,15 +301,6 @@ class Context(OverlayObject):
                                        content['output'])
 
             self.mkdir_p(output_path)
-
-            # render and write content
-            if content['template']:
-                output, template_context = self.render(content)
-                content['template_context'] = template_context
-
-            else:
-                output = content['content']
-
-            self.write(output_path, output or '')
+            self.write(output_path, self.render(content))
 
         self.run_plugin_hook('post_build')
