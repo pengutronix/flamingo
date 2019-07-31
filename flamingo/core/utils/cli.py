@@ -42,8 +42,7 @@ def get_raw_parser(*parser_args, description='', **parser_kwargs):
     return parser
 
 
-def gen_default_parser(*parser_args, description='', setup_logging=True,
-                       **parser_kwargs):
+def gen_default_parser(*parser_args, description='', **parser_kwargs):
 
     parser = get_raw_parser(*parser_args, description=description,
                             **parser_kwargs)
@@ -53,25 +52,24 @@ def gen_default_parser(*parser_args, description='', setup_logging=True,
     parser.add_argument('-p', '--project-root', type=str)
     parser.add_argument('--content-paths', type=str, nargs='+')
 
-    if setup_logging:
-        parser.add_argument(
-            '-l', '--log-level',
-            choices=['DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL'],
-            default='INFO',
-        )
+    parser.add_argument(
+        '-l', '--log-level',
+        choices=['DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL'],
+        default='WARN',
+    )
 
-        parser.add_argument('-d', '--debug', action='store_true')
+    parser.add_argument('-d', '--debug', action='store_true')
 
     return parser
 
 
-def parse_args(parser=None):
+def parse_args(parser=None, setup_logging=True):
     parser = parser or gen_default_parser()
     namespace = parser.parse_args()
     settings = Settings()
 
     # loglevel / debug mode
-    if 'log_level' in namespace:
+    if setup_logging:
         log_level = {
             'DEBUG': logging.DEBUG,
             'INFO': logging.INFO,

@@ -62,3 +62,6 @@ STATIC_ROOT = 'output/static'
 # layers
 PRE_BUILD_LAYERS = []
 POST_BUILD_LAYERS = []
+
+# live-server
+LIVE_SERVER_RUNNING = False

@@ -1,3 +1,5 @@
+Ractive.DEBUG = false;
+
 function iframe_onload(iframe) {
     // get content meta data
     rpc.call(
@@ -149,12 +151,10 @@ var ractive = Ractive({
         overlay_heading: '',
         overlay_content: '',
         overlay_tab: 'meta-data',
-        log: [],
-        log_level: {
-            debug: false,
-            info: false,
-            error: true,
-            critical: true,
+        log: {
+            logger: {},
+            records: [],
+            level: {},
         },
         content_meta_data: {},
         messages: [],
@@ -165,7 +165,7 @@ var ractive = Ractive({
     computed: {
         selected_log_level: function() {
             var selected_log_level = [];
-            var log_level = this.get('log_level')
+            var log_level = this.get('log.level')
 
             if(log_level.debug) {
                 selected_log_level.push('DEBUG');
@@ -173,6 +173,10 @@ var ractive = Ractive({
 
             if(log_level.info) {
                 selected_log_level.push('INFO');
+            }
+
+            if(log_level.warning) {
+                selected_log_level.push('WARNING');
             }
 
             if(log_level.error) {
@@ -184,6 +188,18 @@ var ractive = Ractive({
             }
 
             return selected_log_level;
+        },
+        selected_logger: function() {
+            var selected_logger = [];
+            var logger = this.get('log.logger');
+
+            for(var key in logger) {
+                if(logger[key]) {
+                    selected_logger.push(key);
+                }
+            }
+
+            return selected_logger;
         }
     }
 });
@@ -200,31 +216,16 @@ ractive.on({
     reload: function(event) {
         iframe_reload();
     },
-    rebuild: function(event) {
-        ractive.set('overlay_content', 'rebuilding full site...');
-
-        rpc.call('rebuild', undefined, function(data) {
-            ractive.set('overlay_content', 'site rebuild successful');
-
-        },
-        function(data) {
-            ractive.set('overlay_content', 'rebuild failed');
-
-        });
-    },
-    toggle_index: function(event) {
-        rpc.call('toggle_index', undefined, function(data) {
-            ractive.set('overlay_content', 'index is ' + (data ? 'enabled':'disabled'));
-            iframe_reload();
-
-        },
-        function(data) {
-            ractive.set('overlay_content', 'internal error');
-
-        });
-    },
     hide_message: function(event, id) {
         hide_message(id);
+    },
+    start_shell: function(event) {
+        rpc.call('start_shell');
+    },
+    clear_log: function(event) {
+        rpc.call('clear_log', undefined, function(data) {
+            ractive.set('log.records', []);
+        });
     },
 });
 
@@ -232,6 +233,7 @@ rpc.on('open', function(rpc) {
     ractive.set({
         overlay_heading: 'Connected',
         overlay_content: '',
+        overlay_tab: 'meta-data',
     });
 
     if(ractive.get('overlay') > 0 && ractive.get('overlay_reason') == 'reconnect') {
@@ -245,7 +247,7 @@ rpc.on('open', function(rpc) {
         var iframe = document.getElementsByTagName('iframe')[0];
 
         if(data.changed_paths.includes(iframe.contentWindow.location.pathname) ||
-           data.changed_paths.includes('*')) {
+            data.changed_paths.includes('*')) {
 
             iframe_reload();
             ractive.set('log', []);
@@ -256,14 +258,24 @@ rpc.on('open', function(rpc) {
         }
     });
 
-    rpc.subscribe('log', function(data) {
-        var log = ractive.get('log').concat(data);
+    rpc._topic_handler.log = function(data) {
+        var records = ractive.get('log.records').concat(data.records);
+        var logger = ractive.get('log.logger');
 
-        log = log.slice(-100);
-        ractive.set('log', log);
+        for(var index in data.logger) {
+            var logger_name = data.logger[index];
 
-        for(var index in ractive.get('log')) {
-            if(log[index].level == 'ERROR' && ractive.get('overlay') < 0) {
+            if(logger.hasOwnProperty(logger_name)) {
+                continue;
+            }
+
+            logger[logger_name] = logger_name.startsWith('flamingo');
+        }
+
+        records = records.slice(-2500);
+
+        for(var index in records) {
+            if(records[index].level == 'ERROR' && ractive.get('overlay') < 0) {
                 ractive.set({
                     overlay: 1,
                     overlay_reason: 'log',
@@ -271,6 +283,30 @@ rpc.on('open', function(rpc) {
                 });
             }
         }
+
+        ractive.set('log.logger', logger);
+        ractive.set('log.records', records);
+    };
+
+    rpc.call('setup_log', undefined, function(data) {
+        var logger = {};
+
+        for(var index in data.logger) {
+            var logger_name = data.logger[index];
+
+            logger[logger_name] = logger_name.startsWith('flamingo');
+        }
+
+        ractive.set('log.records', data.records);
+        ractive.set('log.logger', logger);
+
+        ractive.set('log.level', {
+            debug: false,
+            info: false,
+            warning: true,
+            error: true,
+            critical: true,
+        });
     });
 
     rpc.subscribe('messages', function(data) {
@@ -305,7 +341,7 @@ rpc.on('close', function(rpc) {
     ractive.set({
         overlay_heading: 'Connection lost',
         log: [],
-        overlay_tab: 'none',
+        overlay_tab: '',
     });
 
     if(ractive.get('overlay') < 0) {

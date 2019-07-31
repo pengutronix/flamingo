@@ -7,13 +7,12 @@ import os
 from flamingo.core.utils.cli import gen_default_parser, parse_args
 
 TYPES = (list, tuple, int, float, str, bool, )
+parser = gen_default_parser(prog='flamingo args')
 
-parser = gen_default_parser(
-    prog='flamingo args',
+args, settings = parse_args(
+    parser,
     setup_logging='FLAMINGO_ARGS_DISABLE_LOGGING_SETUP' not in os.environ,
 )
-
-args, settings = parse_args(parser)
 
 print(json.dumps({
     'args': vars(args),

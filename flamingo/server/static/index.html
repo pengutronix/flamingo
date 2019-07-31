@@ -1,6 +1,6 @@
 <html>
   <head>
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="static/style.css">
     <link rel="shortcut icon" href="" />
   </head>
   <body onhashchange="onhashchange();">
@@ -40,13 +40,23 @@
       </table>
     </script>
     <script id="log" type="text/html">
-      DEBUG <input type="checkbox" checked="{{log_level.debug}}" />
-      INFO <input type="checkbox" checked="{{log_level.info}}" />
-      ERROR <input type="checkbox" checked="{{log_level.error}}" />
-      CRITICAL <input type="checkbox" checked="{{log_level.critical}}" />
-      {{#if log}}
-        <pre class="log">{{#log}}{{#if selected_log_level.includes(.level)}}<span class="{{.level}}">{{.time}} {{.name}} {{.level}}: {{.message}}</span>
-{{/if}}{{/log}}</pre>{{/if}}
+      <div class="log">
+        <div class="level">
+          DEBUG <input type="checkbox" checked="{{log.level.debug}}" />
+          INFO <input type="checkbox" checked="{{log.level.info}}" />
+          WARNING <input type="checkbox" checked="{{log.level.warning}}" />
+          ERROR <input type="checkbox" checked="{{log.level.error}}" />
+          CRITICAL <input type="checkbox" checked="{{log.level.critical}}" />
+        </div>
+        <div class="sub-grid">
+          <div class="logger">
+            {{#each log.logger: name}}<div><input type="checkbox" checked="{{.}}"/> {{name}}</div>{{/each}}
+          </div>
+          <div class="records">
+            <pre>{{#log.records}}{{#if selected_log_level.includes(.level) && selected_logger.includes(.name)}}<span class="{{.level}}">{{.time}} {{.name}} {{.level}}: {{.message}}</span>
+{{/if}}{{/}}</pre></div>
+        </div>
+      </div>
     </script>
     <script id="settings" type="text/html">
       <input type="checkbox" checked="{{settings.keyboard_shortcuts}}" /> Keyboard Shortcuts
@@ -59,9 +69,9 @@
         <iframe src="{{iframe_initial_pathname}}" onLoad="iframe_onload(this);"></iframe>
         <div id="overlay">
           <div id="controls">
-            <button on-click="reload">Reload</button>
-            <button on-click="rebuild">Rebuild</button>
-            <button on-click="toggle_index">Toggle Index</button>
+            <button on-click="reload">Reload Page</button>
+            <button on-click="clear_log">Clear Log</button>
+            <button on-click="start_shell">Start Shell</button>
           </div>
           <h1>{{overlay_heading}}</h1>
           <p>{{overlay_content}}</p>
@@ -96,8 +106,8 @@
         </div>
       </div>
     </script>
-    <script src="lib/ractive.min.js"></script>
-    <script src="lib/rpc.js"></script>
-    <script src="main.js"></script>
+    <script src="static/lib/ractive.min.js"></script>
+    <script src="static/lib/rpc.js"></script>
+    <script src="static/main.js"></script>
   </body>
 </html>

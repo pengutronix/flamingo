@@ -16,7 +16,6 @@ INSTALL_REQUIRES = [
 EXTRAS_REQUIRE = {
     'live-server': [
         'aiohttp-json-rpc==0.12',
-        'aionotify==0.2.0',
     ],
     'chardet': [
         'chardet',

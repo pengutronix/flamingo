@@ -64,7 +64,7 @@ body {
     background: rgba(5, 5, 5, 0.75);
     font-weight: bold;
     overflow-y: scroll;
-    z-index: 1000;
+    z-index: 2000;
 }
 
 #main-grid.overlay #overlay {
@@ -80,14 +80,79 @@ body {
 }
 
 /* log */
-pre.log {
+.log {
+    display: grid;
+    margin-bottom: 1em;
+}
+
+.log .level {
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 1;
+    grid-row-end: 1;
+    
+    margin-bottom: 0.25em;
+}
+
+.log .sub-grid {
+    display: grid;
+
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 2;
+    grid-row-end: 3;
+
+    grid: auto-flow dense / max-content auto max-content;
+    grid-template-rows: auto;
+
+    border-top: 1px solid grey;
+}
+
+.log .logger {
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 2;
+    grid-row-end: 2;
+
+    padding-top: 0.25em;
+    padding-right: 0.5em;
+}
+
+.log .records {
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 2;
+    grid-row-end: 2;
+
+    border-left: 1px solid grey;
+    padding-top: 0.25em;
+    padding-left: 0.5em;
+    font-weight: normal;
+}
+
+.log pre {
+    margin: 0;
     font-weight: normal;
     font-size: 14px;
     line-heigth: 1ex;
 }
 
-pre.log span.ERROR {
+.log .records span.DEBUG {
+    color: limegreen;
+}
+
+.log .records span.WARNING {
+    color: yellow;
+}
+
+.log .records span.ERROR {
     color: red;
+}
+
+.log .records span.CRITICAL {
+    background-color: red;
+    color: white;
+    font-weight: bold;
 }
 
 /* messages */
@@ -99,6 +164,8 @@ pre.log span.ERROR {
 
     padding-top: 0.5em;
     pointer-events:none;
+
+    z-index: 1000;
 }
 
 #messages .message {

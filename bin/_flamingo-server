@@ -1,92 +1,48 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from datetime import datetime
-from copy import deepcopy
+from functools import partial
+import traceback
 import asyncio
 import logging
+import types
 import os
 
-from aiohttp.web import Application, run_app
+from aiohttp.web import Application, FileResponse, Response, run_app
 from aiohttp_json_rpc import JsonRpc
 
 from flamingo.core.utils.cli import gen_default_parser, parse_args
-from flamingo.core.utils.aionotify import RecursiveWatcher
-from flamingo.core.utils.aiohttp import DirectoryExporter
-from flamingo.core.data_model import ContentSet, Q
-from flamingo.core.context import Context
+from flamingo.core.data_model import Q
 from flamingo import SERVER_STATIC_ROOT
 
-
-class IncrementalContext(Context):
-    def run_plugin_hook(self, name, *args, **kwargs):
-        if name in ('parser_setup'):
-            super().run_plugin_hook(name, *args, **kwargs)
-
-    def build(self, clean=True):
-        super().run_plugin_hook('contents_parsed')
-        super().run_plugin_hook('templating_engine_setup',
-                                self.templating_engine)
-        super().run_plugin_hook('context_setup')
-        super().run_plugin_hook('pre_build')
-        super().build(clean=clean)
-        super().run_plugin_hook('post_build')
+from flamingo.server.build_environment import BuildEnvironment
+from flamingo.server.watcher import Flags, DiscoveryWatcher
+from flamingo.server.exporter import ContentExporter
+from flamingo.server.logging import RPCHandler
 
 
-class IncrementalBuildEnv:
-    def __init__(self, settings):
-        self.settings = settings
-        self.raw_contents = ContentSet()
+def default_exeption_handler(loop, context):
+    print(context['message'])
 
-    def build(self, paths=[]):
-        if paths and not isinstance(paths, list):
-            paths = [paths]
-
-        if paths:
-            self.settings.CONTENT_PATHS = paths
-
-            context = IncrementalContext(
-                self.settings,
-                contents=self.raw_contents.exclude(path__in=paths),
-            )
-
-        else:
-            self.settings.CONTENT_PATHS = []
-            context = IncrementalContext(self.settings)
-
-        self.raw_contents = deepcopy(context.contents)
-        context.build(clean=not bool(paths))
-
-        return context
+    traceback.print_exception(
+        Exception, context['exception'], context['exception'].__traceback__)
 
 
-class RPCHandler(logging.Handler):
-    def handle(self, record):
-        if record.name.startswith('flamingo'):
-            self.rpc.worker_pool.run_sync(
-                self.rpc.notify,
-                'log',
-                {
-                    'time': str(datetime.fromtimestamp(record.created)),
-                    'name': record.name,
-                    'level': record.levelname,
-                    'message': record.getMessage(),
-                },
-                wait=False,
-            )
+loop = asyncio.get_event_loop()
+loop.set_exception_handler(default_exeption_handler)
 
+# setup aiohttp app
+app = Application(loop=loop)
 
 # parse command line
 parser = gen_default_parser(prog='flamingo-server')
 
 parser.add_argument('--port', type=int, default=8080)
 parser.add_argument('--host', type=str, default='localhost')
-parser.add_argument('--shell', action='store_true')
 
-namespace, settings = parse_args(parser)
+namespace, settings = parse_args(parser, setup_logging=False)
 
 # setup rpc
-loop = asyncio.get_event_loop()
 rpc = JsonRpc(loop=loop, max_workers=4)
 worker_pool = rpc.worker_pool
 
@@ -96,37 +52,26 @@ rpc.add_topics(
     ('messages',),
 )
 
-handler = RPCHandler()
-handler.rpc = rpc
+# setup logging
+logging.basicConfig(level=logging.DEBUG)
+rpc_logging_handler = RPCHandler(rpc=rpc, log_level_name=namespace.log_level)
+root_logger = logging.getLogger()
+root_logger.handlers = [rpc_logging_handler]
 
-logging.getLogger().addHandler(handler)
+# flamingo context and context exporter
+build_environment = BuildEnvironment(settings)
+context = build_environment.context
+exporter = ContentExporter(context)
 
-# build
-build_env = IncrementalBuildEnv(settings)
-context = build_env.build()
+app['build_environment'] = build_environment
+app['context'] = context
+app['exporter'] = exporter
+app['rpc'] = rpc
 
 
 # rpc methods
-async def toggle_index(request):
-    global content_exporter
-
-    content_exporter.show_index = not content_exporter.show_index
-
-    return content_exporter.show_index
-
-
-async def rebuild(request):
-    global build_env, context
-
-    context = build_env.build()
-
-    await request.rpc.notify('status', {
-        'changed_paths': ['*'],
-    })
-
-
-def get_meta_data(url):
-    global context
+def get_meta_data(request, url):
+    context = request.http_request.app['context']
     ignore_keys = ('content', 'content_body', 'template_context')
 
     meta_data = {
@@ -164,123 +109,173 @@ def get_meta_data(url):
         for k, v in (content['template_context'] or {}).items()
     ]
 
-    for name in dir(context.settings):
-        if name.startswith('_') or name in ('add', ):
+    for key, value in context.settings._attrs.items():
+        if key.startswith('_') or key in ('add', 'modules', ):
             continue
 
-        attr = getattr(context.settings, name)
+        value_type = type(value)
+
+        if value_type in (types.ModuleType, types.FunctionType,
+                          types.MethodType):
+
+            continue
 
         meta_data['settings'].append(
-            {'key': name, 'value': repr(attr), 'type': type(attr).__name__}
+            {'key': key, 'value': repr(value), 'type': value_type.__name__}
         )
 
     return meta_data
 
 
+def start_shell(request):
+    try:
+        import IPython
+
+        IPython.embed()
+
+        return
+
+    except ImportError:
+        pass
+
+    import code
+
+    code.interact(local=globals())
+
+
 rpc.add_methods(
-    ('', toggle_index),
-    ('', rebuild),
     ('', get_meta_data),
+    ('', start_shell),
+    ('', rpc_logging_handler.setup_log),
+    ('', rpc_logging_handler.clear_log),
 )
 
-
 # setup watcher
-watcher = RecursiveWatcher(settings.CONTENT_ROOT, loop=loop)
-loop.run_until_complete(watcher.setup())
+watcher = DiscoveryWatcher(context)
 
 
-async def watcher_task():
-    global build_env, context
+def rpc_notify_sync(topic, message, wait=False):
+    rpc.worker_pool.run_sync(
+        partial(rpc.notify, topic, message), wait=True,
+    )
 
-    while True:
-        try:
-            flags, path = await watcher.get_file()
 
-            if not path:  # KeyboardInterrupt
-                return
+def handle_watcher_events(app):
+    def _handle_watcher_events(events):
+        paths = []
+        non_content_event = False
+        changed_paths = []
 
-            path = os.path.relpath(path, settings.CONTENT_ROOT)
+        # notifications
+        for flags, path in events:
+            if Flags.TEMPLATE in flags or Flags.STATIC in flags:
+                non_content_event = True
 
-            logging.info('%s changed', path)
+            elif(os.path.splitext(path)[1].lower() in
+                 ('.jpg', '.jpeg', '.png', '.svg', )):
 
-            await rpc.notify(
+                non_content_event = True
+
+            elif Flags.CONTENT in flags:
+                paths.append(
+                    os.path.relpath(path,
+                                    app['context'].settings.CONTENT_ROOT)
+                )
+
+            action = 'modified'
+
+            if Flags.CREATE in flags:
+                action = 'created'
+
+            elif Flags.DELETE in flags:
+                action = 'deleted'
+
+            rpc_notify_sync(
                 'messages',
-                '<span class="important">{}</span> changed. Rebuilding...'.format(path),  # NOQA
+                '<span class="important">{}</span> {}'.format(path, action),
             )
 
-            context = build_env.build(path)
-
-            await rpc.notify(
-                'messages',
-                '<span class="important">{}</span> rebuild successful'.format(path),  # NOQA
-            )
+        # rebuild
+        if paths:
+            rpc_notify_sync('messages', 'rebuilding...')
+            app['build_environment'].build(paths)
+            rpc_notify_sync('messages', 'rebuilding successful')
 
             changed_paths = [
-                '/' + i for i in context.contents.filter(
-                    Q(path=path) | Q(i18n_path=path)
+                '/' + i for i in app['context'].contents.filter(
+                    Q(path__in=paths) | Q(i18n_path__in=paths)
                 ).values('output')
             ]
 
-            for path in changed_paths[::]:
-                if path.endswith('index.html'):
-                    changed_paths.append(os.path.dirname(changed_paths[0]))
-                    changed_paths.append(changed_paths[-1] + '/')
+            if changed_paths:
+                for path in changed_paths[::]:
+                    if path.endswith('index.html'):
+                        clear_path = os.path.dirname(path)
 
-            await rpc.notify('status', {
+                        changed_paths.append(clear_path)
+                        changed_paths.append(clear_path + '/')
+
+        # changed paths
+        if non_content_event:
+            changed_paths.append('*')
+
+        if changed_paths:
+            rpc_notify_sync('status', {
                 'changed_paths': changed_paths,
             })
 
-        except Exception as e:
-            logging.error(e, exc_info=True)
+    return _handle_watcher_events
 
 
-loop.create_task(watcher_task())
+def handle_watcher_notifications(app):
+    def _handle_watcher_notifications(flags, message):
+        rpc_notify_sync('messages', message)
+
+    return _handle_watcher_notifications
+
+
+async def watcher_shutdown(app):
+    watcher.shutdown()
+    await asyncio.sleep(watcher.interval)
+
+
+app.on_shutdown.append(watcher_shutdown)
+
+loop.run_in_executor(
+    worker_pool.executor,
+    watcher.watch,
+    handle_watcher_events(app),
+    handle_watcher_notifications(app),
+)
+
 
 # setup server
-app = Application(loop=loop)
-content_exporter = DirectoryExporter(settings.OUTPUT_ROOT)
+async def index(request):
+    return FileResponse(os.path.join(SERVER_STATIC_ROOT, 'index.html'))
 
-live_server_exporter = DirectoryExporter(SERVER_STATIC_ROOT,
-                                         prefix='/live-server')
+
+async def static(request):
+    path = os.path.join(SERVER_STATIC_ROOT,
+                        os.path.relpath(request.path, '/live-server/static/'))
+
+    if not os.path.exists(path):
+        return Response(text='404: not found', status=404)
+
+    return FileResponse(path)
+
 
 app.router.add_route('*', '/live-server/rpc/', rpc)
-app.router.add_route('*', '/live-server/{path_info:.*}', live_server_exporter)
-app.router.add_route('*', '/{path_info:.*}', content_exporter)
+app.router.add_route('*', '/live-server/static/{path_info:.*}', static)
+app.router.add_route('*', '/live-server/', index)
+app.router.add_route('*', '/{path_info:.*}', exporter)
 
 # run
-print('starting server on http://{}:{}/live-server/'.format(namespace.host,
-                                                            namespace.port))
+print('starting server on http://localhost:{}/live-server/'.format(
+    namespace.host, namespace.port))
 
-if namespace.shell:
-    print('starting shell')
+try:
+    run_app(app=app, host=namespace.host, port=namespace.port,
+            print=lambda *args, **kwargs: None)
 
-    def start_shell():
-        try:
-            import IPython
-
-            IPython.embed()
-
-            return
-
-        except ImportError:
-            pass
-
-        import code
-
-        code.interact(local=globals())
-
-    loop.run_until_complete(
-        loop.create_server(
-            app.make_handler(), namespace.host, namespace.port
-        )
-    )
-
-    loop.run_until_complete(worker_pool.run(start_shell))
-
-else:
-    try:
-        run_app(app=app, host=namespace.host, port=namespace.port,
-                print=lambda *args, **kwargs: None)
-
-    except OSError:
-        exit('ERROR: can not bind to port {}'.format(namespace.port))
+except OSError:
+    exit('ERROR: can not bind to port {}'.format(namespace.port))
