@@ -8,7 +8,6 @@ THEME_PATHS = [
 ]
 
 PLUGINS = [
-    'flamingo.plugins.Layers',
     'flamingo.plugins.SimpleMenu',
     'flamingo.plugins.Bootstrap4',
     'flamingo.plugins.jQuery3',
@@ -16,7 +15,7 @@ PLUGINS = [
     'plugins/example.py::ExamplePlugin',
 ]
 
-LAYERS = [
+POST_BUILD_LAYERS = [
     'overlay',
 ]
 
