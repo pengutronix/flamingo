@@ -74,5 +74,5 @@ class I18N:
             context.contents.add(**{
                 'output': 'index.html',
                 'url': '/',
-                'content': INDEX_PAGE.format(default_language),
+                'content_body': INDEX_PAGE.format(default_language),
             })
