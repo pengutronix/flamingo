@@ -142,6 +142,7 @@ var ractive = Ractive({
     target: '#ractive',
     template: '#main',
     data: {
+        connected: false,
         iframe_pathname: get_hash(),
         iframe_initial_pathname: get_hash(),
         iframe_set_offset: false,
@@ -231,6 +232,7 @@ ractive.on({
 
 rpc.on('open', function(rpc) {
     ractive.set({
+        connected: true,
         overlay_heading: 'Connected',
         overlay_content: '',
         overlay_tab: 'meta-data',
@@ -338,6 +340,7 @@ function reconnect() {
 
 rpc.on('close', function(rpc) {
     ractive.set({
+        connected: false,
         overlay_heading: 'Connection lost',
         overlay_tab: '',
         log: {

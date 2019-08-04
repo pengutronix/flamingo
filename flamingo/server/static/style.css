@@ -73,6 +73,7 @@ body {
 
 #overlay #controls {
     text-align: right;
+    height: 1.5em;
 }
 
 #overlay h1 {
