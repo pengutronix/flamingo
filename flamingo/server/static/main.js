@@ -250,7 +250,6 @@ rpc.on('open', function(rpc) {
             data.changed_paths.includes('*')) {
 
             iframe_reload();
-            ractive.set('log', []);
 
             if(ractive.get('overlay_reason') == 'log') {
                 ractive.set('overlay', -1);
@@ -340,8 +339,12 @@ function reconnect() {
 rpc.on('close', function(rpc) {
     ractive.set({
         overlay_heading: 'Connection lost',
-        log: [],
         overlay_tab: '',
+        log: {
+            logger: {},
+            records: [],
+            level: {},
+        },
     });
 
     if(ractive.get('overlay') < 0) {
