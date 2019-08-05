@@ -12,6 +12,7 @@ from aiohttp.web import Application, FileResponse, Response, run_app
 from aiohttp_json_rpc import JsonRpc
 
 from flamingo.core.utils.cli import gen_default_parser, parse_args
+from flamingo.core.utils.aiohttp import no_cache
 from flamingo.core.data_model import Q
 from flamingo import SERVER_STATIC_ROOT
 
@@ -250,10 +251,12 @@ loop.run_in_executor(
 
 
 # setup server
+@no_cache()
 async def index(request):
     return FileResponse(os.path.join(SERVER_STATIC_ROOT, 'index.html'))
 
 
+@no_cache()
 async def static(request):
     path = os.path.join(SERVER_STATIC_ROOT,
                         os.path.relpath(request.path, '/live-server/static/'))

@@ -3,6 +3,8 @@ import os
 
 from aiohttp.web import FileResponse, Response
 
+from flamingo.core.utils.aiohttp import no_cache
+
 
 class ContentExporter:
     def __init__(self, context):
@@ -102,6 +104,7 @@ class ContentExporter:
 
             return path
 
+    @no_cache()
     async def __call__(self, request):
         def gen_response(content):
             # 404
@@ -121,8 +124,6 @@ class ContentExporter:
 
         try:
             response = gen_response(self.resolve(request.path))
-
-            response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'  # NOQA
 
         except Exception as e:
             self.context.logger.error(e, exc_info=True)
