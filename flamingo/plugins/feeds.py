@@ -58,9 +58,9 @@ class Feeds:
                     fe.title(i['title'])
 
             if feed_config['type'] == 'atom':
-                content['content'] = fg.atom_str().decode()
+                content['content_body'] = fg.atom_str().decode()
 
             elif feed_config['type'] == 'rss':
-                content['content'] = fg.rss_str().decode()
+                content['content_body'] = fg.rss_str().decode()
 
             context.contents.add(**content)
