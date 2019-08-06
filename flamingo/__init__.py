@@ -2,7 +2,7 @@ import os
 
 from flamingo.core.plugins.hooks import hook  # NOQA
 
-VERSION = (0, 10)
+VERSION = (0, 10, 1)
 _dirname = os.path.dirname(__file__)
 VERSION_STRING = '.'.join([str(i) for i in VERSION])
 SERVER_STATIC_ROOT = os.path.join(_dirname, 'server/static')
