@@ -31,7 +31,7 @@ class BuildEnvironment:
         # fake initial build
         for content in self.context.contents:
             self.context.content = content
-            self.context.run_plugin_hook('content_parsed')
+            self.context.run_plugin_hook('content_parsed', content)
 
         self.context.run_plugin_hook('contents_parsed')
         self.context.run_plugin_hook('pre_build')

@@ -2,7 +2,7 @@ class ExamplePlugin:
     def parser_setup(self, context):
         pass
 
-    def content_parsed(self, context):
+    def content_parsed(self, context, content):
         pass
 
     def contents_parsed(self, context):
