@@ -34,11 +34,11 @@ class BuildEnvironment:
         # fake initial build
         for content in self.context.contents:
             self.context.content = content
-            self.context.run_plugin_hook('content_parsed', content)
+            self.context.plugins.run_plugin_hook('content_parsed', content)
 
-        self.context.run_plugin_hook('contents_parsed')
-        self.context.run_plugin_hook('pre_build')
-        self.context.run_plugin_hook('post_build')
+        self.context.plugins.run_plugin_hook('contents_parsed')
+        self.context.plugins.run_plugin_hook('pre_build')
+        self.context.plugins.run_plugin_hook('post_build')
 
     def build(self, paths):
         logger.debug('rebuilding %s', paths)
@@ -57,5 +57,5 @@ class BuildEnvironment:
         self.context.settings.CONTENT_PATHS = paths
 
         self.context.parse_all()
-        self.context.run_plugin_hook('pre_build')
-        self.context.run_plugin_hook('post_build')
+        self.context.plugins.run_plugin_hook('pre_build')
+        self.context.plugins.run_plugin_hook('post_build')

@@ -7,7 +7,7 @@ class TemplatingEngine:
 
         self.theme_paths = (
             context.settings.THEME_PATHS +
-            sum([getattr(i, 'THEME_PATHS', []) for i in context.plugins], []) +
+            self.context.plugins.THEME_PATHS +
             context.settings.CORE_THEME_PATHS
         )
 

@@ -4,7 +4,6 @@ import flamingo
 CORE_PLUGINS_PRE = [
     'flamingo.core.plugins.layers.PreBuildLayers',
     'flamingo.core.plugins.MetaDataProcessor',
-    'flamingo.core.plugins.Hooks',
 ]
 
 DEFAULT_PLUGINS = [

@@ -3,6 +3,7 @@ import shutil
 import os
 
 from flamingo.core.data_model import ContentSet, AND, NOT, OR, Q, F
+from flamingo.core.plugins.plugin_manager import PluginManager
 from flamingo.core.parser import FileParser, ParsingError
 from flamingo.core.utils.imports import acquire
 from flamingo.core.types import OverlayObject
@@ -25,66 +26,11 @@ class Context(OverlayObject):
         self.logger.debug('setting up context')
 
         # setup plugins
-        self.plugins = []
-        self.plugin_paths = []
-
-        plugins = (self.settings.CORE_PLUGINS_PRE +
-                   self.settings.DEFAULT_PLUGINS +
-                   self.settings.PLUGINS +
-                   self.settings.CORE_PLUGINS_POST)
-
-        for plugin in plugins:
-            self.logger.debug("setting up plugin '%s' ", plugin)
-
-            try:
-                plugin_class, plugin_path = acquire(plugin)
-
-                if plugin == 'flamingo.core.plugins.Hooks':
-                    self.plugins.append(plugin_class(self))
-
-                else:
-                    self.plugins.append(plugin_class())
-
-                self.plugin_paths.append(plugin_path)
-
-            except Exception as e:
-                self.logger.error('plugin setup failed', exc_info=True)
-                self.errors.append(e)
-
-        self.plugin_paths = list(set(self.plugin_paths))
-
-        # discover plugin hooks
-        self._plugin_hooks = {
-            'parser_setup': [],
-            'content_parsed': [],
-            'contents_parsed': [],
-            'templating_engine_setup': [],
-            'context_setup': [],
-            'pre_build': [],
-            'post_build': [],
-
-            # live-server hooks
-            'render_content': [],
-            'render_media_content': [],
-        }
-
-        hook_names = self._plugin_hooks.keys()
-
-        for plugin in self.plugins:
-            for hook_name in hook_names:
-                if hook_name not in dir(plugin):
-                    continue
-
-                hook = getattr(plugin, hook_name)
-
-                if hook:
-                    self._plugin_hooks[hook_name].append(
-                        (plugin.__class__.__name__, hook, )
-                    )
+        self.plugins = PluginManager(self)
 
         # setup parser
         self.parser = FileParser(context=self)
-        self.run_plugin_hook('parser_setup')
+        self.plugins.run_plugin_hook('parser_setup')
 
         # parse contents
         self.contents = contents or ContentSet()
@@ -94,8 +40,10 @@ class Context(OverlayObject):
         templating_engine_class, path = acquire(settings.TEMPLATING_ENGINE)
         self.templating_engine = templating_engine_class(self)
 
-        self.run_plugin_hook('templating_engine_setup', self.templating_engine)
-        self.run_plugin_hook('context_setup')
+        self.plugins.run_plugin_hook('templating_engine_setup',
+                                     self.templating_engine)
+
+        self.plugins.run_plugin_hook('context_setup')
 
     def parse(self, content):
         previous_content = self.content
@@ -107,7 +55,7 @@ class Context(OverlayObject):
         try:
             self.parser.parse(path, content)
 
-            self.run_plugin_hook('content_parsed', content)
+            self.plugins.run_plugin_hook('content_parsed', content)
 
         except ParsingError as e:
             content['_parsing_error'] = e
@@ -149,7 +97,7 @@ class Context(OverlayObject):
 
         self.content = None
 
-        self.run_plugin_hook('contents_parsed')
+        self.plugins.run_plugin_hook('contents_parsed')
 
     def get_source_paths(self):
         self.logger.debug('searching for content')
@@ -193,30 +141,6 @@ class Context(OverlayObject):
                         continue
 
                     yield os.path.join(root, name)
-
-    def run_plugin_hook(self, name, *args, **kwargs):
-        if name in self.settings.SKIP_HOOKS:
-            return
-
-        if name not in self._plugin_hooks:
-            return
-
-        if not self._plugin_hooks[name]:
-            return
-
-        self.logger.debug("running plugin hook '%s'", name)
-
-        for plugin_name, hook in self._plugin_hooks[name]:
-            self.logger.debug('running %s.%s', plugin_name, name)
-
-            try:
-                hook(self, *args, **kwargs)
-
-            except Exception as e:
-                self.logger.error('exception occoured while running %s.%s',
-                                  plugin_name, name, exc_info=True)
-
-                self.errors.append(e)
 
     def render(self, content, template_name=''):
         template_name = template_name or content['template']
@@ -296,7 +220,7 @@ class Context(OverlayObject):
             f.write(text)
 
     def build(self, clean=True):
-        self.run_plugin_hook('pre_build')
+        self.plugins.run_plugin_hook('pre_build')
 
         # remove previous artifacts
         if clean and os.path.exists(self.settings.OUTPUT_ROOT):
@@ -319,4 +243,4 @@ class Context(OverlayObject):
             self.mkdir_p(output_path)
             self.write(output_path, self.render(content))
 
-        self.run_plugin_hook('post_build')
+        self.plugins.run_plugin_hook('post_build')

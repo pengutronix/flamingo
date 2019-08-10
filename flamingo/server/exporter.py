@@ -97,7 +97,8 @@ class ContentExporter:
             media_contents = contents.last()['media']
             media_content = media_contents.filter(link=media_link).last()
 
-            self.context.run_plugin_hook('render_media_content', media_content)
+            self.context.plugins.run_plugin_hook('render_media_content',
+                                                 media_content)
 
             self.logger.debug("handled as media file: '%s'",
                               media_content['source'])
@@ -120,7 +121,7 @@ class ContentExporter:
                 content = contents.last()
 
         if content:
-            self.context.run_plugin_hook('render_content', content)
+            self.context.plugins.run_plugin_hook('render_content', content)
 
             self.logger.debug("handled as content: '%s'",
                               content['path'] or content)

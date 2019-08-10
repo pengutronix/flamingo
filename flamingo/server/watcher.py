@@ -122,7 +122,7 @@ class BaseWatcher:
             )
 
         # plugins
-        for path in self.context.plugin_paths:
+        for path in self.context.plugins.PLUGIN_PATHS:
             paths.append(
                 (Flags.CODE, path, False, )
             )
