@@ -46,6 +46,7 @@ parser.add_argument('-t', '--project-template',
                     default=data.get('config', 'default_template'))
 
 parser.add_argument('-l', '--list-templates', action='store_true')
+parser.add_argument('-f', '--force', action='store_true')
 
 
 args = parser.parse_args()
@@ -79,7 +80,7 @@ if args.list_templates:
 
     exit()
 
-# render template
+# parse variables
 variables = args.variables or '.'
 
 if not isinstance(variables, list):
@@ -91,6 +92,10 @@ if '=' not in variables[0]:
 
 else:
     output = '.'
+
+# check output dir
+if not args.force and os.path.exists(output) and os.listdir(output) != []:
+    exit('{} is not empty. use -f to enforce'.format(os.path.abspath(output)))
 
 template_context = {
     'flamingo': flamingo,
