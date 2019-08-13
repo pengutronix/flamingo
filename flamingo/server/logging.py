@@ -46,7 +46,7 @@ class RPCHandler(logging.Handler):
         buffer_size = len(self.buffer)
 
         if buffer_size > self.buffer_max_size:
-            self.buffer = self.buffer[buffer_size-self.buffer_max_size]
+            self.buffer = self.buffer[buffer_size-self.buffer_max_size:]
 
         if record_args['name'] not in self.logger:
             self.logger.append(record_args['name'])
