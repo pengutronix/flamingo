@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from functools import partial
+from pprint import pformat
 import traceback
 import asyncio
 import logging
@@ -102,15 +103,15 @@ def get_meta_data(request, url):
                 'settings': [],
             }
 
-    meta_data['meta_data'] = [
-        {'key': k, 'value': repr(v), 'type': type(v).__name__}
+    meta_data['meta_data'] = sorted([
+        {'key': k, 'value': pformat(v), 'type': type(v).__name__}
         for k, v in content.data.items() if k not in ignore_keys
-    ]
+    ], key=lambda v: v['key'])
 
-    meta_data['template_context'] = [
-        {'key': k, 'value': repr(v), 'type': type(v).__name__}
+    meta_data['template_context'] = sorted([
+        {'key': k, 'value': pformat(v), 'type': type(v).__name__}
         for k, v in (content['template_context'] or {}).items()
-    ]
+    ], key=lambda v: v['key'])
 
     for key, value in context.settings._attrs.items():
         if key.startswith('_') or key in ('add', 'modules', ):
@@ -124,8 +125,11 @@ def get_meta_data(request, url):
             continue
 
         meta_data['settings'].append(
-            {'key': key, 'value': repr(value), 'type': value_type.__name__}
+            {'key': key, 'value': pformat(value), 'type': value_type.__name__}
         )
+
+    meta_data['settings'] = sorted(meta_data['settings'],
+                                   key=lambda v: v['key'])
 
     return meta_data
 
