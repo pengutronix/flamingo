@@ -1,14 +1,41 @@
+from collections import deque
 import logging
 import os
 
 from aiohttp.web import FileResponse, Response
 
 from flamingo.core.utils.aiohttp import no_cache
+from flamingo.core.data_model import Content
+
+
+class History(deque):
+    def first(self):
+        if len(self) < 1:
+            return None
+
+        return self[0]
+
+    def last(self):
+        if len(self) < 1:
+            return None
+
+        return self[-1]
+
+    def last_content(self):
+        if len(self) < 1:
+            return None
+
+        for index in range(1, len(self)+1):
+            item = self[index*-1]
+
+            if isinstance(item, Content):
+                return item
 
 
 class ContentExporter:
-    def __init__(self, context):
+    def __init__(self, context, history):
         self.context = context
+        self.history = history
 
         self.static_dirs = [
             os.path.dirname(i)
@@ -16,6 +43,10 @@ class ContentExporter:
         ]
 
         self.logger = logging.getLogger('flamingo.server.exporter')
+
+    def clear(self):
+        self.logger.debug('clearing history...')
+        self.history.clear()
 
     def resolve(self, request_path):
         # post build layers
@@ -129,7 +160,9 @@ class ContentExporter:
             return Response(text=output, content_type='text/html')
 
         try:
-            response = gen_response(self.resolve(request.path))
+            content = self.resolve(request.path)
+            self.history.append(content)
+            response = gen_response(content)
 
         except Exception as e:
             self.context.logger.error(e, exc_info=True)
