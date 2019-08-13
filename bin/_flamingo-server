@@ -14,12 +14,12 @@ from aiohttp_json_rpc import JsonRpc
 from flamingo.core.utils.cli import gen_default_parser, parse_args
 from flamingo.core.utils.aiohttp import no_cache
 from flamingo.core.data_model import Q
-from flamingo import SERVER_STATIC_ROOT
 
 from flamingo.server.build_environment import BuildEnvironment
 from flamingo.server.watcher import Flags, DiscoveryWatcher
 from flamingo.server.exporter import ContentExporter
 from flamingo.server.logging import RPCHandler
+from flamingo.server import SERVER_STATIC_ROOT
 
 
 def default_exeption_handler(loop, context):

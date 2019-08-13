@@ -2,10 +2,10 @@ import os
 
 from flamingo.core.plugins.hooks import hook  # NOQA
 
-VERSION = (0, 10, 2)
 _dirname = os.path.dirname(__file__)
+
+VERSION = (0, 10, 2)
 VERSION_STRING = '.'.join([str(i) for i in VERSION])
-SERVER_STATIC_ROOT = os.path.join(_dirname, 'server/static')
 THEME_ROOT = os.path.join(_dirname, 'theme')
 PROJECT_TEMPLATES_ROOT = os.path.join(_dirname, 'project_templates')
 
