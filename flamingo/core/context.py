@@ -214,8 +214,9 @@ class Context(OverlayObject):
             try:
                 hook(self, *args, **kwargs)
 
-            except Exception as e:
-                self.logger.error(e, exc_info=True)
+            except Exception:
+                self.logger.error('exception occoured while running %s.%s',
+                                  plugin_name, name, exc_info=True)
 
     def render(self, content, template_name=''):
         template_name = template_name or content['template']
