@@ -128,4 +128,6 @@ class ContentExporter:
         except Exception as e:
             self.context.logger.error(e, exc_info=True)
 
+            response = Response(text='500: rendering error', status=500)
+
         return response
