@@ -47,8 +47,9 @@ class Context(OverlayObject):
 
                 self.plugin_paths.append(plugin_path)
 
-            except Exception:
+            except Exception as e:
                 self.logger.error('plugin setup failed', exc_info=True)
+                self.errors.append(e)
 
         self.plugin_paths = list(set(self.plugin_paths))
 
@@ -214,9 +215,11 @@ class Context(OverlayObject):
             try:
                 hook(self, *args, **kwargs)
 
-            except Exception:
+            except Exception as e:
                 self.logger.error('exception occoured while running %s.%s',
                                   plugin_name, name, exc_info=True)
+
+                self.errors.append(e)
 
     def render(self, content, template_name=''):
         template_name = template_name or content['template']
