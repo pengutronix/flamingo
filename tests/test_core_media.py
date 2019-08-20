@@ -6,17 +6,17 @@ def test_add_media(flamingo_dummy_context, flamingo_env):
     content = Content(path='foo/bar/index.rst')
     media_content = add_media(flamingo_dummy_context, content, 'image.jpg')
 
-    assert media_content['source'] == 'content/foo/bar/image.jpg'
-    assert media_content['destination'] == 'output/media/foo/bar/image.jpg'
-    assert media_content['link'] == '/media/foo/bar/image.jpg'
+    assert media_content['path'] == 'foo/bar/image.jpg'
+    assert media_content['output'] == 'media/foo/bar/image.jpg'
+    assert media_content['url'] == '/media/foo/bar/image.jpg'
 
     # absolute path
     content = Content(path='foo/bar/index.rst')
     media_content = add_media(flamingo_dummy_context, content, '/image.jpg')
 
-    assert media_content['source'] == 'content/image.jpg'
-    assert media_content['destination'] == 'output/media/image.jpg'
-    assert media_content['link'] == '/media/image.jpg'
+    assert media_content['path'] == 'image.jpg'
+    assert media_content['output'] == 'media/image.jpg'
+    assert media_content['url'] == '/media/image.jpg'
 
     # real build tests
     flamingo_env.settings.PLUGINS.append('flamingo.core.plugins.Media')

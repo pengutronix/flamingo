@@ -4,45 +4,34 @@ from flamingo.core.data_model import ContentSet, Content
 
 
 def add_media(context, content, name):
-    # gen source
+    # path
     if name.startswith('/'):
-        source = os.path.join(context.settings.CONTENT_ROOT, name[1:])
+        path = name[1:]
 
     else:
-        source = os.path.join(
-            os.path.dirname(
-                os.path.join(context.settings.CONTENT_ROOT, content['path'])
-            ),
-            name,
-        )
+        path = os.path.join(os.path.dirname(content['path']), name)
 
-    source = os.path.normpath(source)
+    path = os.path.normpath(path)
 
-    # gen destination
+    # output
     if name.startswith('/'):
-        destination = os.path.join(
-            context.settings.MEDIA_ROOT,
-            name[1:],
-        )
+        output = os.path.join(context.settings.MEDIA_ROOT, name[1:])
 
     else:
-        destination = os.path.join(
+        output = os.path.join(
             context.settings.MEDIA_ROOT,
             os.path.dirname(content['path']),
             os.path.basename(name),
         )
 
-    # gen link
-    link = os.path.join(
-        '/media',
-        os.path.relpath(destination, context.settings.MEDIA_ROOT),
-    )
+    # url
+    url = '/' + output
 
     # content['media']
     if not content['media']:
         content['media'] = ContentSet()
 
-    media_content = Content(source=source, destination=destination, link=link)
+    media_content = Content(path=path, output=output, url=url)
 
     content['media'].add(media_content)
 
@@ -54,7 +43,7 @@ def add_media(context, content, name):
 
 class Media:
     def post_build(self, context):
-        if context.settings.CONTENT_PATHS:
+        if context.settings.SKIP_FILE_OPERATIONS:
             return
 
         for content in context.contents:
@@ -62,5 +51,13 @@ class Media:
                 continue
 
             for media in content['media']:
-                context.cp(source=media['source'],
-                           destination=media['destination'])
+                context.cp(
+                    source=os.path.join(
+                        context.settings.CONTENT_ROOT,
+                        media['path'],
+                    ),
+                    destination=os.path.join(
+                        context.settings.OUTPUT_ROOT,
+                        media['output'],
+                    ),
+                )

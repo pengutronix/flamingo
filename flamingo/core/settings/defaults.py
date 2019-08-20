@@ -59,7 +59,7 @@ CONTENT_PATHS = []
 
 # output
 OUTPUT_ROOT = 'output'
-MEDIA_ROOT = 'output/media'
+MEDIA_ROOT = 'media'
 STATIC_ROOT = 'output/static'
 
 # layers

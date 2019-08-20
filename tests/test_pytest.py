@@ -8,7 +8,6 @@ def test_already_existing_directories(flamingo_env):
 
     os.mkdir(flamingo_env.settings.CONTENT_ROOT)
     os.mkdir(flamingo_env.settings.OUTPUT_ROOT)
-    os.mkdir(flamingo_env.settings.MEDIA_ROOT)
     os.mkdir(flamingo_env.settings.STATIC_ROOT)
 
     flamingo_env.build()

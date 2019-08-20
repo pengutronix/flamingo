@@ -141,12 +141,23 @@ class Content:
         self.data = data
 
     def __repr__(self):
+        repr_string = []
+
+        for k, v in self.data.items():
+            if k in ('content_body', ):
+                continue
+
+            if isinstance(v, Content):
+                repr_string.append('{}=Content(...)'.format(k))
+
+            elif isinstance(v, ContentSet):
+                repr_string.append('{}=ContentSet(...)'.format(k))
+
+            else:
+                repr_string.append('{}={}'.format(k, repr(v)))
+
         return '<Content({})>'.format(
-            shorten(', '.join(
-                ['{}={}'.format(k, repr(v)) for k, v in self.data.items()
-                 if k != 'content_body']
-            ), width=CONTENT_REPR_MAX_LEN)
-        )
+            shorten(', '.join(repr_string), width=CONTENT_REPR_MAX_LEN))
 
     def __getitem__(self, key):
         if key in self.data:

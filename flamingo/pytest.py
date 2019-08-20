@@ -41,9 +41,6 @@ def flamingo_env():
             self.settings.OUTPUT_ROOT = os.path.join(
                 path, self.settings.OUTPUT_ROOT)
 
-            self.settings.MEDIA_ROOT = os.path.join(
-                path, self.settings.MEDIA_ROOT)
-
             self.settings.STATIC_ROOT = os.path.join(
                 path, self.settings.STATIC_ROOT)
 

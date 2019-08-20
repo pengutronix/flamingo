@@ -88,22 +88,23 @@ class ContentExporter:
             return path
 
         # media files
-        media_link = '/' + request_path
+        media_url = '/' + request_path
 
         contents = self.context.contents.filter(
-            media__passes=lambda m: m and m.filter(link=media_link).exists())
+            media__passes=lambda m: m and m.filter(url=media_url).exists())
 
         if contents.exists():
             media_contents = contents.last()['media']
-            media_content = media_contents.filter(link=media_link).last()
+            media_content = media_contents.filter(url=media_url).last()
 
             self.context.plugins.run_plugin_hook('render_media_content',
                                                  media_content)
 
             self.logger.debug("handled as media file: '%s'",
-                              media_content['source'])
+                              media_content['path'])
 
-            return media_content['source']
+            return os.path.join(self.context.settings.CONTENT_ROOT,
+                                media_content['path'])
 
         # content
         contents = self.context.contents.filter(output=request_path)
