@@ -1,0 +1,55 @@
+{% if content.align %}
+  {% set align=content.align.lower() %}
+{% endif %}
+{%- if content.caption -%}
+  <div class="image"
+   style="
+    {% if align == 'left' %}
+      float: left;
+      margin-right: 1em;
+      clear: both;
+    {% elif align == 'right' %}
+      float: right;
+      margin-left: 1em;
+      clear: both;
+    {% elif align == 'center' %}
+      width: 100%;
+      text-align: center;
+    {% endif %}
+   ">
+{%- endif -%}
+{%- if content.link -%}
+  <a href="{{ content.link }}">
+{%- endif -%}
+<img src="{{ content.url }}"
+  {% if content.alt %}
+     alt="{{ content.alt }}"
+  {% endif %}
+  {% if content.title %}
+     title="{{ content.title }}"
+  {% endif %}
+  style="
+    {% if content.width %}
+      width: {{ content.width }};
+    {% endif %}
+    {% if content.height %}
+      height: {{ content.height }};
+    {% endif %}
+  ">
+{% if content.link %}
+  </a>
+{% endif %}
+{%- if content.caption -%}
+  <div class="caption"
+    style="
+      {% if align == 'center' %}
+        width: 100%;
+      {% elif content.width %}
+        width: {{ content.width }};
+      {% endif %}
+      ">{{ content.caption }}</div>
+  </div>
+{%- endif -%}
+{%- if content.clear -%}
+  <div style="clear: both"></div>
+{%- endif -%}
