@@ -5,6 +5,7 @@ from flamingo.core.utils.imports import acquire
 logger = logging.getLogger('flamingo.core.PluginManager')
 
 HOOK_NAMES = [
+    'settings_setup',
     'parser_setup',
     'content_parsed',
     'contents_parsed',

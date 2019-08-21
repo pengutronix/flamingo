@@ -27,6 +27,7 @@ class Context(OverlayObject):
 
         # setup plugins
         self.plugins = PluginManager(self)
+        self.plugins.run_plugin_hook('settings_setup')
 
         # setup parser
         self.parser = FileParser(context=self)
