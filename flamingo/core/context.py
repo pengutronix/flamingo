@@ -34,10 +34,6 @@ class Context(OverlayObject):
         self.parser = FileParser(context=self)
         self.plugins.run_plugin_hook('parser_setup')
 
-        # parse contents
-        self.contents = contents or ContentSet()
-        self.parse_all()
-
         # setup templating engine
         templating_engine_class, path = acquire(settings.TEMPLATING_ENGINE)
         self.templating_engine = templating_engine_class(self)
@@ -45,6 +41,11 @@ class Context(OverlayObject):
         self.plugins.run_plugin_hook('templating_engine_setup',
                                      self.templating_engine)
 
+        # parse contents
+        self.contents = contents or ContentSet()
+        self.parse_all()
+
+        # context ready
         self.plugins.run_plugin_hook('context_setup')
 
     def parse(self, content):
