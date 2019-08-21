@@ -13,6 +13,9 @@ HOOK_NAMES = [
     'pre_build',
     'post_build',
 
+    # media
+    'media_added',
+
     # live-server hooks
     'render_content',
     'render_media_content',

@@ -46,6 +46,9 @@ def add_media(context, content, name):
 
     content['media'].add(media_content)
 
+    # run plugin hooks on new added media
+    context.plugins.run_plugin_hook('media_added', content, media_content)
+
     return media_content
 
 
