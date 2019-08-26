@@ -1,9 +1,12 @@
+import logging
 import os
 
 from flamingo.core.data_model import ContentSet, Content
 
+logger = logging.getLogger('flamingo.core.media')
 
-def add_media(context, content, name):
+
+def add_media(context, content, name, **extra_meta_data):
     # path
     if name.startswith('/'):
         path = name[1:]
@@ -31,12 +34,17 @@ def add_media(context, content, name):
     if not content['media']:
         content['media'] = ContentSet()
 
-    media_content = Content(path=path, output=output, url=url)
+    media_content = Content(path=path, output=output, url=url,
+                            **extra_meta_data)
 
     content['media'].add(media_content)
 
     # run plugin hooks on new added media
     context.plugins.run_plugin_hook('media_added', content, media_content)
+
+    logger.debug('%s added to %s',
+                 media_content['path'] or media_content,
+                 content['path'] or content)
 
     return media_content
 
