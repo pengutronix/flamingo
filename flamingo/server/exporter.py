@@ -106,15 +106,21 @@ class ContentExporter:
 
     @no_cache()
     async def __call__(self, request):
+        def _404():
+            self.logger.debug('404: not found')
+
+            return Response(text='404: not found', status=404)
+
         def gen_response(content):
             # 404
             if not content:
-                self.logger.debug('404: not found')
-
-                return Response(text='404: not found', status=404)
+                return _404()
 
             # file response
             if isinstance(content, str):
+                if not os.path.exists(content):
+                    return _404()
+
                 return FileResponse(content)
 
             # content response
