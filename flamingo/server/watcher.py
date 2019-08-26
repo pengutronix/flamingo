@@ -91,6 +91,13 @@ class BaseWatcher:
 
         return True
 
+    def ignored(self, path):
+        for prefix in self.context.settings.LIVE_SERVER_IGNORE_PREFIX:
+            if path.startswith(prefix):
+                return True
+
+        return False
+
     def get_paths(self):
         # content
         paths = [
@@ -175,11 +182,19 @@ class DiscoveryWatcher(BaseWatcher):
                                 continue
 
                             abs_path = os.path.join(dirpath, name)
+
+                            if self.ignored(abs_path):
+                                continue
+
                             mtime = os.path.getmtime(abs_path)
                             new_state[abs_path] = (flag, mtime, )
 
                 else:
                     abs_path = os.path.join(path)
+
+                    if self.ignored(path):
+                        continue
+
                     new_state[abs_path] = (flag, os.path.getmtime(abs_path), )
 
             # first run
