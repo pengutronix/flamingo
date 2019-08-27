@@ -30,6 +30,9 @@ EXTRAS_REQUIRE = {
     'feeds': [
         'feedgen==0.7.0',
     ],
+    'thumbnails': [
+        'pillow',
+    ],
     'coloredlogs': [
         'coloredlogs',
     ],

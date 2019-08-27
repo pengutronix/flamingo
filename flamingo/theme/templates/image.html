@@ -20,6 +20,8 @@
 {%- endif -%}
 {%- if content.link -%}
   <a href="{{ content.link }}">
+{%- elif content.is_thumbnail -%}
+  <a href="{{ content.original.url }}">
 {%- endif -%}
 <img src="{{ content.url }}"
   {% if content.alt %}
@@ -29,14 +31,16 @@
      title="{{ content.title }}"
   {% endif %}
   style="
-    {% if content.width %}
-      width: {{ content.width }};
-    {% endif %}
-    {% if content.height %}
-      height: {{ content.height }};
+    {% if not content.is_thumbnail %}
+      {% if content.width %}
+        width: {{ content.width }};
+      {% endif %}
+      {% if content.height %}
+        height: {{ content.height }};
+      {% endif %}
     {% endif %}
   ">
-{% if content.link %}
+{% if content.link or content.is_thumbnail %}
   </a>
 {% endif %}
 {%- if content.caption -%}
