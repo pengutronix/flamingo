@@ -7,24 +7,26 @@ from flamingo.plugins.rst.base import parse_rst
 
 
 TEMPLATE = Template("""
-<table class="table table-striped table-bordered flamingo">
-    <thead>
-        <tr>
-            {% for col in rows[0] %}
-                <th>{{ col }}</th>
-            {% endfor %}
-        </tr>
-    </thead>
-    <tbody>
-        {% for row in rows[1:] %}
+<div class="wy-table-responsive">
+    <table class="docutils">
+        <thead>
             <tr>
-                {% for col in row %}
-                    <td>{{ col }}</td>
+                {% for col in rows[0] %}
+                    <th>{{ col }}</th>
                 {% endfor %}
             </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            {% for row in rows[1:] %}
+                <tr>
+                    {% for col in row %}
+                        <td>{{ col }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+<div>
 """)
 
 

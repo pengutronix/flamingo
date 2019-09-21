@@ -4,8 +4,7 @@ from bs4 import BeautifulSoup
 
 import flamingo
 
-PROJECT_NAME = 'flamingo-web.org'
-
+PROJECT_NAME = 'flamingo'
 CONTENT_ROOT = 'content'
 OUTPUT_ROOT = 'output'
 PRE_RENDER_CONTENT = False
@@ -17,8 +16,8 @@ THEME_PATHS = [
 PLUGINS = [
     'flamingo.plugins.rstPygments',
     'flamingo.plugins.SimpleMenu',
-    'flamingo.plugins.Bootstrap4',
-    'flamingo.plugins.jQuery3',
+    'flamingo.plugins.ReadTheDocs',
+    'flamingo.plugins.Git',
 
     'plugins/data.py::rstData',
     'plugins/table.py::rstTable',

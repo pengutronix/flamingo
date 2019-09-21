@@ -1,101 +1,10 @@
-html {
-    min-height: 100%;
-}
-
-body {
-    height: 100%
-}
-
-main {
-    max-width: 60em;
-    margin: 0 auto;
-    padding-top: 1em;
-    min-height: 75%;
-}
-
-footer {
-    max-width: 60em;
-    margin: 0 auto;
-}
-
-footer #flamingo {
-    font-size: 60%;
-}
-
-main h1,
-main h2,
-main h3,
-main h4,
-main h5 {
-    margin-top: 0.5em;
-}
-
-@media screen and (max-width: 60em) {
-    main {
-        padding-top: 0;
-    }
-
-    main #content {
-        padding: 0 15px;
-    }
-
-    footer {
-        margin-left: 15px;
-        margin-right: 15px;
-    }
-}
-
-.highlight {
-    background-color: #eee;
-    padding: 0.2em 0.5em;
-    margin-bottom: 1em;
-}
-
-.highlight pre {
-    line-height: 1.2;
-    margin-bottom: 0;
-}
-
-tt.docutils.literal {
-    background-color: #eee;
+.data .highlight {
+    border-top: 2px solid #2881b9 !important;
     font-weight: bold;
-}
-
-/* table */
-table.flamingo th,
-table.flamingo td {
-    padding: 0.2em 0.5em;
-}
-
-table.flamingo p {
-    margin: 0 !important;
-    padding: 0 !important;
-}
-
-table.flamingo tt {
-    background-color: transparent !important;
-}
-
-/* data */
-.data {
-    margin-bottom: 2em;
-}
-
-.data > .highlight {
-    background-color: transparent;
-    padding: 0;
-}
-
-.data > .highlight pre {
     display: inline-block;
-    background-color: #eee;
-    padding: 0.2em 0.5em;
-    margin-bottom: 0;
-    font-weight: bold;
-    border-left: 3px solid grey;
-    margin-left: 3px;
+    margin-bottom: 0.2em !important;
 }
 
-.data > .description {
-    padding-left: 2em;
+.data .description {
+    margin-left: 2em;
 }

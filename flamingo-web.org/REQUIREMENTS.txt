@@ -1,2 +1,2 @@
-../[full]
+-e../[full]
 beautifulsoup4
