@@ -269,4 +269,5 @@ tags
 
 # End of https://www.gitignore.io/api/python,vim,emacs,eclipse
 
+/.idea
 /test-site
