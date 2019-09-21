@@ -1,0 +1,16 @@
+<script type="text/javascript" src="/static/mark.min.js"></script>
+<script type="text/javascript" src="/static/helper.js"></script>
+<script>
+  (function() {
+    var mark_name = get_get_variable('mark');
+
+    if(!mark_name) {
+      return;
+    }
+
+    var context = document.querySelector('[role=main]');
+    var mark = new Mark(context);
+
+    mark.mark(mark_name);
+  })();
+</script>

@@ -1,0 +1,54 @@
+{% extends "DEFAULT_TEMPLATE" %}
+
+{% block content %}
+  <div id="ractive"></div>
+  {% raw %}
+    <script id="main" type="text/html">
+      <h1>Search{{#if query }} "{{query}}"{{/if}}</h1>
+      {{#results}}
+        <h2>{{.doc.title}}</h2>
+        <a href="{{.ref}}?mark={{query}}">{{.ref}}</a>
+        <hr/>
+      {{/results}}
+    </script>
+  {% endraw %}
+{% endblock %}
+
+{% block script %}
+  <script type="text/javascript" src="/static/ractive.min.js"></script>
+  <script type="text/javascript" src="/static/elasticlunr.min.js"></script>
+  <script type="text/javascript" src="/static/helper.js"></script>
+  <script>
+    var ractive = Ractive({
+      target: '#ractive',
+      template: '#main',
+      data: {
+        query: '',
+        results: [],
+      },
+    });
+
+    var index = elasticlunr(function () {
+      this.setRef('id');
+      this.addField('title');
+      this.addField('body');
+    });
+
+    {% for content in context.contents %}
+      index.addDoc({
+        id: '{{ content.output }}',
+        title: {{ json.dumps(content.content_title) }},
+        body: {{ json.dumps(content.content_body) }},
+      });
+    {% endfor %}
+
+    var query = get_get_variable('q');
+
+    if(query) {
+      ractive.set({
+        query: query,
+        results: index.search(query),
+      });
+    }
+  </script>
+{% endblock %}
