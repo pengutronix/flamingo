@@ -47,13 +47,28 @@ def link(context, path, name='', lang=''):
     return '<a href="{}">{}</a>'.format(content['url'], name)
 
 
-class Jinja2(TemplatingEngine):
-    def __init__(self, theme_paths):
-        super().__init__(theme_paths)
+class FlamingoEnvironment(Environment):
+    def __init__(self, flamingo_context, *args, **kwargs):
+        self.flamingo_context = flamingo_context
 
-        self.env = Environment(
+        super().__init__(*args, **kwargs)
+
+    def get_template(self, *args, **kwargs):
+        if args[0] == 'DEFAULT_TEMPLATE':
+            return self.from_string('{{% extends "{}" %}}'.format(
+                self.flamingo_context.settings.DEFAULT_TEMPLATE))
+
+        return super().get_template(*args, **kwargs)
+
+
+class Jinja2(TemplatingEngine):
+    def __init__(self, context):
+        super().__init__(context)
+
+        self.env = FlamingoEnvironment(
+            context,
             loader=FileSystemLoader(
-                [os.path.join(i, 'templates') for i in theme_paths]),
+                [os.path.join(i, 'templates') for i in self.theme_paths]),
             finalize=silent_none,
         )
 
