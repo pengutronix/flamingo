@@ -92,12 +92,7 @@ class Context(OverlayObject):
 
         # setup templating engine
         templating_engine_class, path = acquire(settings.TEMPLATING_ENGINE)
-
-        self.templating_engine = templating_engine_class(
-            settings.THEME_PATHS +
-            sum([getattr(i, 'THEME_PATHS', []) for i in self.plugins], []) +
-            settings.CORE_THEME_PATHS
-        )
+        self.templating_engine = templating_engine_class(self)
 
         self.run_plugin_hook('templating_engine_setup', self.templating_engine)
         self.run_plugin_hook('context_setup')

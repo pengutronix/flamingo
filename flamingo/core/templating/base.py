@@ -2,8 +2,14 @@ import os
 
 
 class TemplatingEngine:
-    def __init__(self, theme_paths):
-        self.theme_paths = theme_paths
+    def __init__(self, context):
+        self.context = context
+
+        self.theme_paths = (
+            context.settings.THEME_PATHS +
+            sum([getattr(i, 'THEME_PATHS', []) for i in context.plugins], []) +
+            context.settings.CORE_THEME_PATHS
+        )
 
     def find_static_dirs(self):
         static_dirs = []
