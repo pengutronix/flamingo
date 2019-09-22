@@ -1,8 +1,10 @@
 <html>
   <head>
     <title>{% if content.title %}{{ content.title }}{% else %}{{ content.content_title }}{% endif %}</title>
+    {% block style %}{% endblock %}
   </head>
   <body>
     {% block content %}{% endblock %}
+    {% block script %}{% endblock %}
   </body>
 </html>
