@@ -59,4 +59,3 @@ class BuildEnvironment:
         self.context.parse_all()
         self.context.run_plugin_hook('pre_build')
         self.context.run_plugin_hook('post_build')
-        self.context.settings.overlay_reset()
