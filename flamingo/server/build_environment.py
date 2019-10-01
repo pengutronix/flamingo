@@ -1,6 +1,9 @@
 from copy import deepcopy
+import logging
 
 from flamingo.core.context import Context
+
+logger = logging.getLogger('flamingo.server.BuildEnvironment')
 
 
 class BuildEnvironment:
@@ -38,9 +41,15 @@ class BuildEnvironment:
         self.context.run_plugin_hook('post_build')
 
     def build(self, paths):
+        logger.debug('rebuilding %s', paths)
+
         # reset
+        logger.debug('resetting context overlay')
         self.context.overlay_reset()
+
+        logger.debug('resetting settings overlay')
         self.context.settings.overlay_reset()
+
         self.raw_contents = self.raw_contents.exclude(path__in=paths)
         self.context.contents = deepcopy(self.raw_contents)
 
