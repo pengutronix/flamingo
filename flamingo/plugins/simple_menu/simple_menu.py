@@ -35,11 +35,18 @@ class SimpleMenu:
                     resolve_links(url)
 
                 else:
+                    logger.debug('resolving %s', item[1])
+
                     try:
                         if isinstance(item[1], Content):
+                            logger.debug('resolving skipped')
+
                             return
 
-                        item[1] = context.contents.get(path=item[1])
+                        path = item[1]
+                        item[1] = context.contents.get(path=path)
+
+                        logger.debug('%s -> %s', path, item[1])
 
                     except (MultipleObjectsReturned, ObjectDoesNotExist):
                         logger.error(
