@@ -219,6 +219,9 @@ class Context(OverlayObject):
     def render(self, content, template_name=''):
         template_name = template_name or content['template']
 
+        self.logger.debug('rendering %s using %s', content['path'] or content,
+                          template_name)
+
         if not template_name:
             content['template_context'] = {}
 
@@ -236,8 +239,15 @@ class Context(OverlayObject):
         }
 
         if self.settings.PRE_RENDER_CONTENT:
-            content['content_body'] = self.templating_engine.render_string(
-                content['content_body'], template_context)
+            self.logger.debug('pre rendering %s', content['path'] or content)
+
+            exitcode = self.templating_engine.pre_render_content(
+                content, template_context)
+
+            if not exitcode:
+                content['template_context'] = template_context
+
+                return content['content_body']
 
         output = self.templating_engine.render(template_name, template_context)
         content['template_context'] = template_context
