@@ -23,7 +23,7 @@ html: env
 
 server: env
 	. $(PYTHON_VENV)/bin/activate && \
-	flamingo server $(FLAMINGO_ARGS) $(FLAMINGO_SERVER_ARGS) -s $(FLAMINGO_SETTINGS)
+	flamingo server2 $(FLAMINGO_ARGS) $(FLAMINGO_SERVER_ARGS) -s $(FLAMINGO_SETTINGS)
 
 shell: env
 	. $(PYTHON_VENV)/bin/activate && \
