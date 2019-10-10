@@ -1,0 +1,66 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+import logging
+
+from flamingo.server2.logging import RPCHandler
+
+rpc_logging_handler = RPCHandler(level=logging.DEBUG)
+
+logging.basicConfig(level=logging.DEBUG)
+logging.root.handlers = [rpc_logging_handler]
+
+# setup server
+import asyncio  # NOQA
+
+from aiohttp.web import Application, run_app  # NOQA
+
+from flamingo.core.utils.cli import gen_default_parser, parse_args  # NOQA
+from flamingo.server2.server import Server  # NOQA
+
+# parse command line
+parser = gen_default_parser(prog='flamingo-server2')
+
+parser.add_argument('--port', type=int, default=8080)
+parser.add_argument('--host', type=str, default='localhost')
+
+namespace, settings = parse_args(parser, setup_logging=False)
+
+log_level = {
+    'DEBUG': logging.DEBUG,
+    'INFO': logging.INFO,
+    'WARN': logging.WARN,
+    'ERROR': logging.ERROR,
+    'FATAL': logging.FATAL,
+}[namespace.log_level]
+
+rpc_logging_handler.set_internal_level(log_level)
+
+# setup aiohttp app
+loop = asyncio.get_event_loop()
+app = Application(loop=loop)
+
+# setup flamingo server
+try:
+    server = Server(app=app, loop=loop, settings=namespace.settings,
+                    rpc_logging_handler=rpc_logging_handler)
+
+except KeyboardInterrupt:
+    exit()
+
+# run
+print('starting server on http://localhost:{}/'.format(namespace.port))
+
+try:
+    # this is a hack that is necessary because of the current design of the
+    # rpc worker_pool
+    loop.close = lambda *args, **kwargs: None
+
+    run_app(app=app, host=namespace.host, port=namespace.port,
+            print=lambda *args, **kwargs: None)
+
+except OSError:
+    exit('ERROR: can not bind to port {}'.format(namespace.port))
+
+print('\rshutting down server')
+server.shutdown()

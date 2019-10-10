@@ -67,6 +67,7 @@ setup(
         'bin/_flamingo-build',
         'bin/_flamingo-server',
         'bin/_flamingo-shell',
+        'bin/_flamingo-server2',
     ],
     entry_points={
         'pytest11': [

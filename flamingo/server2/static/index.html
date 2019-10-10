@@ -1,0 +1,117 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" type="text/css" href="/_flamingo/static/style.css">
+    <link rel="shortcut icon" href="" />
+  </head>
+  <body>
+    <div id="ractive"></div>
+    <script id="main" type="text/html">
+      <div id="main-grid">
+        <div id="top">
+          <span id="logo" on-click="toggle_overlay">Flamingo</span>
+        </div>
+        <div id="overlay"{{#if connected && !settings.overlay.open}} style="display: none;"{{/if}}>
+          <div id="status">{{#if connected }}Connected{{else}}Reconnecting{{#dots}}{{.}}{{/}}{{/if}}</div>
+          <div id="controls"{{#if !connected}} style="display: none;"{{/if}}>
+            <button on-click="@.fire('start_shell')">Start Shell</button>
+          </div>
+          <div class="tabs"{{#if !connected}} style="display: none;"{{/if}}>
+            <div class="left">
+              <div class="spacer"></div>
+              <div class="tab{{#if settings.overlay.tab == 'meta-data'}} active{{/if}}" on-click="@.set('settings.overlay.tab', 'meta-data')">Meta Data</div>
+              <div class="spacer"></div>
+              <div class="tab{{#if settings.overlay.tab == 'template-context'}} active{{/if}}" on-click="@.set('settings.overlay.tab', 'template-context')">Template Context</div>
+              <div class="spacer"></div>
+              <div class="tab{{#if settings.overlay.tab == 'project-settings'}} active{{/if}}" on-click="@.set('settings.overlay.tab', 'project-settings')">Settings</div>
+              <div class="spacer"></div>
+              <div class="tab{{#if settings.overlay.tab == 'log'}} active{{/if}}" on-click="@.set('settings.overlay.tab', 'log')">Log</div>
+              <div class="clearfix"></div>
+            </div>
+            <div class="middle">
+              <div class="spacer"></div>
+            </div>
+            <div class="right">
+              <div class="tab{{#if settings.overlay.tab == 'settings'}} active{{/if}}" on-click="@.set('settings.overlay.tab', 'settings')">Settings</div>
+              <div class="spacer"></div>
+            </div>
+          </div>
+          <div id="tab-content"{{#if !connected}} style="display: none;"{{/if}}>
+            <div id="meta-data"{{#if settings.overlay.tab != 'meta-data'}} style="display: none;"{{/if}}>
+              <table class="attributes">
+                {{#content.meta_data}}
+                <tr>
+                  <td class="key">{{.key}}</td>
+                  <td class="value"><pre>{{.value}}</pre></td>
+                  <td class="type">{{.type}}</td>
+                </tr>
+                {{/}}
+              </table>
+            </div>
+            <div id="meta-data"{{#if settings.overlay.tab != 'template-context'}} style="display: none;"{{/if}}>
+              <table class="attributes">
+                {{#content.template_context}}
+                <tr>
+                  <td class="key">{{.key}}</td>
+                  <td class="value"><pre>{{.value}}</pre></td>
+                  <td class="type">{{.type}}</td>
+                </tr>
+                {{/}}
+              </table>
+            </div>
+            <div id="meta-data"{{#if settings.overlay.tab != 'project-settings'}} style="display: none;"{{/if}}>
+              <table class="attributes">
+                {{#content.settings}}
+                <tr>
+                  <td class="key">{{.key}}</td>
+                  <td class="value"><pre>{{.value}}</pre></td>
+                  <td class="type">{{.type}}</td>
+                </tr>
+                {{/}}
+              </table>
+            </div>
+            <div id="log"{{#if settings.overlay.tab != 'log'}} style="display: none;"{{/if}}>
+              <div class="log">
+                <div class="level">
+                  DEBUG <input type="checkbox" checked="{{settings.log.level.debug}}" />
+                  INFO <input type="checkbox" checked="{{settings.log.level.info}}" />
+                  WARNING <input type="checkbox" checked="{{settings.log.level.warning}}" />
+                  ERROR <input type="checkbox" checked="{{settings.log.level.error}}" />
+                  CRITICAL <input type="checkbox" checked="{{settings.log.level.critical}}" />
+                  <div id="log-controls">
+                    <button on-click="@.fire('clear_log')">Clear Log</button>
+                    <button on-click="@.fire('log_scroll_to_top')">Scroll To Top</button>
+                    <button on-click="@.fire('log_scroll_to_bottom')">Scroll To Bottom</button>
+                  </div>
+                </div>
+                <div class="sub-grid">
+                  <div class="logger">
+                    {{#log.logger:name}}<div><input type="checkbox" checked="{{settings.log.logger[name]}}"/> {{name}}</div>{{/}}
+                  </div>
+                  <div class="records{{#settings.log.level:name}}{{#if .}}{{' '}}{{name}}{{/if}}{{/}}">
+                    <pre>{{#log.records}}<span class="{{.level}} {{log.logger[name]}}">{{.time}} {{.name}} {{.level}}: {{.message}}
+</span>{{/}}</pre><div class="scroll-anchor"></div></div>
+                </div>
+              </div>
+            </div>
+            <div id="meta-data"{{#if settings.overlay.tab != 'settings'}} style="display: none;"{{/if}}>
+              <input type="checkbox" checked="{{settings.keyboard_shortcuts}}" /> Keyboard Shortcuts<br/>
+              <br/>
+              <button on-click="@.fire('reset_settings')">Reset Settings</button>
+            </div>
+          </div>
+        </div>
+        <iframe id="content" onLoad="iframe_onload(this);"></iframe>
+        <div id="messages">
+          {{#messages}}
+            <span class="message" on-click="@.fire('hide_message', id)">{{{.message}}}</span><br/>
+          {{/}}
+        </div>
+      </div>
+    </script>
+    <script src="/_flamingo/static/lib/js.cookie-2.2.1.min.js"></script>
+    <script src="/_flamingo/static/lib/ractive.min.js"></script>
+    <script src="/_flamingo/static/lib/rpc.js"></script>
+    <script src="/_flamingo/static/main.js"></script>
+  </body>
+</html>
