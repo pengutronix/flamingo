@@ -13,13 +13,18 @@ env: $(PYTHON_VENV)/.created
 clean:
 	rm -rf $(PYTHON_VENV)
 
+lazy-test: env
+	. $(PYTHON_VENV)/bin/activate && \
+	tox $(args)
+
 test: env
 	. $(PYTHON_VENV)/bin/activate && \
-	tox
+	rm -rf flamingo.egg-info dist build && \
+	tox -r $(args)
 
 ci-test: env
 	. $(PYTHON_VENV)/bin/activate && \
-	JENKINS_URL=1 tox
+	JENKINS_URL=1 tox -r $(args)
 
 edit: env
 	. $(PYTHON_VENV)/bin/activate && \
@@ -41,3 +46,7 @@ test-site: env
 server: test-site
 	cd test-site && \
 	make server
+
+check-manifest: env
+	. $(PYTHON_VENV)/bin/activate && \
+	check-manifest --ignore "flamingo-web.org/*,tests/*,*.swp,.*"

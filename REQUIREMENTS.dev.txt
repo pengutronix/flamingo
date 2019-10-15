@@ -1,3 +1,4 @@
 -e .[full]
 tox
 flake8
+check-manifest
