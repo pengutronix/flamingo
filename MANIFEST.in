@@ -1,4 +1,6 @@
-recursive-include flamingo/server/static *
-recursive-include flamingo/theme *
-recursive-include flamingo/plugins/*/theme *
-recursive-include flamingo/project_templates *
+global-exclude .*
+global-exclude *~
+global-exclude *.swp
+global-exclude *.pyc
+
+recursive-include flamingo/ *
