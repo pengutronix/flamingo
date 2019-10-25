@@ -24,13 +24,38 @@ def test_project_template(template_name, run):
     import os
 
     with TemporaryDirectory() as tmp_dir:
-        command = 'flamingo init --project-template="{}" {} python_version={}'.format(  # NOQA
-            template_name, tmp_dir, sys.executable)
+        # setup environment
+        executable = 'python{}.{}'.format(sys.version_info.major,
+                                          sys.version_info.minor)
 
-        returncode, output = run(command, cwd=tmp_dir)
+        package = os.environ['TOX_PACKAGE']
+
+        command = """
+             {executable} -m venv bootstrap_env && \
+             source bootstrap_env/bin/activate && \
+             bootstrap_env/bin/pip install {package} && \
+             bootstrap_env/bin/flamingo init \
+                --project-template="{template_name}" \
+                "wobsite" \
+                python_version="{executable}" \
+        """.format(
+            executable=executable,
+            package=package,
+            template_name=template_name,
+        ).strip()
+
+        returncode, output = run(command, cwd=tmp_dir, clean_env=True)
+        project_root = os.path.join(tmp_dir, 'wobsite')
 
         assert returncode == 0
+        assert os.path.exists(project_root)
 
-        returncode, output = run('make html', cwd=tmp_dir)
+        # build
+        returncode, output = run('make clean html', cwd=project_root,
+                                 clean_env=True)
 
-        assert os.path.exists(os.path.join(tmp_dir, 'output/index.html'))
+        index_html = os.path.join(project_root, 'output/index.html')
+
+        assert returncode == 0
+        assert os.path.exists(index_html)
+        assert len(open(index_html, 'r').read()) > 0

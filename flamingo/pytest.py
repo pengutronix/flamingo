@@ -108,11 +108,18 @@ def run():
     import logging
     import os
 
-    def _run(command, cwd=None, logger=logging):
+    def _run(command, cwd=None, clean_env=False, logger=logging):
+        cwd = cwd or os.getcwd()
+        env = None
+
+        if clean_env:
+            env = {
+                'PATH': os.environ['PATH'].split(':', 1)[1],
+            }
+
         logger.debug("running '%s' in '%s'", command, cwd)
 
         returncode = 0
-        cwd = cwd or os.getcwd()
 
         try:
             output = check_output(
@@ -120,6 +127,8 @@ def run():
                 shell=True,
                 stderr=STDOUT,
                 cwd=cwd,
+                env=env,
+                executable='/bin/bash',
             ).decode()
 
         except CalledProcessError as e:
