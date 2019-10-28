@@ -1,13 +1,14 @@
 FLAMINGO_SETTINGS=settings.py
 FLAMINGO_SERVER_ARGS=--host=localhost --port=8080
 
-PYTHON=python3.6
+PYTHON=python3.7
 PYTHON_VENV=env
 
 $(PYTHON_VENV)/.created: REQUIREMENTS.txt
 	rm -rf $(PYTHON_VENV) && \
 	$(PYTHON) -m venv $(PYTHON_VENV) && \
 	. $(PYTHON_VENV)/bin/activate && \
+	pip install --upgrade setuptools pip && \
 	pip install -r ./REQUIREMENTS.txt && \
 	date > $(PYTHON_VENV)/.created
 
