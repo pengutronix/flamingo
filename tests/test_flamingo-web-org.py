@@ -3,6 +3,9 @@ def test_flamingo_web_org(run):
     import sys
     import os
 
+    if not os.environ.get('EXTENDED_BUILD_TESTS', ''):
+        pytest.skip('EXTENDED_BUILD_TESTS is disabeld')
+
     if (sys.version_info.major, sys.version_info.minor, ) != (3, 6, ):
         pytest.skip('flamingo-web.org uses python3.6')
 

@@ -24,7 +24,7 @@ test: env
 
 ci-test: env
 	. $(PYTHON_VENV)/bin/activate && \
-	JENKINS_URL=1 tox -r $(args)
+	EXTENDED_BUILD_TESTS=1 JENKINS_URL=1 tox -r $(args)
 
 edit: env
 	. $(PYTHON_VENV)/bin/activate && \
