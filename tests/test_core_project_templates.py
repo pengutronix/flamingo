@@ -23,6 +23,9 @@ def test_project_template(template_name, run):
     import sys
     import os
 
+    if not os.environ.get('EXTENDED_BUILD_TESTS', ''):
+        pytest.skip('EXTENDED_BUILD_TESTS is disabeld')
+
     with TemporaryDirectory() as tmp_dir:
         # setup environment
         executable = 'python{}.{}'.format(sys.version_info.major,
