@@ -56,6 +56,7 @@ class BuildEnvironment:
         # build
         self.context.settings.CONTENT_PATHS = paths
 
+        self.context.plugins.run_plugin_hook('setup')
         self.context.plugins.run_plugin_hook('settings_setup')
 
         self.context.parse_all()
