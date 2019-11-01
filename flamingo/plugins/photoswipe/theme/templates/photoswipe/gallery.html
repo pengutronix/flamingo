@@ -1,0 +1,64 @@
+{% set utils=import('flamingo.plugins.photoswipe.utils') %}
+{% set len=utils.load_builtin('len') %}
+{% if content.align %}
+  {% set align=content.align.lower() %}
+{% endif %}
+<div class="ps-gallery {% if len(contents) > 1 %}multi-image{% else %}single-image{% endif %}{% if align %} {{ align }}{% endif %}" itemscope itemtype="http://schema.org/ImageGallery"
+   style="
+    {% if align == 'left' %}
+      float: left;
+      margin-right: 1em;
+      clear: {{ align }};
+    {% elif align == 'right' %}
+      float: right;
+      margin-left: 1em;
+      clear: {{ align }};
+    {% elif align == 'center' %}
+      width: 100%;
+      text-align: center;
+    {% endif %}
+  ">
+  {% for media_content in contents %}
+    {% if media_content.width %}
+    {% set width=utils.add_unit(media_content.width) %}
+    {% elif media_content.height %}
+      {% set width=utils.calc_width(context, media_content) %}
+    {% endif %}
+    <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+      {%- if media_content.is_thumbnail -%}
+        <a href="{{ media_content.original.url }}" itemprop="contentUrl" data-size="{{ utils.get_size(context, media_content.original) }}">
+          <img src="{{ media_content.url }}" itemprop="thumbnail" alt="{{ media_content.alt }}" />
+        </a>
+      {%- else -%}
+        <a href="{{ media_content.url }}" itemprop="contentUrl"
+          data-size="
+            {% if media_content.width and media_content.height %}
+              {{ media_content.width }}x{{ media_content.height }}
+            {% else %}
+              {{ utils.get_size(context, media_content) }}
+            {% endif %}
+          ">
+          <img src="{{ media_content.url }}" itemprop="thumbnail" alt="{{ media_content.alt }}"
+            style="
+              {% if width %}
+                width: {{ width }};
+              {% endif %}
+              {% if media_content.height %}
+                height: {{ utils.add_unit(media_content.height) }};
+              {% endif %}
+          "/>
+        </a>
+      {%- endif -%}
+      <figcaption itemprop="caption description"
+          style="
+            {% if width and align != 'center' %}
+              width: {{ width }};
+            {% endif %}
+      ">{{ media_content.caption }}</figcaption>
+    </figure>
+    {% set width=None %}
+  {% endfor %}
+</div>
+{%- if content.clear -%}
+  <div style="clear: both"></div>
+{%- endif -%}

@@ -33,6 +33,9 @@ EXTRAS_REQUIRE = {
     'thumbnails': [
         'pillow',
     ],
+    'photoswipe': [
+        'pillow',
+    ],
     'coloredlogs': [
         'coloredlogs',
     ],
