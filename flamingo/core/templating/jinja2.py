@@ -107,9 +107,20 @@ class FlamingoEnvironment(Environment):
         super().__init__(*args, **kwargs)
 
     def get_template(self, *args, **kwargs):
-        if args[0] == 'DEFAULT_TEMPLATE':
-            return self.from_string('{{% extends "{}" %}}'.format(
-                self.flamingo_context.settings.DEFAULT_TEMPLATE))
+        template_name = args[0]
+
+        if '.' in template_name:
+            return super().get_template(*args, **kwargs)
+
+        try:
+            expression = self.compile_expression(template_name)
+            template_name = expression(**dict(self.flamingo_context.settings))
+
+        except Exception:
+            template_name = ''
+
+        if template_name:
+            return super().get_template(template_name, *args[1:], **kwargs)
 
         return super().get_template(*args, **kwargs)
 
