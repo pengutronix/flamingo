@@ -258,8 +258,13 @@ class Context(OverlayObject):
         if self.settings.SKIP_FILE_OPERATIONS and not force:
             return
 
-        self.logger.debug('rm -rf %s', self.settings.OUTPUT_ROOT)
-        shutil.rmtree(path)
+        self.logger.debug('rm -rf %s', path)
+
+        if os.path.isdir(path):
+            shutil.rmtree(path)
+
+        else:
+            os.unlink(path)
 
     def mkdir_p(self, path, force=False):
         if self.settings.SKIP_FILE_OPERATIONS and not force:
