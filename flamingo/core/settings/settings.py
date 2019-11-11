@@ -37,11 +37,8 @@ class Settings(OverlayObject):
         self._attrs = {k: v for k, v in attrs.items()
                        if not k.startswith('_')}
 
-    def get(self, key, default=None):
-        if default:
-            return getattr(self, key, default)
-
-        return getattr(self, key)
+    def get(self, *args):
+        return getattr(self, *args)
 
     def __iter__(self):
         ignore = ('add', )
