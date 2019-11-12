@@ -110,6 +110,7 @@ class Context(OverlayObject):
             self.run_plugin_hook('content_parsed', content)
 
         except ParsingError as e:
+            content['_parsing_error'] = e
             self.errors.append(e)
 
             if hasattr(e, 'line'):
@@ -124,6 +125,7 @@ class Context(OverlayObject):
                 self.logger.error('%s: %s', path, e)
 
         except Exception as e:
+            content['_parsing_error'] = e
             self.errors.append(e)
 
             self.logger.error('exception occoured while reading %s',

@@ -244,21 +244,30 @@ class Jinja2(TemplatingEngine):
 
         return template.render(exception=exception, stack=stack)
 
-    def _render(self, template_name, template_context):
+    def _render(self, template_name, template_context, handle_exceptions=True):
         if(not self.context.settings.LIVE_SERVER_RUNNING or
            not self.context.settings.JINJA2_TRACEBACKS):
 
             return True, self.env.get_template(template_name).render(
                 **template_context)
 
-        exception = None
+        if('content' in template_context and
+           '_parsing_error' in template_context['content']):
 
-        try:
-            return True, self.env.get_template(template_name).render(
-                **template_context)
+            exception = template_context['content']['_parsing_error']
 
-        except Exception as e:
-            exception = e
+        else:
+            exception = None
+
+            try:
+                return True, self.env.get_template(template_name).render(
+                    **template_context)
+
+            except Exception as e:
+                exception = e
+
+        if not handle_exceptions:
+            raise exception
 
         try:
             return False, self._render_exception(exception)
@@ -269,8 +278,9 @@ class Jinja2(TemplatingEngine):
 
         raise exception
 
-    def render(self, template_name, template_context):
-        return self._render(template_name, template_context)[1]
+    def render(self, template_name, template_context, handle_exceptions=True):
+        return self._render(
+            template_name, template_context, handle_exceptions)[1]
 
     def pre_render_content(self, content, template_context):
         if not content['content_body'] or '{' not in content['content_body']:
