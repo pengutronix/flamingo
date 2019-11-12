@@ -15,11 +15,26 @@ def acquire(item, types=None):
 
     if isinstance(item, str):
         if MODULE_RE.match(item):
-            module_name, attr_name = item.rsplit('.', 1)
-            module = importlib.import_module(module_name)
-            path = inspect.getfile(module)
+            try:
+                item = importlib.import_module(item)
+                path = inspect.getfile(item)
 
-            item = getattr(module, attr_name)
+            except Exception:
+                if '.' in item:
+                    module_name, attr_name = item.rsplit('.', 1)
+
+                else:
+                    module_name = item
+                    attr_name = None
+
+                module = importlib.import_module(module_name)
+                path = inspect.getfile(module)
+
+                if attr_name:
+                    item = getattr(module, attr_name)
+
+                else:
+                    item = module
 
         elif SCRIPT_RE.match(item):
             script, attr_name = item.split('::')

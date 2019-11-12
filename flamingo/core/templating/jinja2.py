@@ -12,6 +12,7 @@ from jinja2 import TemplateNotFound, TemplateSyntaxError
 
 from flamingo.core.templating.base import TemplatingEngine
 from flamingo.core.errors import ObjectDoesNotExist
+from flamingo.core.utils.imports import acquire
 from flamingo import THEME_ROOT
 
 try:
@@ -59,6 +60,10 @@ def _shell(context):
 
     else:
         code.interact(local=globals())
+
+
+def _import(*args, **kwargs):
+    return acquire(*args, **kwargs)[0]
 
 
 @contextfunction
@@ -130,6 +135,7 @@ class Jinja2(TemplatingEngine):
         )
 
         self.env.globals['link'] = link
+        self.env.globals['import'] = _import
         self.env.globals['_shell'] = _shell
 
         # setup error env
