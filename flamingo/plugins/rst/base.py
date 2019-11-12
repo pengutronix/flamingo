@@ -15,11 +15,18 @@ logger = logging.getLogger('flamingo.plugins.rst.reStructuredText')
 
 
 class reStructuredTextError(ParsingError):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, name=None, line=None, level_name=None,
+                 level=None, short_description=None, long_description=None,
+                 **kwargs):
+
         super().__init__(*args)
 
-        for k, v in kwargs.items():
-            setattr(self, k, v)
+        self.name = name
+        self.line = line
+        self.level_name = level_name
+        self.level = level
+        self.short_description = short_description
+        self.long_description = long_description
 
 
 def parse_rst_parts(rst_input, system_message_re=SYSTEM_MESSAGE_RE,
