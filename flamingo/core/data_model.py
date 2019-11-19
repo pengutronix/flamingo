@@ -1,11 +1,30 @@
 import operator
 
 from flamingo.core.errors import MultipleObjectsReturned, ObjectDoesNotExist
-from textwrap import shorten
 
 AND = operator.and_
 NOT = operator.not_
 OR = operator.or_
+
+QUOTE_KEYS = ('content_body', 'template_context', )
+
+
+def quote(value):
+    types = {
+        str: '<str(...)>',
+        list: '<[...]>',
+        dict: '<{...}>',
+        tuple: '<(...)>',
+        Content: '<Content(...)>',
+        ContentSet: '<ContentSet(...)>',
+    }
+
+    t = type(value)
+
+    if t in types:
+        return types[t]
+
+    return value
 
 
 def _str(s):
@@ -28,9 +47,6 @@ LOGIC_FUNCTIONS = {
     'endswith': lambda a, b: _str(a).startswith(b),
     'passes': lambda a, b: b(a),
 }
-
-CONTENT_REPR_MAX_LEN = 500
-CONTENT_SET_REPR_MAX_LEN = 2500
 
 
 class F:
@@ -140,24 +156,22 @@ class Content:
     def __init__(self, **data):
         self.data = data
 
-    def __repr__(self):
+    def __repr__(self, pretty=True):
+        if pretty:
+            from flamingo.core.utils.pprint import pformat
+
+            return pformat(self)
+
         repr_string = []
 
         for k, v in self.data.items():
-            if k in ('content_body', ):
-                continue
-
-            if isinstance(v, Content):
-                repr_string.append('{}=Content(...)'.format(k))
-
-            elif isinstance(v, ContentSet):
-                repr_string.append('{}=ContentSet(...)'.format(k))
+            if k in QUOTE_KEYS:
+                repr_string.append('{}={}'.format(k, quote(v)))
 
             else:
                 repr_string.append('{}={}'.format(k, repr(v)))
 
-        return '<Content({})>'.format(
-            shorten(', '.join(repr_string), width=CONTENT_REPR_MAX_LEN))
+        return '<Content({})>'.format(', '.join(repr_string))
 
     def __getitem__(self, key):
         if key in self.data:
@@ -311,9 +325,13 @@ class ContentSet:
     def __iter__(self):
         return self.contents.__iter__()
 
-    def __repr__(self):
-        return '<ContentSet({})>'.format(
-            shorten(repr(self.contents)[1:-1], width=CONTENT_SET_REPR_MAX_LEN))
+    def __repr__(self, pretty=True):
+        if pretty:
+            from flamingo.core.utils.pprint import pformat
+
+            return pformat(self)
+
+        return '<ContentSet({})>'.format(repr(self.contents)[1:-1])
 
     def __add__(self, other):
         if not isinstance(other, (ContentSet, Content)):
