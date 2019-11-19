@@ -23,6 +23,8 @@ PLUGINS = [
     'plugins/table.py::rstTable',
 ]
 
+RST_IMAGE_DIRECTIVE_NAMES = ['img']
+
 POST_BUILD_LAYERS = [
     'overlay',
 ]
