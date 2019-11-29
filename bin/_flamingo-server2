@@ -26,6 +26,9 @@ parser.add_argument('--host', type=str, default='localhost')
 
 namespace, settings = parse_args(parser, setup_logging=False)
 
+if namespace.project_root:
+    exit('ERROR: project root option (-p) is not supported')
+
 log_level = {
     'DEBUG': logging.DEBUG,
     'INFO': logging.INFO,
@@ -42,7 +45,7 @@ app = Application(loop=loop)
 
 # setup flamingo server
 try:
-    server = Server(app=app, loop=loop, settings=namespace.settings,
+    server = Server(app=app, loop=loop, settings=namespace.settings or [],
                     rpc_logging_handler=rpc_logging_handler)
 
 except KeyboardInterrupt:
