@@ -13,6 +13,7 @@ from jinja2 import TemplateNotFound, TemplateSyntaxError
 from flamingo.core.templating.base import TemplatingEngine
 from flamingo.core.errors import ObjectDoesNotExist
 from flamingo.core.utils.imports import acquire
+from flamingo.core.utils.pprint import pformat
 from flamingo import THEME_ROOT
 
 try:
@@ -163,6 +164,7 @@ class Jinja2(TemplatingEngine):
             )
 
             self.error_env.globals['gen_snippet'] = self.gen_snippet
+            self.error_env.globals['pformat'] = pformat
             self.error_env.globals['html_escape'] = html_escape
             self.error_env.globals['_shell'] = _shell
 
@@ -242,7 +244,13 @@ class Jinja2(TemplatingEngine):
 
         template = self.error_env.get_template('error.html')
 
-        return template.render(exception=exception, stack=stack)
+        return template.render(
+            context=self.context,
+            exception=exception,
+            stack=stack,
+            TemplateNotFound=TemplateNotFound,
+            isinstance=isinstance,
+        )
 
     def _render(self, template_name, template_context, handle_exceptions=True):
         if(not self.context.settings.LIVE_SERVER_RUNNING or
@@ -264,6 +272,7 @@ class Jinja2(TemplatingEngine):
                     **template_context)
 
             except Exception as e:
+                logger.debug(e, exc_info=True)
                 exception = e
 
         if not handle_exceptions:

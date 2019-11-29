@@ -104,7 +104,11 @@
     {% if exception.query %}
       <h1>{{ exception.__class__.__name__ }}: {{ html_escape(exception) }}</h1>
     {% else %}
-      <h1>{{ exception.__class__.__name__ }}{% if exception.args %}: {% for arg in exception.args %}{{ html_escape(arg) }}{% endfor %}{% endif %}</h1>
+      <h1>{{ exception.__class__.__name__ }}{% if exception.message %}: {{ exception.message }}{% elif exception.args %}: {% for arg in exception.args %}{{ html_escape(arg) }}{% endfor %}{% endif %}</h1>
+    {% endif %}
+    {% if isinstance(exception, TemplateNotFound) %}
+      <h2>Theme paths:</h2>
+      <pre>{{ pformat(context.templating_engine.theme_paths) }}</pre>
     {% endif %}
     {% for path, lineno, content_path in stack %}
       {% if content_path %}
