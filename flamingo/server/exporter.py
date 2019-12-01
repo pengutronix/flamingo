@@ -144,7 +144,9 @@ class ContentExporter:
 
             return Response(text='404: not found', status=404)
 
-        def gen_response(content):
+        def gen_response(path):
+            content = self.resolve(path)
+
             # 404
             if not content:
                 return _404()
@@ -157,18 +159,26 @@ class ContentExporter:
                 return FileResponse(content)
 
             # content response
-            output = self.context.render(content)
+            try:
+                output = self.context.render(content)
+                self.history.append(content)
+
+            except Exception as e:
+                self.context.logger.error(e, exc_info=True)
+
+                return Response(text='500: rendering error', status=500)
 
             return Response(text=output, content_type='text/html')
 
         try:
-            content = self.resolve(request.path)
-            self.history.append(content)
-            response = gen_response(content)
+            response = await request.app['rpc'].worker_pool.run(
+                gen_response,
+                request.path
+            )
 
         except Exception as e:
             self.context.logger.error(e, exc_info=True)
 
-            response = Response(text='500: rendering error', status=500)
+            response = Response(text='500: Internal Error', status=500)
 
         return response

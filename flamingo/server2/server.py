@@ -49,6 +49,8 @@ class Server:
         self.rpc_logging_handler = rpc_logging_handler
         self.rpc_logging_handler.set_rpc(self.rpc)
 
+        self.app['rpc'] = self.rpc
+
         # setup rpc methods and topics
         self.rpc.add_topics(
             ('status',),
