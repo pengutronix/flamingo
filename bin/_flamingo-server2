@@ -15,7 +15,7 @@ import asyncio  # NOQA
 
 from aiohttp.web import Application, run_app  # NOQA
 
-from flamingo.core.utils.cli import gen_default_parser, parse_args  # NOQA
+from flamingo.core.utils.cli import gen_default_parser, parse_args, error  # NOQA
 from flamingo.server2.server import Server  # NOQA
 
 # parse command line
@@ -27,7 +27,7 @@ parser.add_argument('--host', type=str, default='localhost')
 namespace, settings = parse_args(parser, setup_logging=False)
 
 if namespace.project_root:
-    exit('ERROR: project root option (-p) is not supported')
+    exit(error('ERROR: project root option (-p) is not supported'))
 
 log_level = {
     'DEBUG': logging.DEBUG,
@@ -63,7 +63,7 @@ try:
             print=lambda *args, **kwargs: None)
 
 except OSError:
-    exit('ERROR: can not bind to port {}'.format(namespace.port))
+    exit(error('ERROR: can not bind to port {}'.format(namespace.port)))
 
 print('\rshutting down server')
 server.shutdown()

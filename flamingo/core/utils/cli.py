@@ -31,6 +31,74 @@ DESCRIPTION_HEADER = r"""
 """.format(' ' * (39 - len(VERSION)), VERSION)
 
 
+def color(string, color='', background='', style='', reset=True):
+    reset_string = '\033[00m' if reset else ''
+
+    if not string and reset:
+        return reset_string
+
+    if style:
+        style = {
+            'bright': '1',
+            'underlined': '2',
+            'negative': '3',
+        }[style]
+
+    if color:
+        color = {
+            'black': '30',
+            'red': '31',
+            'green': '32',
+            'yellow': '33',
+            'blue': '34',
+            'magenta': '35',
+            'cyan': '36',
+            'white': '37',
+        }[color]
+
+        if style:
+            color = ';{}'.format(color)
+
+    if background:
+        background = {
+            'black': '40',
+            'red': '41',
+            'green': '42',
+            'yellow': '43',
+            'blue': '44',
+            'magenta': '45',
+            'cyan': '46',
+            'white': '47',
+        }[background]
+
+        if color:
+            background = ';{}'.format(background)
+
+    return '\033[{}{}{}m{}{}'.format(
+        style,
+        color,
+        background,
+        string,
+        reset_string,
+    )
+
+
+def success(string):
+    return color(string, color='green')
+
+
+def warning(string):
+    return color(string, color='yellow')
+
+
+def error(string):
+    return color(string, color='red', style='bright')
+
+
+def critical(string):
+    return color(string, color='white', background='red', style='bright')
+
+
 def get_raw_parser(*parser_args, description='', **parser_kwargs):
     description = '{}\n{}'.format(DESCRIPTION_HEADER, description)
 
