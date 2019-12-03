@@ -3,6 +3,7 @@ from asyncio import Future
 import logging
 import types
 import code
+import json
 import os
 
 from aiohttp.web import FileResponse, Response
@@ -73,6 +74,9 @@ class Server:
 
         # setup aiohttp
         app.router.add_route('*', '/_flamingo/rpc/', self.rpc)
+
+        app.router.add_route(
+            '*', '/_flamingo/settings.js', self.frontend_settings)
 
         app.router.add_route(
             '*', '/_flamingo/static/{path_info:.*}', self.static)
@@ -174,6 +178,17 @@ class Server:
         return
 
     # views ###################################################################
+    @no_cache()
+    async def frontend_settings(self, request):
+        settings = {
+            'log_buffer_max_size': self.rpc_logging_handler.buffer_max_size,
+        }
+
+        settings_string = "var server_settings = JSON.parse('{}');".format(
+            json.dumps(settings))
+
+        return Response(text=settings_string)
+
     @no_cache()
     async def static(self, request):
         await self.await_unlock()

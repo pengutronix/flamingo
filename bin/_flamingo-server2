@@ -25,6 +25,7 @@ parser = gen_default_parser(prog='flamingo-server2')
 
 parser.add_argument('--port', type=int, default=8080)
 parser.add_argument('--host', type=str, default='localhost')
+parser.add_argument('--log-backlog', type=int, default=2500)
 parser.add_argument('--shell', action='store_true')
 parser.add_argument('--shell-history', action='store_true')
 
@@ -42,6 +43,7 @@ log_level = {
 }[namespace.log_level]
 
 rpc_logging_handler.set_internal_level(log_level)
+rpc_logging_handler.buffer_max_size = namespace.log_backlog
 
 # setup aiohttp app
 loop = asyncio.get_event_loop()

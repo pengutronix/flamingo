@@ -32,12 +32,6 @@ body {
     padding: 0.25em 0.2em;
 }
 
-#main-grid #top #logo {
-    font-weight: bold;
-    cursor: pointer;
-    user-select: none;
-}
-
 #main-grid iframe {
     grid-column-start: 1;
     grid-column-end: 1;
@@ -47,6 +41,31 @@ body {
     border: 0;
     height: 100%;
     width: 100%;
+}
+
+/* TOP BAR ----------------------------------------------------------------- */
+#main-grid #top span {
+    margin-right: 0.5em;
+    cursor: pointer;
+    user-select: none;
+}
+
+#main-grid #top span#logo {
+    font-weight: bold;
+}
+
+#main-grid #top span#critical-errors {
+    background-color: red;
+    color: white;
+    font-weight: bold;
+}
+
+#main-grid #top span#errors {
+    color: red;
+}
+
+#main-grid #top span#warnings {
+    color: yellow;
 }
 
 /* OVERLAY ----------------------------------------------------------------- */

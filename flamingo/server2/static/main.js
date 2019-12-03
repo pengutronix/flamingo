@@ -78,10 +78,7 @@ rpc.DEBUG = false;
 
 ractive.on('clear_log', function(event) {
     rpc.call('clear_log', undefined, function(data) {
-        ractive.set('log', {
-            logger: [],
-            records: [],
-        });
+        ractive.set('log.records', []);
     });
 });
 
@@ -315,6 +312,38 @@ function log_scroll_to_bottom() {
     document.querySelector('.log .records .scroll-anchor').scrollIntoView();
 }
 
+function log_show(level) {
+    var records = ractive.get('log.records');
+
+    var settings = {
+        level: {
+            debug: false,
+            info: false,
+            warning: false,
+            error: false,
+            critical: false,
+        },
+        logger: {},
+    };
+
+    settings.level[level] = true;
+
+    for(var index in records) {
+        var record = records[index];
+
+        if(record.level == level) {
+            settings.logger[record.name] = true;
+        }
+    }
+
+    ractive.set('settings.log', settings);
+
+    ractive.set('settings.overlay', {
+        open: true,
+        tab: 'log',
+    });
+}
+
 ractive.observe('settings.log', function(settings) {
     generate_logging_stylesheet(settings);
 });
@@ -325,6 +354,9 @@ ractive.on({
     },
     log_scroll_to_bottom: function() {
         log_scroll_to_bottom();
+    },
+    log_show: function(event, level) {
+        log_show(level);
     },
 });
 
@@ -372,8 +404,11 @@ rpc.on('open', function(rpc) {
         log.logger = data.logger;
         add_logger(data.logger);
 
+        log.stats = data.stats;
         log.records = log.records.concat(data.records);
-        log.records = log.records.slice(-2500);
+
+        log.records = log.records.slice(
+            server_settings.log_buffer_max_size * -1);
 
         ractive.set('log', log);
     };
