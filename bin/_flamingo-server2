@@ -63,6 +63,7 @@ try:
             print=lambda *args, **kwargs: None)
 
 except OSError:
+    server.shutdown()
     exit(error('ERROR: can not bind to port {}'.format(namespace.port)))
 
 print('\rshutting down server')
