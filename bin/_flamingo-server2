@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import signal
+import os
 
 from flamingo.server2.logging import RPCHandler
 
@@ -23,6 +25,8 @@ parser = gen_default_parser(prog='flamingo-server2')
 
 parser.add_argument('--port', type=int, default=8080)
 parser.add_argument('--host', type=str, default='localhost')
+parser.add_argument('--shell', action='store_true')
+parser.add_argument('--shell-history', action='store_true')
 
 namespace, settings = parse_args(parser, setup_logging=False)
 
@@ -50,6 +54,14 @@ try:
 
 except KeyboardInterrupt:
     exit()
+
+# setup shell
+if namespace.shell:
+    def start_shell(server):
+        server.start_shell(history=namespace.shell_history)
+        os.kill(os.getpid(), signal.SIGTERM)
+
+    loop.create_task(server.rpc.worker_pool.run(start_shell, server))
 
 # run
 print('starting server on http://localhost:{}/'.format(namespace.port))

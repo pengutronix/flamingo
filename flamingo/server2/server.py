@@ -19,6 +19,7 @@ from flamingo.core.data_model import Q
 
 try:
     import IPython
+    from traitlets.config import Config
 
     IPYTHON = True
 
@@ -41,6 +42,7 @@ class Server:
         self.logger = logger
 
         # locks
+        self._shell_running = False
         self._locked = False
         self._pending_locks = []
 
@@ -247,15 +249,31 @@ class Server:
 
         return meta_data
 
-    def start_shell(self, request):
-        context = self.context  # NOQA
-        history = self.history  # NOQA
+    def start_shell(self, request=None, history=False):
+        if self._shell_running:
+            return
 
-        if IPYTHON:
-            IPython.embed()
+        self._shell_running = True
 
-        else:
-            code.interact(local=globals())
+        try:
+            if IPYTHON:
+                config = Config()
+
+                if not history:
+                    # this is needed to avoid sqlite errors while running in
+                    # a multithreading environment
+                    config.HistoryAccessor.enabled = False
+
+                context = self.context  # NOQA
+                history = self.history  # NOQA
+
+                IPython.embed(config=config)
+
+            else:
+                code.interact(local=globals())
+
+        finally:
+            self._shell_running = False
 
     # watcher events ##########################################################
     def handle_watcher_events(self, events):

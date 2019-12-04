@@ -17,6 +17,7 @@ EXTRAS_REQUIRE = {
     'live-server': [
         'aiohttp-json-rpc==0.12.1',
         'pygments',
+        'ipython<7',
     ],
     'chardet': [
         'chardet',
@@ -40,7 +41,7 @@ EXTRAS_REQUIRE = {
         'coloredlogs',
     ],
     'ipython': [
-        'ipython',
+        'ipython<7',
     ]
 }
 
