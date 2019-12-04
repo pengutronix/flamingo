@@ -19,16 +19,16 @@ clean:
 
 html: env
 	. $(PYTHON_VENV)/bin/activate && \
-	flamingo build $(FLAMINGO_ARGS) -s $(FLAMINGO_SETTINGS)
+	flamingo build $(FLAMINGO_ARGS) -s $(FLAMINGO_SETTINGS) $(args)
 
 server: env
 	. $(PYTHON_VENV)/bin/activate && \
-	flamingo server $(FLAMINGO_ARGS) $(FLAMINGO_SERVER_ARGS) -s $(FLAMINGO_SETTINGS)
+	flamingo server $(FLAMINGO_ARGS) $(FLAMINGO_SERVER_ARGS) -s $(FLAMINGO_SETTINGS) $(args)
 
 server2: env
 	. $(PYTHON_VENV)/bin/activate && \
-	flamingo server2 $(FLAMINGO_ARGS) $(FLAMINGO_SERVER_ARGS) -s $(FLAMINGO_SETTINGS)
+	flamingo server2 $(FLAMINGO_ARGS) $(FLAMINGO_SERVER_ARGS) -s $(FLAMINGO_SETTINGS) $(args)
 
 shell: env
 	. $(PYTHON_VENV)/bin/activate && \
-	flamingo shell $(FLAMINGO_ARGS) -s $(FLAMINGO_SETTINGS)
+	flamingo shell $(FLAMINGO_ARGS) -s $(FLAMINGO_SETTINGS) $(args)
