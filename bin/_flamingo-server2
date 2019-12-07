@@ -57,11 +57,17 @@ except KeyboardInterrupt:
 
 # setup shell
 if namespace.shell:
-    def start_shell(server):
-        server.start_shell(history=namespace.shell_history)
-        os.kill(os.getpid(), signal.SIGTERM)
+    async def start_shell(server):
+        def _start_shell(server):
+            server.start_shell(history=namespace.shell_history)
+            os.kill(os.getpid(), signal.SIGTERM)
 
-    loop.create_task(server.rpc.worker_pool.run(start_shell, server))
+        await server.await_unlock()
+        await server.rpc.worker_pool.run(_start_shell, server)
+
+        print('shell stopped')
+
+    loop.create_task(start_shell(server))
 
 # run
 print('starting server on http://localhost:{}/'.format(namespace.port))

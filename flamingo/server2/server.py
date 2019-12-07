@@ -43,7 +43,7 @@ class Server:
 
         # locks
         self._shell_running = False
-        self._locked = False
+        self._locked = True
         self._pending_locks = []
 
         # setup rpc
@@ -76,7 +76,10 @@ class Server:
         app.router.add_route('*', '/{path_info:.*}', self.serve)
 
         # setup context
-        self.setup(initial=True)
+        loop.run_in_executor(
+            self.rpc.worker_pool.executor,
+            partial(self.setup, initial=True),
+        )
 
     def setup(self, initial=False):
         self.lock()
