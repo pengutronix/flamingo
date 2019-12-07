@@ -1,4 +1,5 @@
 from argparse import ArgumentParser, RawTextHelpFormatter
+import subprocess
 import logging
 import os
 
@@ -201,3 +202,11 @@ def parse_args(parser=None, setup_logging=True):
         settings.CONTENT_PATHS = namespace.content_paths
 
     return namespace, settings
+
+
+def start_editor(path):
+    command = ["""
+        $((test -n "$EDITOR" && echo $EDITOR) || which vim || which nano) {}
+    """.format(path)]
+
+    subprocess.run(command, shell=True, executable='/bin/bash')

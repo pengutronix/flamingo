@@ -8,6 +8,7 @@ import os
 from aiohttp.web import FileResponse, Response
 from aiohttp_json_rpc import JsonRpc
 
+from flamingo.server2.frontend_controller import FrontendController
 from flamingo.server2.build_environment import BuildEnvironment
 from flamingo.server.watcher import DiscoveryWatcher, Flags
 from flamingo.server.exporter import ContentExporter
@@ -41,6 +42,7 @@ class Server:
         self.settings_paths = settings
         self.loop = loop or app.loop
         self.logger = logger
+        self.frontend_controller = FrontendController(self)
 
         # locks
         self._shell_running = False
@@ -59,6 +61,7 @@ class Server:
             ('status',),
             ('log',),
             ('messages',),
+            ('commands',),
         )
 
         self.rpc.add_methods(
@@ -270,6 +273,7 @@ class Server:
 
                 context = self.context  # NOQA
                 history = self.history  # NOQA
+                frontend = self.frontend_controller  # NOQA
 
                 IPython.embed(config=config)
 

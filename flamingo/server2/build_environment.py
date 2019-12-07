@@ -1,6 +1,9 @@
+from functools import partial
 from copy import deepcopy
 import logging
+import os
 
+from flamingo.core.utils.cli import start_editor
 from flamingo.core.context import Context
 
 logger = logging.getLogger('flamingo.server.BuildEnvironment')
@@ -86,3 +89,21 @@ class BuildEnvironment:
 
         for content in self.context.contents:
             content.on_change = self.Content_on_change_handler
+
+            # content.edit
+            if content['path']:
+                path = os.path.join(self.server.settings.CONTENT_ROOT,
+                                    content['path'])
+
+                content.edit = partial(start_editor, path)
+
+            else:
+                content.edit = partial(print, 'Content has no source file')
+
+            # content.show
+            if content['url']:
+                content.show = partial(
+                    self.server.frontend_controller.set_url, content)
+
+            else:
+                content.show = partial(print, 'Content has no url')

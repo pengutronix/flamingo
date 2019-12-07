@@ -383,6 +383,23 @@ rpc.on('open', function(rpc) {
         ractive.set('log', data);
         generate_logging_stylesheet();
     });
+
+    // frontend rpc
+    rpc.subscribe('commands', function(data) {
+        if(data.method == 'ractive_set') {
+            ractive.set(data.keypath, data.value);
+
+        } else if(data.method == 'ractive_fire') {
+            ractive.fire(data.event_name);
+
+        } else if(data.method == 'set_url') {
+            iframe_set_url(data.url);
+
+        } else if(data.method == 'reload') {
+            iframe_reload();
+
+        }
+    });
 });
 
 rpc.connect();
