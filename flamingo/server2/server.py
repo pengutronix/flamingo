@@ -9,11 +9,12 @@ from aiohttp.web import FileResponse, Response
 from aiohttp_json_rpc import JsonRpc
 
 from flamingo.server2.build_environment import BuildEnvironment
-from flamingo.server.exporter import ContentExporter, History
 from flamingo.server.watcher import DiscoveryWatcher, Flags
+from flamingo.server.exporter import ContentExporter
 from flamingo.core.utils.aiohttp import no_cache
 from flamingo.core.data_model import QUOTE_KEYS
 from flamingo.core.utils.pprint import pformat
+from flamingo.server2.exporter import History
 from flamingo.core.settings import Settings
 from flamingo.core.data_model import Q
 
