@@ -8,7 +8,7 @@ import os
 from aiohttp.web import FileResponse, Response
 from aiohttp_json_rpc import JsonRpc
 
-from flamingo.server.build_environment import BuildEnvironment
+from flamingo.server2.build_environment import BuildEnvironment
 from flamingo.server.exporter import ContentExporter, History
 from flamingo.server.watcher import DiscoveryWatcher, Flags
 from flamingo.core.utils.aiohttp import no_cache
@@ -99,7 +99,7 @@ class Server:
 
             # setup build environment
             self.logger.debug('setup build environment')
-            self.build_environment = BuildEnvironment(self.settings)
+            self.build_environment = BuildEnvironment(self)
             self.context = self.build_environment.context
 
             # setup content exporter
