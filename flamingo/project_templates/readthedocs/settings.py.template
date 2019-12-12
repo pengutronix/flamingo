@@ -1,0 +1,24 @@
+PROJECT_NAME = '{{ project_name }}'
+CONTENT_ROOT = 'content'
+OUTPUT_ROOT = 'output'
+
+THEME_PATHS = [
+    'theme',
+]
+
+PLUGINS = [
+    'flamingo.plugins.rstPygments',
+    'flamingo.plugins.SimpleMenu',
+    'flamingo.plugins.ReadTheDocs',
+    'flamingo.plugins.Git',
+]
+
+POST_BUILD_LAYERS = [
+    'overlay',
+]
+
+MENU = [
+    ['Documentation', [
+        ['Index', 'index.rst'],
+    ]],
+]
