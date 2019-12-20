@@ -2,7 +2,7 @@ import logging
 import os
 
 from flamingo.core.errors import MultipleObjectsReturned, ObjectDoesNotExist
-from flamingo.core.data_model import Content
+from flamingo.core.data_model import Content, Q
 
 logger = logging.getLogger('flamingo.plugins.SimpleMenu')
 
@@ -43,14 +43,32 @@ class SimpleMenu:
 
                             return
 
-                        path = item[1]
-                        item[1] = context.contents.get(path=path)
+                        if isinstance(item[1], str):
+                            lookup = Q(path=item[1])
 
-                        logger.debug('%s -> %s', path, item[1])
+                        elif not isinstance(item[1], Q):
+                            lookup = Q(item[1])
 
-                    except (MultipleObjectsReturned, ObjectDoesNotExist):
+                        else:
+                            lookup = item[1]
+
+                        item[1] = context.contents.get(lookup)
+
+                        logger.debug('%s -> %s', lookup, item[1])
+
+                    except ObjectDoesNotExist:
                         logger.error(
-                            "no content with path '%s' found", item[1])
+                            "no content with %s %s found",
+                            'path' if isinstance(lookup, str) else 'lookup',
+                            lookup or repr(lookup),
+                        )
+
+                    except MultipleObjectsReturned:
+                        logger.error(
+                            "multiple contents found with %s %s found",
+                            'path' if isinstance(lookup, str) else 'lookup',
+                            lookup or repr(lookup),
+                        )
 
         if not hasattr(context.settings, 'MENU'):
             context.settings.MENU = {
