@@ -156,17 +156,30 @@ class Content:
     def __init__(self, **data):
         self.data = data
 
-    def __repr__(self, pretty=True):
+    def __repr__(self, pretty=True, recursion_stack=None):
         if pretty:
             from flamingo.core.utils.pprint import pformat
 
             return pformat(self)
 
+        recursion_stack = recursion_stack or []
         repr_string = []
+
+        recursion_stack.append(self)
 
         for k, v in self.data.items():
             if k in QUOTE_KEYS:
                 repr_string.append('{}={}'.format(k, quote(v)))
+
+            elif isinstance(v, (Content, ContentSet)):
+                if v in recursion_stack:
+                    repr_string.append('{}={}'.format(k, quote(v)))
+
+                else:
+                    repr_string.append(
+                        '{}={}'.format(
+                            k, v.__repr__(pretty=pretty,
+                                          recursion_stack=recursion_stack)))
 
             else:
                 repr_string.append('{}={}'.format(k, repr(v)))
@@ -325,13 +338,23 @@ class ContentSet:
     def __iter__(self):
         return self.contents.__iter__()
 
-    def __repr__(self, pretty=True):
+    def __repr__(self, pretty=True, recursion_stack=None):
         if pretty:
             from flamingo.core.utils.pprint import pformat
 
             return pformat(self)
 
-        return '<ContentSet({})>'.format(repr(self.contents)[1:-1])
+        repr_strings = []
+        recursion_stack = recursion_stack or []
+
+        recursion_stack.append(self)
+
+        for content in self.contents:
+            repr_strings.append(
+                content.__repr__(pretty=pretty,
+                                 recursion_stack=recursion_stack))
+
+        return '<ContentSet({})>'.format(', '.join(repr_strings))
 
     def __add__(self, other):
         if not isinstance(other, (ContentSet, Content)):
