@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from functools import partial
-from pprint import pformat
 import traceback
 import asyncio
 import logging
@@ -14,6 +13,7 @@ from aiohttp_json_rpc import JsonRpc
 
 from flamingo.core.utils.cli import gen_default_parser, parse_args
 from flamingo.core.utils.aiohttp import no_cache
+from flamingo.core.utils.pprint import pformat
 from flamingo.core.data_model import Q
 
 from flamingo.server.build_environment import BuildEnvironment
