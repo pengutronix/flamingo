@@ -12,6 +12,11 @@ def code_block(context):
         optional_arguments = 1
         has_content = True
 
+        option_spec = {
+            'license': directives.unchanged,
+            'template': directives.unchanged,
+        }
+
         def run(self):
             try:
                 if self.arguments:
@@ -24,10 +29,24 @@ def code_block(context):
                 lexer = get_lexer_by_name('text')
 
             formatter = HtmlFormatter()
-            html = highlight('\n'.join(self.content), lexer, formatter)
+            content = highlight('\n'.join(self.content), lexer, formatter)
+
+            # find template
+            template = self.options.get(
+                'template', context.settings.DEFAULT_CODE_BLOCK_TEMPLATE)
+
+            node_content = context.templating_engine.render(
+                template,
+                {
+                    'context': context,
+                    'content': content,
+                    'license': self.options.get('license', ''),
+                },
+                handle_exceptions=False,
+            )
 
             return [
-                raw('', html, format='html'),
+                raw('', node_content, format='html')
             ]
 
     return CodeBlock

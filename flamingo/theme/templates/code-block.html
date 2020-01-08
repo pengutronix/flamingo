@@ -1,0 +1,12 @@
+<div class="code-block">
+  {{ content }}
+  {% if license %}
+    <div class="license">
+      {% if context.content.lang == 'de' %}
+        Dieser Code steht unter der <strong>{{ license }}</strong> Lizenz
+      {% else %}
+        This code is licensed under the <strong>{{ license }}</strong> license
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
