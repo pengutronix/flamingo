@@ -142,7 +142,9 @@ class Server:
         return True
 
     def shutdown(self):
-        self.watcher.shutdown()
+        if hasattr(self, 'watcher'):
+            self.watcher.shutdown()
+
         self.rpc.worker_pool.shutdown()
 
     def notify_sync(self, topic, message, wait=False):
