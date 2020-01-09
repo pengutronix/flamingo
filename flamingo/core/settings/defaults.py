@@ -3,7 +3,7 @@ import flamingo
 # plugins / hooks
 CORE_PLUGINS_PRE = [
     'flamingo.core.plugins.layers.PreBuildLayers',
-    'flamingo.core.plugins.MetaDataProcessor',
+    'flamingo.core.plugins.MetaDataDefaults',
 ]
 
 DEFAULT_PLUGINS = [

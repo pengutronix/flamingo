@@ -1,7 +1,7 @@
 import os
 
 
-class MetaDataProcessor:
+class MetaDataDefaults:
     def contents_parsed(self, context):
         for content in context.contents:
             # set output_path
@@ -15,3 +15,13 @@ class MetaDataProcessor:
             # set template
             if not content['template']:
                 content['template'] = context.settings.DEFAULT_TEMPLATE
+
+            # set content meta data
+            if not content['title']:
+                content['title'] = ''
+
+            if not content['content_title']:
+                content['content_title'] = ''
+
+            if not content['content_body']:
+                content['content_body'] = ''
