@@ -32,6 +32,14 @@ DESCRIPTION_HEADER = r"""
 """.format(' ' * (39 - len(VERSION)), VERSION)
 
 
+class LogFilter:
+    def __init__(self, names):
+        self.names = names
+
+    def filter(self, record):
+        return record.name in self.names
+
+
 def color(string, color='', background='', style='', reset=True):
     reset_string = '\033[00m' if reset else ''
 
@@ -127,6 +135,7 @@ def gen_default_parser(*parser_args, description='', **parser_kwargs):
         default='WARN',
     )
 
+    parser.add_argument('--loggers', type=str, nargs='+')
     parser.add_argument('-d', '--debug', action='store_true')
 
     return parser
@@ -155,6 +164,9 @@ def parse_args(parser=None, setup_logging=True):
 
         if COLOREDLOGS:  # pragma: no cover
             coloredlogs.install(level=log_level)
+
+        if namespace.loggers:
+            logging.root.handlers[0].addFilter(LogFilter(namespace.loggers))
 
     # project root
     if namespace.project_root:

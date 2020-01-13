@@ -44,6 +44,7 @@ log_level = {
 
 rpc_logging_handler.set_internal_level(log_level)
 rpc_logging_handler.buffer_max_size = namespace.log_backlog
+rpc_logging_handler.loggers = namespace.loggers
 
 # setup aiohttp app
 loop = asyncio.get_event_loop()
