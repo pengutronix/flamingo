@@ -6,61 +6,62 @@ from docutils.nodes import raw
 from .base import NestedDirective
 
 
-class Container(NestedDirective):
-    def run(self):
-        nodes = super().run()
+def _gen_directives(context):
+    class Container(NestedDirective):
+        def run(self):
+            nodes = super().run(context)
 
-        nodes.insert(0, raw('', '<div>', format='html'))
-        nodes.append(raw('', '<div class="clearfix"></div></div>',
-                         format='html'))
+            nodes.insert(0, raw('', '<div>', format='html'))
+            nodes.append(raw('', '<div class="clearfix"></div></div>',
+                             format='html'))
 
-        return nodes
+            return nodes
 
+    class BootstrapRow(NestedDirective):
+        def run(self):
+            nodes = super().run(context)
 
-class BootstrapRow(NestedDirective):
-    def run(self):
-        nodes = super().run()
+            nodes.insert(0, raw('', '<div class="row">', format='html'))
+            nodes.append(raw('', '</div>', format='html'))
 
-        nodes.insert(0, raw('', '<div class="row">', format='html'))
-        nodes.append(raw('', '</div>', format='html'))
+            return nodes
 
-        return nodes
+    class BootstrapCol(NestedDirective):
+        required_arguments = 1
+        argument_re = re.compile(r'(xs|sm|md|lg)-([0-9]{1,2})')
 
+        def parse_argument(self, argument):
+            try:
+                match = self.argument_re.search(argument)
 
-class BootstrapCol(NestedDirective):
-    required_arguments = 1
-    argument_re = re.compile(r'(xs|sm|md|lg)-([0-9]{1,2})')
+                if match:
+                    aspect, size = match.groups()
+                    size = int(size)
 
-    def parse_argument(self, argument):
-        try:
-            match = self.argument_re.search(argument)
+                    if 0 < size < 13:
+                        return aspect, size
 
-            if match:
-                aspect, size = match.groups()
-                size = int(size)
+            except Exception:
+                pass
 
-                if 0 < size < 13:
-                    return aspect, size
+            raise ValueError(
+                "'{}' is no valid Bootstrap3 col".format(argument))
 
-        except Exception:
-            pass
+        def run(self):
+            nodes = super().run(context)
+            aspect, size = self.parse_argument(self.arguments[0])
 
-        raise ValueError("'{}' is no valid Bootstrap3 col".format(argument))
+            nodes.insert(
+                0,
+                raw('', '<div class="col-{}-{}">'.format(aspect, size),
+                    format='html')
+            )
 
-    def run(self):
-        nodes = super().run()
-        aspect, size = self.parse_argument(self.arguments[0])
+            nodes.append(raw('', '<div class="clearfix"></div></div>',
+                             format='html'))
 
-        nodes.insert(0, raw('', '<div class="col-{}-{}">'.format(aspect, size),
-                            format='html'))
+            return nodes
 
-        nodes.append(raw('', '<div class="clearfix"></div></div>',
-                         format='html'))
-
-        return nodes
-
-
-def youtube(context):
     class Youtube(NestedDirective):
         has_content = False
         required_arguments = 1
@@ -102,33 +103,44 @@ def youtube(context):
                 raw('', self.template.format(url=url), format='html')
             ]
 
-    return Youtube
+    class Alert(NestedDirective):
+        has_content = True
+        required_arguments = 1
 
+        def run(self):
+            valid_alert_types = ('success', 'info', 'warning', 'danger', )
+            alert_type = self.arguments[0].strip()
 
-class Alert(NestedDirective):
-    has_content = True
-    required_arguments = 1
+            if alert_type not in valid_alert_types:
+                raise ValueError("'{}' is no valid alert type ({})".format(
+                    alert_type, ', '.join(valid_alert_types)))
 
-    def run(self):
-        valid_alert_types = ('success', 'info', 'warning', 'danger', )
-        alert_type = self.arguments[0].strip()
+            return [
+                raw('', '<div class="alert alert-{}" role="alert">'.format(
+                    alert_type), format='html'),
+                *super().run(context),
+                raw('', '</div>', format='html')
+            ]
 
-        if alert_type not in valid_alert_types:
-            raise ValueError("'{}' is no valid alert type ({})".format(
-                alert_type, ', '.join(valid_alert_types)))
-
-        return [
-            raw('', '<div class="alert alert-{}" role="alert">'.format(
-                alert_type), format='html'),
-            *super().run(),
-            raw('', '</div>', format='html')
-        ]
+    return (
+        Container,
+        BootstrapRow,
+        BootstrapCol,
+        Youtube,
+        Alert,
+    )
 
 
 class rstBootstrap3:
     def parser_setup(self, context):
+        Container, \
+            BootstrapRow, \
+            BootstrapCol, \
+            Youtube, \
+            Alert = _gen_directives(context)
+
         directives.register_directive('div', Container)
         directives.register_directive('row', BootstrapRow)
         directives.register_directive('col', BootstrapCol)
-        directives.register_directive('youtube', youtube(context))
+        directives.register_directive('youtube', Youtube)
         directives.register_directive('alert', Alert)
