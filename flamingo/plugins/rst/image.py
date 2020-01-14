@@ -73,7 +73,7 @@ def gen_directives(context, plugin):
                 plugin.galleries[path] = ContentSet()
 
                 # find related images
-                parse_rst('\n'.join(self.content))
+                parse_rst('\n'.join(self.content), context)
 
                 # render gallery
                 contents = plugin.galleries.pop(path)
@@ -123,7 +123,7 @@ def gen_directives(context, plugin):
                 meta['caption'] = '\n'.join(self.content)
 
                 if meta['caption'] and not RST_IMAGE_CAPTION_RAW:
-                    meta['caption'] = parse_rst(meta['caption'])
+                    meta['caption'] = parse_rst(meta['caption'], context)
 
             for k, v in self.options.items():
                 meta[k] = v
