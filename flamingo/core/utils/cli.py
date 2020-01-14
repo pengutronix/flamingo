@@ -1,7 +1,6 @@
 from argparse import ArgumentParser, RawTextHelpFormatter
 import subprocess
 import logging
-import os
 
 try:
     import coloredlogs
@@ -126,7 +125,6 @@ def gen_default_parser(*parser_args, description='', **parser_kwargs):
 
     parser.add_argument('-s', '--settings', nargs='+')
     parser.add_argument('-c', '--content-root', type=str)
-    parser.add_argument('-p', '--project-root', type=str)
     parser.add_argument('--content-paths', type=str, nargs='+')
 
     parser.add_argument(
@@ -167,35 +165,6 @@ def parse_args(parser=None, setup_logging=True):
 
         if namespace.loggers:
             logging.root.handlers[0].addFilter(LogFilter(namespace.loggers))
-
-    # project root
-    if namespace.project_root:
-        logger.debug('project-root is set')
-
-        # content root
-        content_root = os.path.join(namespace.project_root, 'content')
-
-        if os.path.exists(content_root):
-            settings.CONTENT_ROOT = content_root
-
-        # theme
-        theme_path = os.path.join(namespace.project_root, 'theme')
-
-        if os.path.exists(theme_path):
-            settings.THEME_PATHS.insert(0, theme_path)
-
-        # output
-        output_root = os.path.join(namespace.project_root, 'output')
-
-        settings.OUTPUT_ROOT = output_root
-        settings.MEDIA_ROOT = os.path.join(output_root, 'media')
-        settings.STATIC_ROOT = os.path.join(output_root, 'static')
-
-        # settings
-        settings_path = os.path.join(namespace.project_root, 'settings.py')
-
-        if os.path.exists(settings_path):
-            settings.add(settings_path)
 
     # settings
     if namespace.settings:

@@ -31,9 +31,6 @@ parser.add_argument('--shell-history', action='store_true')
 
 namespace, settings = parse_args(parser, setup_logging=False)
 
-if namespace.project_root:
-    exit(error('ERROR: project root option (-p) is not supported'))
-
 log_level = {
     'DEBUG': logging.DEBUG,
     'INFO': logging.INFO,

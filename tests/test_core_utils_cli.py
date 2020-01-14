@@ -1,25 +1,3 @@
-def test_project_root(run):
-    from tempfile import TemporaryDirectory
-    import json
-    import os
-
-    with TemporaryDirectory() as tmp_dir:
-        os.mkdir(os.path.join(tmp_dir, 'content'))
-        os.mkdir(os.path.join(tmp_dir, 'theme'))
-
-        with open(os.path.join(tmp_dir, 'settings.py'), 'w+') as f:
-            f.write('TEST = True')
-
-        returncode, output = run('flamingo args -p {}'.format(tmp_dir))
-
-        assert returncode == 0
-
-        settings = json.loads(output)['settings']
-
-        assert settings['CONTENT_ROOT'] == os.path.join(tmp_dir, 'content')
-        assert settings['TEST'] is True
-
-
 def test_debug_mode(run):
     import json
 
