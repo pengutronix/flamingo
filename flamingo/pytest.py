@@ -3,7 +3,7 @@ import pytest
 
 @pytest.fixture
 def flamingo_dummy_context():
-    from flamingo.core.data_model import ContentSet
+    from flamingo.core.data_model import ContentSet, Content
     from flamingo.core.settings import Settings
     from flamingo.core.context import Context
 
@@ -13,6 +13,7 @@ def flamingo_dummy_context():
 
             self.settings = settings
             self.contents = contents or ContentSet()
+            self.content = Content(path='<string>')
 
     return DummyContext(settings=Settings())
 

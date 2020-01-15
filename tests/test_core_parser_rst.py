@@ -21,7 +21,7 @@ foobar"""
     assert content['content_body'] == '<p>foobar</p>\n'
 
 
-def test_error_line_number():
+def test_error_line_number(flamingo_dummy_context):
     import pytest
 
     from flamingo.plugins.rst.base import (
@@ -31,7 +31,7 @@ def test_error_line_number():
 
     # one liner
     with pytest.raises(reStructuredTextError) as exc_info:
-        parse_rst_parts('.. foo::')
+        parse_rst_parts('.. foo::', flamingo_dummy_context)
 
     assert exc_info.value.line == 1
 
@@ -41,7 +41,7 @@ def test_error_line_number():
 ===
 
 
-.. foo::""")
+.. foo::""", flamingo_dummy_context)
 
     assert exc_info.value.line == 5
 
@@ -51,7 +51,7 @@ def test_error_line_number():
 
 
 
-.. foo::""")
+.. foo::""", flamingo_dummy_context)
 
     assert exc_info.value.line == 5
 
@@ -76,16 +76,19 @@ def test_parsing_error_while_building(flamingo_env):
             flamingo_env.context.errors[0].short_description)
 
 
-def test_error_while_parsing_error():
+def test_error_while_parsing_error(flamingo_dummy_context):
     import pytest
 
-    from flamingo.plugins.rst.base import parse_rst_parts
-    from docutils.utils import SystemMessage
+    from flamingo.plugins.rst.base import (
+        reStructuredTextError,
+        parse_rst_parts,
+    )
 
-    with pytest.raises(SystemMessage) as exc_info:
-        parse_rst_parts('.. foo::', system_message_re=None)
+    with pytest.raises(reStructuredTextError) as exc_info:
+        parse_rst_parts('.. foo::', flamingo_dummy_context,
+                        system_message_re=None)
 
-    assert 'Unknown directive type "foo"' in exc_info.value.args[0]
+    assert 'Unknown directive type "foo"' in exc_info.value.short_description
 
 
 def test_includes(flamingo_env):
