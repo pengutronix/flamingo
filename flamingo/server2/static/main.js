@@ -88,6 +88,7 @@ ractive.on('start_shell', function(event) {
 
 // iframe handling ------------------------------------------------------------
 var iframe = document.querySelector('iframe#content');
+var iframe_initial_setup = false;
 
 function iframe_onload(iframe) {
     if(rpc._ws.readyState != rpc._ws.OPEN) {
@@ -95,8 +96,10 @@ function iframe_onload(iframe) {
     }
 
     // history / address
-    history.pushState({}, iframe.contentDocument.title,
-                      iframe.contentWindow.location.href);
+    if(iframe.contentWindow.location.href != 'about:blank') {
+        history.pushState({}, iframe.contentDocument.title,
+                          iframe.contentWindow.location.href);
+    }
 
     // title
     document.title = iframe.contentDocument.title;
@@ -148,8 +151,18 @@ function iframe_reload() {
 };
 
 function iframe_setup() {
-    iframe_set_url(document.location.href);
+    if(!iframe_initial_setup) {
+        iframe_set_url(document.location.href);
+        iframe_initial_setup = true;
 
+        return;
+    }
+
+    iframe_set_url('about:blank');
+
+    setTimeout(function() {
+        iframe_set_url(document.location.href);
+    }, 1000);
 };
 
 window.onpopstate = function(event) {

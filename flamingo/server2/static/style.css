@@ -41,6 +41,9 @@ body {
     border: 0;
     height: 100%;
     width: 100%;
+    background: url('/_flamingo/static/loading.svg');
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 /* TOP BAR ----------------------------------------------------------------- */
