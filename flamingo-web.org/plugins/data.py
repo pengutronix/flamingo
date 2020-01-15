@@ -32,10 +32,12 @@ def code_block(context):
             html = highlight(python, lexer, formatter)
 
             return [
-                raw('', TEMPLATE.format(highlight=html,
-                                        description=parse_rst(description)),
-                                        format='html'),
-            ]
+                raw('',
+                    TEMPLATE.format(
+                        highlight=html,
+                        description=parse_rst(description, context)
+                    ),
+                    format='html')]
 
     return Data
 

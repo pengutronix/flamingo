@@ -39,7 +39,8 @@ def table(context):
             rows = '\n'.join(self.content).split('\n\n\n')
 
             for index, item in enumerate(rows):
-                rows[index] = [parse_rst(i) for i in item.split('\n\n')]
+                rows[index] = [parse_rst(i, context)
+                               for i in item.split('\n\n')]
 
             return [
                 raw('', TEMPLATE.render(rows=rows), format='html'),
