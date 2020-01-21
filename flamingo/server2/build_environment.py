@@ -80,7 +80,7 @@ class BuildEnvironment:
         if not content['url']:
             return
 
-        self.server.notify_sync('status', {
+        self.server.rpc.notify('status', {
             'changed_paths': content['url'],
         })
 

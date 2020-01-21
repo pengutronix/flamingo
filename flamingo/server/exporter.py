@@ -171,7 +171,8 @@ class ContentExporter:
             return Response(text=output, content_type='text/html')
 
         try:
-            response = await request.app['rpc'].worker_pool.run(
+            response = await request.app['rpc'].loop.run_in_executor(
+                request.app['rpc'].worker_pool.executor,
                 gen_response,
                 request.path
             )

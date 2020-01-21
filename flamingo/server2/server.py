@@ -7,7 +7,6 @@ import json
 import os
 
 from aiohttp.web import FileResponse, Response
-from aiohttp_json_rpc import JsonRpc
 
 from flamingo.server2.frontend_controller import FrontendController
 from flamingo.server2.build_environment import BuildEnvironment
@@ -18,6 +17,7 @@ from flamingo.core.data_model import QUOTE_KEYS
 from flamingo.core.utils.pprint import pformat
 from flamingo.server2.exporter import History
 from flamingo.core.settings import Settings
+from flamingo.server2.rpc import JsonRpc
 from flamingo.core.data_model import Q
 
 try:
@@ -37,7 +37,7 @@ default_logger = logging.getLogger('flamingo.server')
 
 class Server:
     def __init__(self, app, settings, rpc_logging_handler, loop=None,
-                 rpc_max_workers=4, logger=default_logger):
+                 rpc_max_workers=6, logger=default_logger):
 
         self.app = app
         self.settings_paths = settings
@@ -97,6 +97,9 @@ class Server:
                 self.logger.debug('shutting down watcher')
                 self.watcher.shutdown()
 
+            else:
+                self.rpc.start_notification_worker(1)
+
             # setup settings
             self.logger.debug('setup settings')
             self.settings = Settings()
@@ -124,12 +127,13 @@ class Server:
 
             self.watcher.context = self.context
 
-            self.loop.run_in_executor(
-                self.rpc.worker_pool.executor,
-                self.watcher.watch,
-                self.handle_watcher_events,
-                self.handle_watcher_notifications,
-            )
+            if self.loop.is_running():
+                self.loop.run_in_executor(
+                    self.rpc.worker_pool.executor,
+                    self.watcher.watch,
+                    self.handle_watcher_events,
+                    self.handle_watcher_notifications,
+                )
 
         except Exception:
             self.logger.error('setup failed', exc_info=True)
@@ -145,12 +149,8 @@ class Server:
         if hasattr(self, 'watcher'):
             self.watcher.shutdown()
 
+        self.rpc.stop_notification_worker()
         self.rpc.worker_pool.shutdown()
-
-    def notify_sync(self, topic, message, wait=False):
-        self.rpc.worker_pool.run_sync(
-            partial(self.rpc.notify, topic, message), wait=True,
-        )
 
     # locking #################################################################
     def lock(self):
@@ -164,7 +164,9 @@ class Server:
 
         while len(self._pending_locks) > 0:
             future = self._pending_locks.pop()
-            future.set_result(True)
+
+            if not future.cancelled():
+                future.set_result(True)
 
         self.logger.debug('server is unlocked')
 
@@ -312,19 +314,19 @@ class Server:
             if Flags.CODE in flags:
                 code_event = True
 
-                self.notify_sync(
+                self.rpc.notify(
                     'messages',
                     '<span class="important">{}</span> changed'.format(path),
                 )
 
         if code_event:
-            self.notify_sync('messages', 'setup new context...')
+            self.rpc.notify('messages', 'setup new context...')
 
             self.setup()
 
-            self.notify_sync('messages', 'setup successful')
+            self.rpc.notify('messages', 'setup successful')
 
-            self.notify_sync('status', {
+            self.rpc.notify('status', {
                 'changed_paths': '*',
             })
 
@@ -353,16 +355,16 @@ class Server:
             elif Flags.DELETE in flags:
                 action = 'deleted'
 
-            self.notify_sync(
+            self.rpc.notify(
                 'messages',
                 '<span class="important">{}</span> {}'.format(path, action),
             )
 
         # rebuild
         if paths:
-            self.notify_sync('messages', 'rebuilding...')
+            self.rpc.notify('messages', 'rebuilding...')
             self.build_environment.build(paths)
-            self.notify_sync('messages', 'rebuilding successful')
+            self.rpc.notify('messages', 'rebuilding successful')
 
             changed_paths = [
                 '/' + i for i in self.context.contents.filter(
@@ -383,9 +385,9 @@ class Server:
             changed_paths.append('*')
 
         if changed_paths:
-            self.notify_sync('status', {
+            self.rpc.notify('status', {
                 'changed_paths': changed_paths,
             })
 
     def handle_watcher_notifications(self, flags, message):
-        self.notify_sync('messages', message)
+        self.rpc.notify('messages', message)

@@ -35,18 +35,11 @@ class RPCHandler(logging.Handler):
         if not self.rpc:
             return
 
-        records = records or []
-
-        self.rpc.worker_pool.run_sync(
-            self.rpc.notify,
-            'log',
-            {
-                'stats': self.stats,
-                'logger': self.logger,
-                'records': records,
-            },
-            wait=False,
-        )
+        self.rpc.notify('log', {
+            'stats': self.stats,
+            'logger': self.logger,
+            'records': records or [],
+        })
 
     def set_rpc(self, rpc):
         self.rpc = rpc
