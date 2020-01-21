@@ -276,6 +276,8 @@ table.attributes .type {
     border-left: 1px solid grey;
     padding: 0.25em 0 0.5em 0.25em;
     font-weight: normal;
+
+    color: limegreen;
 }
 
 .log .records * {
@@ -294,8 +296,8 @@ table.attributes .type {
     line-heigth: 1ex;
 }
 
-.log .records span.DEBUG {
-    color: limegreen;
+.log .records span.INFO {
+    color: white;
 }
 
 .log .records span.WARNING {

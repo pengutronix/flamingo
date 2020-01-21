@@ -42,6 +42,7 @@ var ractive = Ractive({
     target: '#ractive',
     template: '#main',
     data: {
+        server_settings: server_settings,
         connected: true,
         dots: [],
         messages: [],
@@ -270,39 +271,6 @@ ractive.on('toggle_overlay', function(event) {
 });
 
 // Logging --------------------------------------------------------------------
-var stylesheet = document.styleSheets[document.styleSheets.length-1];
-var rule_id = stylesheet.rules.length;
-
-stylesheet.insertRule('@media all {}', rule_id);
-
-function generate_logging_stylesheet(settings) {
-    if(settings === undefined) {
-        var settings = ractive.get('settings.log');
-    }
-
-    var logger = ractive.get('log.logger');
-    var rule = '@media all {';
-
-    // logger
-    for(var name in logger) {
-        if(!settings.logger[name]) {
-            rule += '.log .records .' + logger[name] + ' {display: none} ';
-        }
-    }
-
-    // level
-    for(var key in settings.level) {
-        if(!settings.level[key]) {
-            rule += '.log .records .' + key + ' {display: none} ';
-        }
-    }
-
-    rule += '}';
-
-    stylesheet.removeRule(rule_id);
-    stylesheet.insertRule(rule, rule_id);
-}
-
 function add_logger(logger) {
     var settings = ractive.get('settings.log.logger');
 
@@ -356,10 +324,6 @@ function log_show(level) {
         tab: 'log',
     });
 }
-
-ractive.observe('settings.log', function(settings) {
-    generate_logging_stylesheet(settings);
-});
 
 ractive.on({
     log_scroll_to_top: function() {
@@ -429,7 +393,6 @@ rpc.on('open', function(rpc) {
     rpc.call('setup_log', undefined, function(data) {
         add_logger(data.logger);
         ractive.set('log', data);
-        generate_logging_stylesheet();
     });
 
     // frontend rpc

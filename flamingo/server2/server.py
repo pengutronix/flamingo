@@ -186,6 +186,7 @@ class Server:
     async def frontend_settings(self, request):
         settings = {
             'log_buffer_max_size': self.rpc_logging_handler.buffer_max_size,
+            'log_level': self.rpc_logging_handler.internal_level,
         }
 
         settings_string = "var server_settings = JSON.parse('{}');".format(

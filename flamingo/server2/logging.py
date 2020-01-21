@@ -48,6 +48,9 @@ class RPCHandler(logging.Handler):
         self.internal_level = level
 
     def handle(self, record):
+        if self.internal_level and record.levelno < self.internal_level:
+            return
+
         # add record to ring buffer
         time_stamp = datetime.fromtimestamp(record.created)
         time_stamp_str = time_stamp.strftime('%H:%M:%S.%f')
@@ -94,39 +97,38 @@ class RPCHandler(logging.Handler):
         record_args['id'] = self.logger[record_args['name']]
 
         # print record to stdout
-        if self.internal_level and record.levelno >= self.internal_level:
-            color_args = {}
+        color_args = {}
 
-            message = '{}:{}:{}'.format(
-                record_args['level'].upper(),
-                record_args['name'],
-                record_args['message'],
-            )
+        message = '{}:{}:{}'.format(
+            record_args['level'].upper(),
+            record_args['name'],
+            record_args['message'],
+        )
 
-            if record.levelname == 'DEBUG':
-                color_args = {
-                    'color': 'green',
-                }
+        if record.levelname == 'DEBUG':
+            color_args = {
+                'color': 'green',
+            }
 
-            elif record.levelname == 'WARNING':
-                color_args = {
-                    'color': 'yellow',
-                }
+        elif record.levelname == 'WARNING':
+            color_args = {
+                'color': 'yellow',
+            }
 
-            elif record.levelname == 'ERROR':
-                color_args = {
-                    'color': 'red',
-                    'style': 'bright',
-                }
+        elif record.levelname == 'ERROR':
+            color_args = {
+                'color': 'red',
+                'style': 'bright',
+            }
 
-            elif record.levelname == 'CRITICAL':
-                color_args = {
-                    'color': 'white',
-                    'background': 'red',
-                    'style': 'bright',
-                }
+        elif record.levelname == 'CRITICAL':
+            color_args = {
+                'color': 'white',
+                'background': 'red',
+                'style': 'bright',
+            }
 
-            print(color(message, **color_args))
+        print(color(message, **color_args))
 
         self._notify(records=[record_args])
 

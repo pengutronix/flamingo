@@ -45,69 +45,89 @@
               <div class="spacer"></div>
             </div>
           </div>
-          <div id="tab-content"{{#if !connected}} style="display: none;"{{/if}}>
-            <div id="meta-data"{{#if settings.overlay.tab != 'meta-data'}} style="display: none;"{{/if}}>
-              <table class="attributes">
-                {{#content.meta_data}}
-                <tr>
-                  <td class="key">{{.key}}</td>
-                  <td class="value"><pre>{{.value}}</pre></td>
-                  <td class="type">{{.type}}</td>
-                </tr>
-                {{/}}
-              </table>
-            </div>
-            <div id="meta-data"{{#if settings.overlay.tab != 'template-context'}} style="display: none;"{{/if}}>
-              <table class="attributes">
-                {{#content.template_context}}
-                <tr>
-                  <td class="key">{{.key}}</td>
-                  <td class="value"><pre>{{.value}}</pre></td>
-                  <td class="type">{{.type}}</td>
-                </tr>
-                {{/}}
-              </table>
-            </div>
-            <div id="meta-data"{{#if settings.overlay.tab != 'project-settings'}} style="display: none;"{{/if}}>
-              <table class="attributes">
-                {{#content.settings}}
-                <tr>
-                  <td class="key">{{.key}}</td>
-                  <td class="value"><pre>{{.value}}</pre></td>
-                  <td class="type">{{.type}}</td>
-                </tr>
-                {{/}}
-              </table>
-            </div>
-            <div id="log"{{#if settings.overlay.tab != 'log'}} style="display: none;"{{/if}}>
-              <div class="log">
-                <div class="level">
-                  DEBUG <input type="checkbox" checked="{{settings.log.level.debug}}" />
-                  INFO <input type="checkbox" checked="{{settings.log.level.info}}" />
-                  WARNING <input type="checkbox" checked="{{settings.log.level.warning}}" />
-                  ERROR <input type="checkbox" checked="{{settings.log.level.error}}" />
-                  CRITICAL <input type="checkbox" checked="{{settings.log.level.critical}}" />
-                  <div id="log-controls">
-                    <button on-click="@.fire('clear_log')">Clear Log</button>
-                    <button on-click="@.fire('log_scroll_to_top')">Scroll To Top</button>
-                    <button on-click="@.fire('log_scroll_to_bottom')">Scroll To Bottom</button>
+          <div id="tab-content">
+            {{#if connected}}
+              {{#if settings.overlay.tab == 'meta-data'}}
+                <div id="meta-data">
+                  <table class="attributes">
+                    {{#content.meta_data}}
+                    <tr>
+                      <td class="key">{{.key}}</td>
+                      <td class="value"><pre>{{.value}}</pre></td>
+                      <td class="type">{{.type}}</td>
+                    </tr>
+                    {{/}}
+                  </table>
+                </div>
+              {{elseif settings.overlay.tab == 'template-context'}}
+                <div id="meta-data">
+                  <table class="attributes">
+                    {{#content.template_context}}
+                    <tr>
+                      <td class="key">{{.key}}</td>
+                      <td class="value"><pre>{{.value}}</pre></td>
+                      <td class="type">{{.type}}</td>
+                    </tr>
+                    {{/}}
+                  </table>
+                </div>
+              {{elseif settings.overlay.tab == 'project-settings'}}
+                <div id="meta-data">
+                  <table class="attributes">
+                    {{#content.settings}}
+                    <tr>
+                      <td class="key">{{.key}}</td>
+                      <td class="value"><pre>{{.value}}</pre></td>
+                      <td class="type">{{.type}}</td>
+                    </tr>
+                    {{/}}
+                  </table>
+                </div>
+              {{elseif settings.overlay.tab == 'log'}}
+                <div id="log">
+                  <div class="log">
+                    <div class="level">
+                      {{#if server_settings.log_level == 10}}
+                        DEBUG <input type="checkbox" checked="{{settings.log.level.debug}}" />
+                      {{/if}}
+                      {{#if server_settings.log_level <= 20}}
+                        INFO <input type="checkbox" checked="{{settings.log.level.info}}" />
+                      {{/if}}
+                      {{#if server_settings.log_level <= 30}}
+                        WARNING <input type="checkbox" checked="{{settings.log.level.warning}}" />
+                      {{/if}}
+                      {{#if server_settings.log_level <= 40}}
+                        ERROR <input type="checkbox" checked="{{settings.log.level.error}}" />
+                      {{/if}}
+                      {{#if server_settings.log_level <= 50}}
+                        CRITICAL <input type="checkbox" checked="{{settings.log.level.critical}}" />
+                      {{/if}}
+                      <div id="log-controls">
+                        <button on-click="@.fire('clear_log')">Clear Log</button>
+                        <button on-click="@.fire('log_scroll_to_top')">Scroll To Top</button>
+                        <button on-click="@.fire('log_scroll_to_bottom')">Scroll To Bottom</button>
+                      </div>
+                    </div>
+                    <div class="sub-grid">
+                      {{#if log.logger }}
+                        <div class="logger">
+                          {{#log.logger:name}}<div><input type="checkbox" checked="{{settings.log.logger[name]}}"/> {{name}}</div>{{/}}
+                        </div>
+                        <div class="records">
+                          <pre>{{#log.records}}{{#if settings.log.logger[.name] && settings.log.level[.level]}}{{#if .level != 'debug'}}<span class="{{.level}}">{{.time}} {{.name}} {{.level}}: {{.message}}</span>{{else}}{{.time}} {{.name}} {{.level}}: {{.message}}{{/if}}
+{{/if}}{{/}}</pre><div class="scroll-anchor"></div></div>
+                      {{/if}}
+                    </div>
                   </div>
                 </div>
-                <div class="sub-grid">
-                  <div class="logger">
-                    {{#log.logger:name}}<div><input type="checkbox" checked="{{settings.log.logger[name]}}"/> {{name}}</div>{{/}}
-                  </div>
-                  <div class="records{{#settings.log.level:name}}{{#if .}}{{' '}}{{name}}{{/if}}{{/}}">
-                    <pre>{{#log.records}}<span class="{{.level}} {{log.logger[name]}}">{{.time}} {{.name}} {{.level}}: {{.message}}
-</span>{{/}}</pre><div class="scroll-anchor"></div></div>
+              {{elseif settings.overlay.tab == 'settings'}}
+                <div id="meta-data">
+                  <input type="checkbox" checked="{{settings.keyboard_shortcuts}}" /> Keyboard Shortcuts<br/>
+                  <br/>
+                  <button on-click="@.fire('reset_settings')">Reset Settings</button>
                 </div>
-              </div>
-            </div>
-            <div id="meta-data"{{#if settings.overlay.tab != 'settings'}} style="display: none;"{{/if}}>
-              <input type="checkbox" checked="{{settings.keyboard_shortcuts}}" /> Keyboard Shortcuts<br/>
-              <br/>
-              <button on-click="@.fire('reset_settings')">Reset Settings</button>
-            </div>
+              {{/if}}
+            {{/if}}
           </div>
         </div>
         <iframe id="content" onLoad="iframe_onload(this);"></iframe>
