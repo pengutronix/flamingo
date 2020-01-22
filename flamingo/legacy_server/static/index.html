@@ -1,0 +1,117 @@
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="static/style.css">
+    <link rel="shortcut icon" href="" />
+  </head>
+  <body onhashchange="onhashchange();">
+    <div id="ractive"></div>
+    <script id="none" type="text/html"></script>
+    <script id="meta-data" type="text/html">
+      <table class="attributes">
+        {{#content_meta_data}}
+        <tr>
+          <td class="key">{{.key}}</td>
+          <td class="value"><pre>{{.value}}</pre></td>
+          <td class="type">{{.type}}</td>
+        </tr>
+        {{/content_meta_data}}
+      </table>
+    </script>
+    <script id="template-context" type="text/html">
+      <table class="attributes">
+        {{#content_template_context}}
+        <tr>
+          <td class="key">{{.key}}</td>
+          <td class="value"><pre>{{.value}}</pre></td>
+          <td class="type">{{.type}}</td>
+        </tr>
+        {{/content_template_context}}
+      </table>
+    </script>
+    <script id="project-settings" type="text/html">
+      <table class="attributes">
+        {{#content_settings}}
+        <tr>
+          <td class="key">{{.key}}</td>
+          <td class="value"><pre>{{.value}}</pre></td>
+          <td class="type">{{.type}}</td>
+        </tr>
+        {{/content_settings}}
+      </table>
+    </script>
+    <script id="log" type="text/html">
+      <div class="log">
+        <div class="level">
+          DEBUG <input type="checkbox" checked="{{log.level.debug}}" />
+          INFO <input type="checkbox" checked="{{log.level.info}}" />
+          WARNING <input type="checkbox" checked="{{log.level.warning}}" />
+          ERROR <input type="checkbox" checked="{{log.level.error}}" />
+          CRITICAL <input type="checkbox" checked="{{log.level.critical}}" />
+        </div>
+        <div class="sub-grid">
+          <div class="logger">
+            {{#each log.logger: name}}<div><input type="checkbox" checked="{{.}}"/> {{name}}</div>{{/each}}
+          </div>
+          <div class="records">
+            <pre>{{#log.records}}{{#if selected_log_level.includes(.level) && selected_logger.includes(.name)}}<span class="{{.level}}">{{.time}} {{.name}} {{.level}}: {{.message}}</span>
+{{/if}}{{/}}</pre></div>
+        </div>
+      </div>
+    </script>
+    <script id="settings" type="text/html">
+      <input type="checkbox" checked="{{settings.keyboard_shortcuts}}" /> Keyboard Shortcuts
+    </script>
+    <script id="main" type="text/html">
+      <div id="main-grid" {{#if overlay > 0}} class="overlay"{{/if}}>
+        <div id="top">
+          <span id="logo" on-click="toggle_overlay">Flamingo</span>
+        </div>
+        <iframe src="{{iframe_initial_pathname}}" onLoad="iframe_onload(this);"></iframe>
+        <div id="overlay">
+          <div id="controls">
+            {{#if connected }}
+              <button on-click="reload">Reload Page</button>
+              <button on-click="clear_log">Clear Log</button>
+              <button on-click="start_shell">Start Shell</button>
+            {{/if}}
+          </div>
+          <h1>{{overlay_heading}}</h1>
+          <p>{{overlay_content}}</p>
+          {{#if connected }}
+            <div class="tabs">
+              <div class="left">
+                <div class="spacer"></div>
+                <div class="tab{{#if overlay_tab == 'meta-data'}} active{{/if}}" on-click="@.set('overlay_tab', 'meta-data')">Meta Data</div>
+                <div class="spacer"></div>
+                <div class="tab{{#if overlay_tab == 'template-context'}} active{{/if}}" on-click="@.set('overlay_tab', 'template-context')">Template Context</div>
+                <div class="spacer"></div>
+                <div class="tab{{#if overlay_tab == 'project-settings'}} active{{/if}}" on-click="@.set('overlay_tab', 'project-settings')">Settings</div>
+                <div class="spacer"></div>
+                <div class="tab{{#if overlay_tab == 'log'}} active{{/if}}" on-click="@.set('overlay_tab', 'log')">Log</div>
+                <div class="clearfix"></div>
+              </div>
+              <div class="middle">
+                <div class="spacer"></div>
+              </div>
+              <div class="right">
+                <div class="tab{{#if overlay_tab == 'settings'}} active{{/if}}" on-click="@.set('overlay_tab', 'settings')">Settings</div>
+                <div class="spacer"></div>
+              </div>
+            </div>
+            <div id="current-tab">
+              {{>overlay_tab}}
+            </div>
+          {{/if}}
+        </div>
+        <div id="messages">
+          {{#messages}}
+            <span class="message" on-click="@.fire('hide_message', id)">{{{.message}}}</span><br/>
+          {{/}}
+        </div>
+      </div>
+    </script>
+    <script src="static/lib/ractive.min.js"></script>
+    <script src="static/lib/rpc.js"></script>
+    <script src="static/main.js"></script>
+  </body>
+</html>

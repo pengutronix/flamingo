@@ -1,0 +1,271 @@
+html,
+body,
+#main-grid {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    color: white;
+    line-height: 1em;
+}
+
+body {
+    font-size: 16px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+}
+
+.clearfix {
+    clear: both;
+}
+
+/* main grid */
+#main-grid {
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: 1.5em auto 20%;
+}
+
+/* main grid top */
+#main-grid #top {
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 1;
+    grid-row-end: 1;
+
+    background: rgba(5, 5, 5, 0.75);
+    padding: 0.25em 0.2em;
+}
+
+#main-grid #top #logo {
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#main-grid iframe {
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 2;
+    grid-row-end: 4;
+
+    border: 0;
+    height: 100%;
+    width: 100%;
+}
+
+/* overlay */
+#overlay {
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 2;
+    grid-row-end: 3;
+    display: none;
+
+    padding: 0em 1em;
+    background: rgba(5, 5, 5, 0.75);
+    font-weight: bold;
+    overflow-y: scroll;
+    z-index: 2000;
+}
+
+#main-grid.overlay #overlay {
+    display: block;
+}
+
+#overlay #controls {
+    text-align: right;
+    height: 1.5em;
+}
+
+#overlay h1 {
+    margin-top: 0 !important;
+}
+
+/* log */
+.log {
+    display: grid;
+    margin-bottom: 1em;
+}
+
+.log .level {
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 1;
+    grid-row-end: 1;
+    
+    margin-bottom: 0.25em;
+}
+
+.log .sub-grid {
+    display: grid;
+
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 2;
+    grid-row-end: 3;
+
+    grid: auto-flow dense / max-content auto max-content;
+    grid-template-rows: auto;
+
+    border-top: 1px solid grey;
+}
+
+.log .logger {
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 2;
+    grid-row-end: 2;
+
+    padding-top: 0.25em;
+    padding-right: 0.5em;
+}
+
+.log .records {
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 2;
+    grid-row-end: 2;
+
+    border-left: 1px solid grey;
+    padding-top: 0.25em;
+    padding-left: 0.5em;
+    font-weight: normal;
+}
+
+.log pre {
+    margin: 0;
+    font-weight: normal;
+    font-size: 14px;
+    line-heigth: 1ex;
+}
+
+.log .records span.DEBUG {
+    color: limegreen;
+}
+
+.log .records span.WARNING {
+    color: yellow;
+}
+
+.log .records span.ERROR {
+    color: red;
+}
+
+.log .records span.CRITICAL {
+    background-color: red;
+    color: white;
+    font-weight: bold;
+}
+
+/* messages */
+#messages {
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 2;
+    grid-row-end: 4;
+
+    padding-top: 0.5em;
+    pointer-events:none;
+
+    z-index: 1000;
+}
+
+#messages .message {
+    background: rgba(5, 5, 5, 0.75);
+    padding: 0 0.2em;
+    line-height: normal;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+#messages .important {
+    color: #E96D79;
+}
+
+/* attribute table */
+table.attributes {
+    border: 1px solid grey;
+    font-family: Courier;
+    width: 100%;
+    font-size: 75%;
+}
+
+table.attributes tr:nth-child(even) {
+    background-color: grey;
+}
+
+table.attributes td,
+table.attributes th {
+    padding-right: 0.5em;
+    vertical-align: top;
+}
+
+table.attributes .key {
+    text-align: right;
+    font-weight: bold;
+}
+
+table.attributes .value {
+    width: 100%;
+}
+
+table.attributes .type {
+    text-align: right;
+}
+
+/* TABS -------------------------------------------------------------------- */
+.tabs {
+    display: grid;
+    grid: auto-flow dense / max-content auto max-content;
+    grid-template-rows: auto;
+
+    margin-bottom: 1em;
+}
+
+.tabs .tab {
+    padding: 0.2em 0.75em 0.2em 0.5em;
+    float: left;
+    cursor: pointer;
+    border: 1px solid grey;
+    color: grey;
+}
+
+.tabs .tab.active {
+    color: white;
+    border-bottom: transparent;
+}
+
+.tabs .left {
+    grid-column-start: 1;
+    grid-column-end: 2;
+}
+
+.tabs .middle {
+    grid-column-start: 2;
+    grid-column-end: 3;
+}
+
+.tabs .right {
+    grid-column-start: 3;
+    grid-column-end: 4;
+}
+
+/* TABS::SPACER ------------------------------------------------------------ */
+.tabs .spacer {
+    content: " ";
+    height: calc(1.4em + 1px);
+    border-bottom: 1px solid grey;
+}
+
+.tabs .left .spacer {
+    float: left;
+    width: 0.5em;
+}
+
+.tabs .middle .spacer {
+    width: 100%;
+}
+
+.tabs .right .spacer {
+    float: left;
+    width: 0.5em;
+}

@@ -1,97 +1,181 @@
+// Cookies --------------------------------------------------------------------
+function set_cookie(name, value) {
+    return Cookies.set(name, value);
+}
+
+function get_cookie(name, default_value) {
+    var value = Cookies.get(name);
+
+    if(value !== undefined) {
+        return JSON.parse(value);
+    }
+
+    return default_value;
+}
+
+// Ractive / Settings ---------------------------------------------------------
 Ractive.DEBUG = false;
 
-function iframe_onload(iframe) {
-    // get content meta data
-    rpc.call(
-        'get_meta_data',
-        iframe.contentWindow.location.pathname,
-        function(data) {
-            ractive.set({
-                content_meta_data: data.meta_data,
-                content_template_context: data.template_context,
-                content_settings: data.settings,
-            });
-        }
-    )
+var _default_settings = {
+    overlay: {
+        open: false,
+        tab: 'meta-data',
+    },
+    log: {
+        logger: {},
+        level: {
+            debug: false,
+            info: false,
+            warning: true,
+            error: true,
+            critical: true,
+        },
+    },
+    keyboard_shortcuts: true,
+};
 
-    // url
-    ractive.set('iframe_pathname', iframe.contentWindow.location.pathname);
-    document.location.hash = iframe.contentWindow.location.pathname;
+function get_default_settings() {
+    return JSON.parse(JSON.stringify(_default_settings));
+}
+
+var ractive = Ractive({
+    target: '#ractive',
+    template: '#main',
+    data: {
+        server_settings: server_settings,
+        connected: true,
+        dots: [],
+        messages: [],
+        settings: get_cookie('flamingo_settings', get_default_settings()),
+        content: {},
+        log: {
+            logger: [],
+            records: [],
+        },
+    },
+});
+
+ractive.observe('settings', function () {
+    set_cookie('flamingo_settings', ractive.get('settings'));
+});
+
+ractive.on('reset_settings', function() {
+    ractive.set('settings', get_default_settings());
+
+    show_message('<span class="important">Settings reseted</span> ' +
+                 'Please reload the browser tab');
+});
+
+
+// RPC ------------------------------------------------------------------------
+var rpc_protocol = 'ws://';
+
+if(window.location.protocol == 'https:') {
+    rpc_protocol = 'wss://';
+}
+
+var rpc = new RPC(rpc_protocol + window.location.host + '/_flamingo/rpc/');
+rpc.DEBUG = false;
+
+ractive.on('clear_log', function(event) {
+    rpc.call('clear_log', undefined, function(data) {
+        ractive.set('log.records', []);
+    });
+});
+
+ractive.on('start_shell', function(event) {
+    rpc.call('start_shell');
+});
+
+// iframe handling ------------------------------------------------------------
+var iframe = document.querySelector('iframe#content');
+var iframe_initial_setup = false;
+
+function iframe_onload(iframe) {
+    if(rpc._ws.readyState != rpc._ws.OPEN) {
+        return;
+    }
+
+    // history / address
+    if(iframe.contentWindow.location.href != 'about:blank') {
+        history.pushState({}, iframe.contentDocument.title,
+                          iframe.contentWindow.location.href);
+    }
 
     // title
     document.title = iframe.contentDocument.title;
 
     // favicon
     var nodes = iframe.contentDocument.getElementsByTagName('link');
+    var icon = document.querySelector("link[rel='shortcut icon']");
 
     for(var index = 0; index < nodes.length; index++) {
-        if((nodes[index].getAttribute('rel') == 'icon') || (nodes[index].getAttribute('rel') == 'shortcut icon')) {
-            document.querySelector("link[rel='shortcut icon']").href = nodes[index].getAttribute('href');
+        if((nodes[index].getAttribute('rel') == 'icon') ||
+           (nodes[index].getAttribute('rel') == 'shortcut icon')) {
+
+            icon.href = nodes[index].getAttribute('href');
+
+            break;
         }
     }
 
-    // page offset
-    if(ractive.get('iframe_set_offset')) {
-        var offset = ractive.get('iframe_offset');
-
-        iframe.contentWindow.scrollTo(offset[0], offset[1]);
-        ractive.set('iframe_set_offset', false);
-
-    } else {
-        ractive.set('iframe_offset', [0, 0]);
-
-    }
-
-    iframe.contentWindow.onscroll = function(event) {
-        ractive.set('iframe_offset', [this.scrollX, this.scrollY]);
-    }
-
-    // keyboard shortcuts
+    // iframe keyboard shortcuts
     iframe.contentDocument.addEventListener('keydown', function(event) {
         handle_keydown(event);
     });
-}
 
+    // close overlay if iframe gets clicked
+    iframe.contentDocument.addEventListener('click', function(event) {
+        ractive.set('settings.overlay.open', false);
+    });
+
+    // iframe meta data
+    rpc.call(
+        'get_meta_data',
+        iframe.contentWindow.location.pathname,
+        function(data) {
+            ractive.set('content', data);
+        }
+    );
+};
 
 function iframe_set_url(url) {
-    var iframe = document.getElementsByTagName('iframe')[0];
-
-    ractive.set('iframe_set_offset', false);
-
-    if(url == '') {
-        ractive.set('iframe_pathname', '/');
-
-    } else {
-        iframe.contentWindow.location = url;
-
-    }
-}
-
-function get_hash() {
-    var hash = document.location.hash;
-
-    if(!hash) {
-        return '/';
-
+    if(url === undefined || url == '') {
+        url = '/';
     }
 
-    return hash.substring(1);
-}
-
-function onhashchange() {
-    var hash = get_hash();
-
-    if(hash != ractive.get('iframe_pathname')) {
-        iframe_set_url(hash);
-    }
-}
+    iframe.contentWindow.location = url;
+};
 
 function iframe_reload() {
-    var iframe = document.getElementsByTagName('iframe')[0];
+    iframe.contentWindow.location.reload();
+};
 
-    ractive.set('iframe_set_offset', true);
-    iframe.contentWindow.location.reload(true);
-}
+function iframe_setup() {
+    if(!iframe_initial_setup) {
+        iframe_set_url(document.location.href);
+        iframe_initial_setup = true;
+
+        return;
+    }
+
+    iframe_set_url('about:blank');
+
+    setTimeout(function() {
+        iframe_set_url(document.location.href);
+    }, 1000);
+};
+
+window.onpopstate = function(event) {
+    iframe_set_url(document.location.href);
+};
+
+window.onhashchange = function(event) {
+    iframe_set_url(document.location.href);
+};
+
+// messages -------------------------------------------------------------------
+var message_id = 1;
 
 function hide_message(id) {
     var messages = ractive.get('messages');
@@ -135,268 +219,198 @@ function show_message(message, timeout) {
     return id;
 }
 
-var rpc = new RPC('ws://' + window.location.host + '/live-server/rpc/');
-var message_id = 1;
-
-var ractive = Ractive({
-    target: '#ractive',
-    template: '#main',
-    data: {
-        connected: false,
-        iframe_pathname: get_hash(),
-        iframe_initial_pathname: get_hash(),
-        iframe_set_offset: false,
-        iframe_offset: [0, 0],
-        overlay: -1,
-        overlay_reason: '',
-        overlay_heading: '',
-        overlay_content: '',
-        overlay_tab: 'meta-data',
-        log: {
-            logger: {},
-            records: [],
-            level: {},
-        },
-        content_meta_data: {},
-        messages: [],
-        settings: {
-            keyboard_shortcuts: true,
-        },
-    },
-    computed: {
-        selected_log_level: function() {
-            var selected_log_level = [];
-            var log_level = this.get('log.level')
-
-            if(log_level.debug) {
-                selected_log_level.push('DEBUG');
-            }
-
-            if(log_level.info) {
-                selected_log_level.push('INFO');
-            }
-
-            if(log_level.warning) {
-                selected_log_level.push('WARNING');
-            }
-
-            if(log_level.error) {
-                selected_log_level.push('ERROR');
-            }
-
-            if(log_level.critical) {
-                selected_log_level.push('CRITICAL');
-            }
-
-            return selected_log_level;
-        },
-        selected_logger: function() {
-            var selected_logger = [];
-            var logger = this.get('log.logger');
-
-            for(var key in logger) {
-                if(logger[key]) {
-                    selected_logger.push(key);
-                }
-            }
-
-            return selected_logger;
-        }
-    }
-});
-
 ractive.on({
-    toggle_overlay: function(event) {
-        if(rpc._ws.readyState == rpc._ws.OPEN) {
-            ractive.set({
-                overlay: ractive.get('overlay') * -1,
-                overlay_reason: 'user',
-            });
-        }
-    },
-    reload: function(event) {
-        iframe_reload();
-    },
     hide_message: function(event, id) {
         hide_message(id);
     },
-    start_shell: function(event) {
-        rpc.call('start_shell');
+});
+
+// Keyboard Shortcuts ---------------------------------------------------------
+function handle_keydown(event) {
+    // ESC
+    if(event.keyCode == 27) {
+        ractive.fire('toggle_overlay');
+
+        return;
+    }
+
+    if(!ractive.get('settings.overlay.open')) {
+        return;
+    }
+
+    switch(event.keyCode) {
+        case 49:  // 1
+            ractive.set('settings.overlay.tab', 'meta-data');
+            break;
+
+        case 50:  // 2
+            ractive.set('settings.overlay.tab', 'template-context');
+            break;
+
+        case 51:  // 3
+            ractive.set('settings.overlay.tab', 'project-settings');
+            break;
+
+        case 52:  // 4
+            ractive.set('settings.overlay.tab', 'log');
+            break;
+    }
+}
+
+document.addEventListener('keydown', function(event) {
+    if(!ractive.get('settings.keyboard_shortcuts')) {
+        return;
+    }
+
+    handle_keydown(event);
+});
+
+ractive.on('toggle_overlay', function(event) {
+    ractive.set('settings.overlay.open',
+                !ractive.get('settings.overlay.open'));
+});
+
+// Logging --------------------------------------------------------------------
+function add_logger(logger) {
+    var settings = ractive.get('settings.log.logger');
+
+    for(var name in logger) {
+        if(name in settings) {
+            continue;
+        }
+
+        settings[name] = name.startsWith('flamingo');
+    }
+
+    ractive.set('settings.log.logger', settings);
+}
+
+function log_scroll_to_top() {
+    document.querySelector('.log .records').scrollTo(0, 0);
+}
+
+function log_scroll_to_bottom() {
+    document.querySelector('.log .records .scroll-anchor').scrollIntoView();
+}
+
+function log_show(level) {
+    var records = ractive.get('log.records');
+
+    var settings = {
+        level: {
+            debug: false,
+            info: false,
+            warning: false,
+            error: false,
+            critical: false,
+        },
+        logger: {},
+    };
+
+    settings.level[level] = true;
+
+    for(var index in records) {
+        var record = records[index];
+
+        if(record.level == level) {
+            settings.logger[record.name] = true;
+        }
+    }
+
+    ractive.set('settings.log', settings);
+
+    ractive.set('settings.overlay', {
+        open: true,
+        tab: 'log',
+    });
+}
+
+ractive.on({
+    log_scroll_to_top: function() {
+        log_scroll_to_top();
     },
-    clear_log: function(event) {
-        rpc.call('clear_log', undefined, function(data) {
-            ractive.set('log.records', []);
-        });
+    log_scroll_to_bottom: function() {
+        log_scroll_to_bottom();
+    },
+    log_show: function(event, level) {
+        log_show(level);
     },
 });
 
+// Connection Handling --------------------------------------------------------
+rpc.on('close', function(rpc) {
+    ractive.set('connected', false);
+
+    setTimeout(function() {
+        var dots = ractive.get('dots');
+        dots.push('.');
+
+        if(dots.length >= 4) {
+            dots = [];
+        }
+
+        ractive.set('dots', dots);
+
+        rpc.connect();
+    }, 1000);
+});
+
 rpc.on('open', function(rpc) {
-    ractive.set({
-        connected: true,
-        overlay_heading: 'Connected',
-        overlay_content: '',
-        overlay_tab: 'meta-data',
-    });
+    iframe_setup();
+    ractive.set('connected', true);
 
-    if(ractive.get('overlay') > 0 && ractive.get('overlay_reason') == 'reconnect') {
-        ractive.set({
-            overlay: -1,
-            overlay_reason: '',
-        });
-    }
-
+    // subscribe to rpc topics
     rpc.subscribe('status', function(data) {
-        var iframe = document.getElementsByTagName('iframe')[0];
+        var pathname = iframe.contentWindow.location.pathname;
 
-        if(data.changed_paths.includes(iframe.contentWindow.location.pathname) ||
-            data.changed_paths.includes('*')) {
+        if(data.changed_paths.includes(pathname) ||
+           data.changed_paths.includes('*')) {
 
             iframe_reload();
-
-            if(ractive.get('overlay_reason') == 'log') {
-                ractive.set('overlay', -1);
-            }
         }
-    });
-
-    rpc._topic_handler.log = function(data) {
-        var records = ractive.get('log.records').concat(data.records);
-        var logger = ractive.get('log.logger');
-
-        for(var index in data.logger) {
-            var logger_name = data.logger[index];
-
-            if(logger.hasOwnProperty(logger_name)) {
-                continue;
-            }
-
-            logger[logger_name] = logger_name.startsWith('flamingo');
-        }
-
-        records = records.slice(-2500);
-
-        for(var index in records) {
-            if(records[index].level == 'ERROR' && ractive.get('overlay') < 0) {
-                ractive.set({
-                    overlay: 1,
-                    overlay_reason: 'log',
-                    overlay_tab: 'log',
-                });
-            }
-        }
-
-        ractive.set('log.logger', logger);
-        ractive.set('log.records', records);
-    };
-
-    rpc.call('setup_log', undefined, function(data) {
-        var logger = {};
-
-        for(var index in data.logger) {
-            var logger_name = data.logger[index];
-
-            logger[logger_name] = logger_name.startsWith('flamingo');
-        }
-
-        ractive.set('log.records', data.records);
-        ractive.set('log.logger', logger);
-
-        ractive.set('log.level', {
-            debug: false,
-            info: false,
-            warning: true,
-            error: true,
-            critical: true,
-        });
     });
 
     rpc.subscribe('messages', function(data) {
         show_message(data, 2000);
     });
 
-    iframe_reload();
-});
+    // setup logging
+    rpc._topic_handler.log = function(data) {
+        var log = ractive.get('log')
 
-function reconnect() {
-    var counter = 5;
+        log.logger = data.logger;
+        add_logger(data.logger);
 
-    function tick() {
-        if(counter > -1) {
-            ractive.set('overlay_content', 'trying to reconnect in ' + counter + ' seconds');
-            counter--;
+        log.stats = data.stats;
+        log.records = log.records.concat(data.records);
 
-            setTimeout(function() {
-                tick();
-            }, 1000);
+        log.records = log.records.slice(
+            server_settings.log_buffer_max_size * -1);
 
-        } else {
-            rpc.connect();
+        ractive.set('log', log);
+    };
 
-        }
-    }
-
-    tick();
-}
-
-rpc.on('close', function(rpc) {
-    ractive.set({
-        connected: false,
-        overlay_heading: 'Connection lost',
-        overlay_tab: '',
-        log: {
-            logger: {},
-            records: [],
-            level: {},
-        },
+    rpc.call('setup_log', undefined, function(data) {
+        add_logger(data.logger);
+        ractive.set('log', data);
     });
 
-    if(ractive.get('overlay') < 0) {
-        ractive.set({
-            overlay: 1,
-            overlay_reason: 'reconnect',
-        });
-    }
+    // frontend rpc
+    rpc.subscribe('commands', function(data) {
+        if(data.method == 'ractive_set') {
+            ractive.set(data.keypath, data.value);
 
-    reconnect();
+        } else if(data.method == 'ractive_fire') {
+            ractive.fire(data.event_name);
+
+        } else if(data.method == 'set_url') {
+            iframe_set_url(data.url);
+
+        } else if(data.method == 'reload') {
+            iframe_reload();
+
+        }
+    });
 });
 
 rpc.connect();
-
-// keyboard shortcuts
-function handle_keydown(event) {
-    function set_tab(name) {
-        if(ractive.get('overlay') > 0) {
-            ractive.set('overlay_tab', name);
-        }
-    }
-
-    if(!ractive.get('settings.keyboard_shortcuts')) {
-        return;
-    }
-
-    switch(event.keyCode) {
-        case 27:  // ESC
-            ractive.fire('toggle_overlay');
-            break;
-
-        case 49:  // 1
-            set_tab('meta-data');
-            break;
-
-        case 50:  // 2
-            set_tab('template-context');
-            break;
-
-        case 51:  // 3
-            set_tab('project-settings');
-            break;
-
-        case 52:  // 4
-            set_tab('log');
-            break;
-    }
-}
-
-document.addEventListener('keydown', function(event) {
-    handle_keydown(event);
-});

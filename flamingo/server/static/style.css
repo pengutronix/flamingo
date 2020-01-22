@@ -6,6 +6,7 @@ body,
     height: 100%;
     color: white;
     line-height: 1em;
+    overflow: hidden;
 }
 
 body {
@@ -14,18 +15,13 @@ body {
 
 }
 
-.clearfix {
-    clear: both;
-}
-
-/* main grid */
+/* MAIN GRID --------------------------------------------------------------- */
 #main-grid {
     display: grid;
     grid-template-columns: auto;
-    grid-template-rows: 1.5em auto 20%;
+    grid-template-rows: 1.5em 80% auto;
 }
 
-/* main grid top */
 #main-grid #top {
     grid-column-start: 1;
     grid-column-end: 1;
@@ -34,11 +30,6 @@ body {
 
     background: rgba(5, 5, 5, 0.75);
     padding: 0.25em 0.2em;
-}
-
-#main-grid #top #logo {
-    font-weight: bold;
-    cursor: pointer;
 }
 
 #main-grid iframe {
@@ -50,175 +41,88 @@ body {
     border: 0;
     height: 100%;
     width: 100%;
+    background: url('/_flamingo/static/loading.svg');
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
-/* overlay */
-#overlay {
-    grid-column-start: 1;
-    grid-column-end: 2;
-    grid-row-start: 2;
-    grid-row-end: 3;
-    display: none;
+/* TOP BAR ----------------------------------------------------------------- */
+#main-grid #top span {
+    margin-right: 0.5em;
+    cursor: pointer;
+    user-select: none;
+}
 
-    padding: 0em 1em;
-    background: rgba(5, 5, 5, 0.75);
+#main-grid #top span#logo {
     font-weight: bold;
-    overflow-y: scroll;
-    z-index: 2000;
 }
 
-#main-grid.overlay #overlay {
-    display: block;
-}
-
-#overlay #controls {
-    text-align: right;
-    height: 1.5em;
-}
-
-#overlay h1 {
-    margin-top: 0 !important;
-}
-
-/* log */
-.log {
-    display: grid;
-    margin-bottom: 1em;
-}
-
-.log .level {
-    grid-column-start: 1;
-    grid-column-end: 1;
-    grid-row-start: 1;
-    grid-row-end: 1;
-    
-    margin-bottom: 0.25em;
-}
-
-.log .sub-grid {
-    display: grid;
-
-    grid-column-start: 1;
-    grid-column-end: 1;
-    grid-row-start: 2;
-    grid-row-end: 3;
-
-    grid: auto-flow dense / max-content auto max-content;
-    grid-template-rows: auto;
-
-    border-top: 1px solid grey;
-}
-
-.log .logger {
-    grid-column-start: 1;
-    grid-column-end: 2;
-    grid-row-start: 2;
-    grid-row-end: 2;
-
-    padding-top: 0.25em;
-    padding-right: 0.5em;
-}
-
-.log .records {
-    grid-column-start: 2;
-    grid-column-end: 3;
-    grid-row-start: 2;
-    grid-row-end: 2;
-
-    border-left: 1px solid grey;
-    padding-top: 0.25em;
-    padding-left: 0.5em;
-    font-weight: normal;
-}
-
-.log pre {
-    margin: 0;
-    font-weight: normal;
-    font-size: 14px;
-    line-heigth: 1ex;
-}
-
-.log .records span.DEBUG {
-    color: limegreen;
-}
-
-.log .records span.WARNING {
-    color: yellow;
-}
-
-.log .records span.ERROR {
-    color: red;
-}
-
-.log .records span.CRITICAL {
+#main-grid #top span#critical-errors {
     background-color: red;
     color: white;
     font-weight: bold;
 }
 
-/* messages */
-#messages {
+#main-grid #top span#errors {
+    color: red;
+}
+
+#main-grid #top span#warnings {
+    color: yellow;
+}
+
+/* OVERLAY ----------------------------------------------------------------- */
+#overlay {
     grid-column-start: 1;
-    grid-column-end: 1;
+    grid-column-end: 2;
     grid-row-start: 2;
-    grid-row-end: 4;
+    grid-row-end: 3;
+    display: grid;
+
+    grid-template-columns: auto;
+    grid-template-rows: 2em 2.5em auto;
+
+    padding: 0em 1em;
+    background: rgba(5, 5, 5, 0.75);
+    font-weight: bold;
+    z-index: 2000;
+}
+
+#overlay #status {
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 1;
+    grid-row-end: 2;
 
     padding-top: 0.5em;
-    pointer-events:none;
-
-    z-index: 1000;
+    font-size: 1.5em;
+    text-align: left;
+    user-select: none;
 }
 
-#messages .message {
-    background: rgba(5, 5, 5, 0.75);
-    padding: 0 0.2em;
-    line-height: normal;
-    cursor: pointer;
-    pointer-events: auto;
-}
+#overlay #controls {
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 1;
+    grid-row-end: 2;
 
-#messages .important {
-    color: #E96D79;
-}
-
-/* attribute table */
-table.attributes {
-    border: 1px solid grey;
-    font-family: Courier;
-    width: 100%;
-    font-size: 75%;
-}
-
-table.attributes tr:nth-child(even) {
-    background-color: grey;
-}
-
-table.attributes td,
-table.attributes th {
-    padding-right: 0.5em;
-    vertical-align: top;
-}
-
-table.attributes .key {
     text-align: right;
-    font-weight: bold;
-}
-
-table.attributes .value {
-    width: 100%;
-}
-
-table.attributes .type {
-    text-align: right;
+    user-select: none;
 }
 
 /* TABS -------------------------------------------------------------------- */
 .tabs {
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 2;
+    grid-row-end: 3;
+
     display: grid;
     grid: auto-flow dense / max-content auto max-content;
     grid-template-rows: auto;
 
-    margin-bottom: 1em;
+    padding-top: 0.5em;
+    user-select: none;
 }
 
 .tabs .tab {
@@ -249,7 +153,6 @@ table.attributes .type {
     grid-column-end: 4;
 }
 
-/* TABS::SPACER ------------------------------------------------------------ */
 .tabs .spacer {
     content: " ";
     height: calc(1.4em + 1px);
@@ -268,4 +171,171 @@ table.attributes .type {
 .tabs .right .spacer {
     float: left;
     width: 0.5em;
+}
+
+#tab-content {
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 3;
+    grid-row-end: 4;
+
+    padding-bottom: 1em;
+    overflow: auto;
+}
+
+/* Attribute Table --------------------------------------------------------- */
+table.attributes {
+    border: 1px solid grey;
+    font-family: Courier;
+    width: 100%;
+    font-size: 75%;
+}
+
+table.attributes tr:nth-child(even) {
+    background-color: grey;
+}
+
+table.attributes td,
+table.attributes th {
+    padding-right: 0.5em;
+    vertical-align: top;
+}
+
+table.attributes .key {
+    text-align: right;
+    font-weight: bold;
+}
+
+table.attributes .value {
+    width: 100%;
+}
+
+table.attributes .value pre {
+    margin: 0;
+    padding: 0;
+}
+
+table.attributes .type {
+    text-align: right;
+}
+
+/* log --------------------------------------------------------------------- */
+.log {
+    display: grid;
+    grid-template-rows: 1.5em auto;
+
+    height: 100%;
+}
+
+.log .level {
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 1;
+    grid-row-end: 1;
+}
+
+.log .level #log-controls {
+    float: right;
+}
+
+.log .sub-grid {
+    display: grid;
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 2;
+    grid-row-end: 3;
+
+    grid: auto-flow dense / max-content auto max-content;
+    grid-template-rows: auto;
+
+    height: 100%;
+    overflow: hidden;
+    border-top: 1px solid grey;
+}
+
+.log .logger {
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 1;
+    grid-row-end: 2;
+
+    height: 100%;
+    overflow: auto;
+    padding-top: 0.25em;
+    padding-right: 0.5em;
+}
+
+.log .records {
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 1;
+    grid-row-end: 2;
+
+    height: calc(100% - 5px);
+    overflow: auto;
+    border-left: 1px solid grey;
+    padding: 0.25em 0 0.5em 0.25em;
+    font-weight: normal;
+
+    color: limegreen;
+}
+
+.log .records * {
+    overflow-anchor: none;
+}
+
+.scroll-anchor {
+    overflow-anchor: auto !important;
+    height: 1px;
+}
+
+.log pre {
+    margin: 0;
+    font-weight: normal;
+    font-size: 14px;
+    line-heigth: 1ex;
+}
+
+.log .records span.INFO {
+    color: white;
+}
+
+.log .records span.WARNING {
+    color: yellow;
+}
+
+.log .records span.ERROR {
+    color: red;
+}
+
+.log .records span.CRITICAL {
+    background-color: red;
+    color: white;
+    font-weight: bold;
+}
+
+/* MESSAGES ---------------------------------------------------------------- */
+#messages {
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 2;
+    grid-row-end: 4;
+
+    padding-top: 0.5em;
+    pointer-events:none;
+    user-select: none;
+
+    z-index: 1000;
+}
+
+#messages .message {
+    background: rgba(5, 5, 5, 0.75);
+    padding: 0 0.2em;
+    line-height: normal;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+#messages .important {
+    color: #E96D79;
 }

@@ -51,13 +51,13 @@ function RPC(host) {
             if('method' in data) {
                 if('id' in data && data.id != null) {  // request
                     this._rpc._handle_request(data);
-                    
+
                 } else {  // notification
                     if(data.method in this._rpc._topic_handler) {
                         this._rpc._topic_handler[data.method](data.params);
                     }
                 }
-                
+
             } else {
                 if('id' in data && data.id in this._rpc._pending) {
                     if('error' in data) {  // error
