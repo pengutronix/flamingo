@@ -15,7 +15,7 @@ INSTALL_REQUIRES = [
 
 EXTRAS_REQUIRE = {
     'live-server': [
-        'aiohttp-json-rpc==0.12.1',
+        'aiohttp-json-rpc==0.12.2',
         'pygments',
         'ipython<7',
     ],
