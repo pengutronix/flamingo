@@ -1,3 +1,4 @@
+from concurrent.futures import CancelledError
 from collections import deque
 import logging
 import os
@@ -176,6 +177,9 @@ class ContentExporter:
                 gen_response,
                 request.path
             )
+
+        except CancelledError:
+            response = Response(text='500: Cancelled', status=500)
 
         except Exception as e:
             self.context.logger.error(e, exc_info=True)
