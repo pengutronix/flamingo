@@ -186,8 +186,12 @@ class DiscoveryWatcher(BaseWatcher):
                             if self.ignored(abs_path):
                                 continue
 
-                            mtime = os.path.getmtime(abs_path)
-                            new_state[abs_path] = (flag, mtime, )
+                            try:
+                                mtime = os.path.getmtime(abs_path)
+                                new_state[abs_path] = (flag, mtime, )
+
+                            except FileNotFoundError:
+                                pass
 
                 else:
                     abs_path = os.path.join(path)
@@ -195,7 +199,12 @@ class DiscoveryWatcher(BaseWatcher):
                     if self.ignored(path):
                         continue
 
-                    new_state[abs_path] = (flag, os.path.getmtime(abs_path), )
+                    try:
+                        new_state[abs_path] = (flag,
+                                               os.path.getmtime(abs_path), )
+
+                    except FileNotFoundError:
+                        pass
 
             # first run
             if first_run:
