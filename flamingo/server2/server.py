@@ -317,24 +317,31 @@ class Server:
 
                 self.rpc.notify(
                     'messages',
-                    '<span class="important">{}</span> changed'.format(path),
+                    '<span class="important">{}</span> modified'.format(path),
                 )
 
         if code_event:
-            self.rpc.notify('messages', 'setup new context...')
+            if self.context.settings.LIVE_SERVER_RESETUP_ON_CODE_CHANGE:
+                self.rpc.notify('messages', 'setup new context...')
 
-            self.setup()
+                self.setup()
 
-            self.rpc.notify('messages', 'setup successful')
+                self.rpc.notify('messages', 'setup successful')
 
-            self.rpc.notify('status', {
-                'changed_paths': '*',
-            })
+                self.rpc.notify('status', {
+                    'changed_paths': '*',
+                })
 
-            return
+                return
+
+            else:
+                self.rpc.notify('messages', 'please restart')
 
         # notifications
         for flags, path in events:
+            if Flags.CODE in flags:
+                continue
+
             if Flags.TEMPLATE in flags or Flags.STATIC in flags:
                 non_content_event = True
 
