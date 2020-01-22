@@ -57,11 +57,10 @@ class JsonRpc(_JsonRpc):
         self._running = True
 
         for i in range(worker):
-            if self.loop.is_running():
-                self.loop.run_in_executor(
-                    self.executor,
-                    self.notification_worker,
-                )
+            self.loop.run_in_executor(
+                self.executor,
+                self.notification_worker,
+            )
 
     def stop_notification_worker(self):
         self._running = False
