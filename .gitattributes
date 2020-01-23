@@ -1,3 +1,4 @@
-flamingo/server/lib/* linguist-vendored
+flamingo/legacy_server/static/lib/* linguist-vendored
+flamingo/server/static/lib/* linguist-vendored
 flamingo/plugins/*/theme/* linguist-vendored
 flamingo/project_templates/* linguist-vendored
