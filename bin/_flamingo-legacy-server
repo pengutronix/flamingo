@@ -1,0 +1,293 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from functools import partial
+import traceback
+import asyncio
+import logging
+import types
+import os
+
+from aiohttp.web import Application, FileResponse, Response, run_app
+from aiohttp_json_rpc import JsonRpc
+
+from flamingo.core.utils.cli import gen_default_parser, parse_args
+from flamingo.core.utils.aiohttp import no_cache
+from flamingo.core.utils.pprint import pformat
+from flamingo.core.data_model import Q
+
+from flamingo.legacy_server.build_environment import BuildEnvironment
+from flamingo.legacy_server.exporter import ContentExporter, History
+from flamingo.legacy_server.watcher import Flags, DiscoveryWatcher
+from flamingo.legacy_server.logging import RPCHandler
+from flamingo.legacy_server import SERVER_STATIC_ROOT
+
+
+def default_exeption_handler(loop, context):
+    print(context['message'])
+
+    traceback.print_exception(
+        Exception, context['exception'], context['exception'].__traceback__)
+
+
+loop = asyncio.get_event_loop()
+loop.set_exception_handler(default_exeption_handler)
+
+# setup aiohttp app
+app = Application(loop=loop)
+
+# parse command line
+parser = gen_default_parser(prog='flamingo legacy-server')
+
+parser.add_argument('--port', type=int, default=8080)
+parser.add_argument('--host', type=str, default='localhost')
+
+namespace, settings = parse_args(parser, setup_logging=False)
+
+# setup rpc
+rpc = JsonRpc(loop=loop, max_workers=4)
+worker_pool = rpc.worker_pool
+
+rpc.add_topics(
+    ('status',),
+    ('log',),
+    ('messages',),
+)
+
+# setup logging
+logging.basicConfig(level=logging.DEBUG)
+rpc_logging_handler = RPCHandler(rpc=rpc, log_level_name=namespace.log_level)
+root_logger = logging.getLogger()
+root_logger.handlers = [rpc_logging_handler]
+
+# flamingo context and context exporter
+build_environment = BuildEnvironment(settings)
+context = build_environment.context
+history = History(maxlen=100)
+exporter = ContentExporter(context, history)
+
+app['build_environment'] = build_environment
+app['context'] = context
+app['history'] = history
+app['exporter'] = exporter
+app['rpc'] = rpc
+
+
+# rpc methods
+def get_meta_data(request, url):
+    context = request.http_request.app['context']
+    ignore_keys = ('content', 'content_body', 'template_context')
+
+    meta_data = {
+        'meta_data': [],
+        'template_context': [],
+        'settings': [],
+    }
+
+    try:
+        content = context.contents.get(url=url)
+
+    except Exception:
+        content = None
+
+    if not content:
+        url = os.path.join(url, 'index.html')
+
+        try:
+            content = context.contents.get(url=url)
+
+        except Exception:
+            return {
+                'meta_data': [],
+                'template_context': [],
+                'settings': [],
+            }
+
+    meta_data['meta_data'] = sorted([
+        {'key': k, 'value': pformat(v), 'type': type(v).__name__}
+        for k, v in content.data.items() if k not in ignore_keys
+    ], key=lambda v: v['key'])
+
+    meta_data['template_context'] = sorted([
+        {'key': k, 'value': pformat(v), 'type': type(v).__name__}
+        for k, v in (content['template_context'] or {}).items()
+    ], key=lambda v: v['key'])
+
+    for key, value in context.settings._attrs.items():
+        if key.startswith('_') or key in ('add', 'modules', ):
+            continue
+
+        value_type = type(value)
+
+        if value_type in (types.ModuleType, types.FunctionType,
+                          types.MethodType):
+
+            continue
+
+        meta_data['settings'].append(
+            {'key': key, 'value': pformat(value), 'type': value_type.__name__}
+        )
+
+    meta_data['settings'] = sorted(meta_data['settings'],
+                                   key=lambda v: v['key'])
+
+    return meta_data
+
+
+def start_shell(request):
+    try:
+        import IPython
+
+        IPython.embed()
+
+        return
+
+    except ImportError:
+        pass
+
+    import code
+
+    code.interact(local=globals())
+
+
+rpc.add_methods(
+    ('', get_meta_data),
+    ('', start_shell),
+    ('', rpc_logging_handler.setup_log),
+    ('', rpc_logging_handler.clear_log),
+)
+
+# setup watcher
+watcher = DiscoveryWatcher(context)
+
+
+def rpc_notify_sync(topic, message, wait=False):
+    rpc.worker_pool.run_sync(
+        partial(rpc.notify, topic, message), wait=True,
+    )
+
+
+def handle_watcher_events(app):
+    def _handle_watcher_events(events):
+        paths = []
+        non_content_event = False
+        changed_paths = []
+
+        # notifications
+        for flags, path in events:
+            if Flags.TEMPLATE in flags or Flags.STATIC in flags:
+                non_content_event = True
+
+            elif(os.path.splitext(path)[1].lower() in
+                 ('.jpg', '.jpeg', '.png', '.svg', )):
+
+                non_content_event = True
+
+            elif Flags.CONTENT in flags:
+                paths.append(
+                    os.path.relpath(path,
+                                    app['context'].settings.CONTENT_ROOT)
+                )
+
+            action = 'modified'
+
+            if Flags.CREATE in flags:
+                action = 'created'
+
+            elif Flags.DELETE in flags:
+                action = 'deleted'
+
+            rpc_notify_sync(
+                'messages',
+                '<span class="important">{}</span> {}'.format(path, action),
+            )
+
+        # rebuild
+        if paths:
+            rpc_notify_sync('messages', 'rebuilding...')
+            app['build_environment'].build(paths)
+            rpc_notify_sync('messages', 'rebuilding successful')
+
+            changed_paths = [
+                '/' + i for i in app['context'].contents.filter(
+                    Q(path__in=paths) | Q(i18n_path__in=paths)
+                ).values('output')
+            ]
+            app['exporter'].clear()
+
+            if changed_paths:
+                for path in changed_paths[::]:
+                    if path.endswith('index.html'):
+                        clear_path = os.path.dirname(path)
+
+                        changed_paths.append(clear_path)
+                        changed_paths.append(clear_path + '/')
+
+        # changed paths
+        app['exporter'].clear()
+
+        if non_content_event:
+            changed_paths.append('*')
+
+        if changed_paths:
+            rpc_notify_sync('status', {
+                'changed_paths': changed_paths,
+            })
+
+    return _handle_watcher_events
+
+
+def handle_watcher_notifications(app):
+    def _handle_watcher_notifications(flags, message):
+        rpc_notify_sync('messages', message)
+
+    return _handle_watcher_notifications
+
+
+async def watcher_shutdown(app):
+    watcher.shutdown()
+    await asyncio.sleep(watcher.interval)
+
+
+app.on_shutdown.append(watcher_shutdown)
+
+loop.run_in_executor(
+    worker_pool.executor,
+    watcher.watch,
+    handle_watcher_events(app),
+    handle_watcher_notifications(app),
+)
+
+
+# setup server
+@no_cache()
+async def index(request):
+    return FileResponse(os.path.join(SERVER_STATIC_ROOT, 'index.html'))
+
+
+@no_cache()
+async def static(request):
+    path = os.path.join(SERVER_STATIC_ROOT,
+                        os.path.relpath(request.path, '/live-server/static/'))
+
+    if not os.path.exists(path):
+        return Response(text='404: not found', status=404)
+
+    return FileResponse(path)
+
+
+app.router.add_route('*', '/live-server/rpc/', rpc)
+app.router.add_route('*', '/live-server/static/{path_info:.*}', static)
+app.router.add_route('*', '/live-server/', index)
+app.router.add_route('*', '/{path_info:.*}', exporter)
+
+# run
+print('starting server on http://localhost:{}/live-server/'.format(
+    namespace.port))
+
+try:
+    run_app(app=app, host=namespace.host, port=namespace.port,
+            print=lambda *args, **kwargs: None)
+
+except OSError:
+    exit('ERROR: can not bind to port {}'.format(namespace.port))
