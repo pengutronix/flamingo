@@ -1,5 +1,6 @@
 import os
 
+from flamingo.core.data_model import Content, ContentSet, F, Q  # NOQA
 from flamingo.core.plugins.plugin_manager import hook  # NOQA
 
 _dirname = os.path.dirname(__file__)
