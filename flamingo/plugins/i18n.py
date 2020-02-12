@@ -47,6 +47,8 @@ class I18N:
                 if l not in translation_langs:
                     content_data = copy(content.data)
 
+                    content_data['original_path'] = content['path']
+
                     if 'path' in content_data:
                         content_data['i18n_path'] = content_data['path']
                         del content_data['path']
