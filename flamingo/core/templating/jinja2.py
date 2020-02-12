@@ -225,6 +225,11 @@ class Jinja2(TemplatingEngine):
             if filename in self.contents:
                 content_path = self.contents[filename]['path']
 
+                if(not content_path and
+                   self.contents[filename]['original_path']):
+
+                    content_path = self.contents[filename]['original_path']
+
             stack.append(
                 (filename, frame.lineno, content_path, )
             )
@@ -306,9 +311,18 @@ class Jinja2(TemplatingEngine):
         path = ''
 
         try:
+            content_path = content['path']
+
+            if not content_path:
+                if content['original_path']:  # I18N
+                    content_path = content['original_path']
+
+                else:
+                    content_path = ''
+
             name = '{}{}'.format(
                 hashlib.md5(str(datetime.datetime.now()).encode()).hexdigest(),
-                os.path.splitext(content['path'])[1],
+                os.path.splitext(content_path)[1],
             )
 
             path = os.path.join(self.tempdir.name, name)
