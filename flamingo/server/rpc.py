@@ -6,9 +6,20 @@ from aiohttp_json_rpc.protocol import encode_notification
 from aiohttp_json_rpc import JsonRpc as _JsonRpc
 
 
+class Clients(list):
+    def remove(self, *args, **kwargs):
+        try:
+            return super().remove(*args, **kwargs)
+
+        except ValueError:
+            return None
+
+
 class JsonRpc(_JsonRpc):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self.clients = Clients()
 
         self.notification_queue = Queue()
         self.executor = None
