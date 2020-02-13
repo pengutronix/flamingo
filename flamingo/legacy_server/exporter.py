@@ -3,7 +3,7 @@ from collections import deque
 import logging
 import os
 
-from aiohttp.web import FileResponse, Response
+from aiohttp.web import FileResponse, HTTPFound, Response
 
 from flamingo.core.utils.aiohttp import no_cache
 from flamingo.core.data_model import Content
@@ -160,6 +160,9 @@ class ContentExporter:
                 return FileResponse(content)
 
             # content response
+            if content['redirect']:
+                raise HTTPFound(content['redirect'])
+
             try:
                 output = self.context.render(content)
                 self.history.append(content)
@@ -182,6 +185,9 @@ class ContentExporter:
             response = Response(text='500: Cancelled', status=500)
 
         except Exception as e:
+            if isinstance(e, HTTPFound):  # redirects
+                raise
+
             self.context.logger.error(e, exc_info=True)
 
             response = Response(text='500: Internal Error', status=500)
