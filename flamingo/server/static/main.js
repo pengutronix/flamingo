@@ -92,6 +92,13 @@ var iframe = document.querySelector('iframe#content');
 var iframe_initial_setup = false;
 
 function iframe_onload(iframe) {
+    // detect iframe recursion
+    if(iframe.contentDocument.body.classList.contains('flamingo-server')) {
+        iframe_set_url(iframe.contentWindow.location.href);
+
+        return;
+    }
+
     if(rpc._ws.readyState != rpc._ws.OPEN) {
         return;
     }
