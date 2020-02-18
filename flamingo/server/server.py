@@ -31,6 +31,8 @@ except ImportError:
 
 STATIC_ROOT = os.path.join(os.path.dirname(__file__), 'static')
 INDEX_HTML = os.path.join(STATIC_ROOT, 'index.html')
+HTTP_404_HTML = os.path.join(STATIC_ROOT, '404.html')
+HTTP_500_HTML = os.path.join(STATIC_ROOT, '500.html')
 
 default_logger = logging.getLogger('flamingo.server')
 
@@ -217,7 +219,15 @@ class Server:
         if extension == '.html' and 'Referer' not in request.headers:
             return FileResponse(INDEX_HTML)
 
-        return await self.content_exporter(request)
+        response = await self.content_exporter(request)
+
+        if response.status == 404:
+            return FileResponse(HTTP_404_HTML, status=404)
+
+        if response.status == 500:
+            return FileResponse(HTTP_500_HTML, status=500)
+
+        return response
 
     # rpc methods #############################################################
     def get_meta_data(self, request, url):
