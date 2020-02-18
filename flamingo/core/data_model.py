@@ -24,7 +24,7 @@ def quote(value):
     if t in types:
         return types[t]
 
-    return value
+    return str(value)
 
 
 def _str(s):
