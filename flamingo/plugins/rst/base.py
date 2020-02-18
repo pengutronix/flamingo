@@ -103,15 +103,26 @@ class WarningStream:
                 '%s:%s: %s', path, line, short_description)
 
 
-class SilentWriter(Writer):
+class FlamingoWriter(Writer):
     """
     This writer subclass removes all SystemMessages from its doctree
     """
+
+    def __init__(self, flamingo_context, *args, **kwargs):
+        self.flamingo_context = flamingo_context
+
+        super().__init__(*args, **kwargs)
 
     def write(self, document, destination):
         def remove_system_messages(children):
             for child in children[::]:
                 if isinstance(child, system_message):
+                    children.remove(child)
+
+                elif(hasattr(child, 'attributes') and
+                     'classes' in child.attributes and
+                     'system-messages' in child.attributes['classes']):
+
                     children.remove(child)
 
                 elif child.children:
@@ -120,9 +131,6 @@ class SilentWriter(Writer):
         remove_system_messages(document.children)
 
         return super().write(document, destination)
-
-
-_silent_writer = SilentWriter()
 
 
 def parse_rst_parts(rst_input, context, system_message_re=SYSTEM_MESSAGE_RE):
@@ -152,10 +160,12 @@ def parse_rst_parts(rst_input, context, system_message_re=SYSTEM_MESSAGE_RE):
         **context.settings.get('RST_SETTINGS_OVERRIDES', {}),
     }
 
+    writer = FlamingoWriter(flamingo_context=context)
+
     try:
         output = publish_parts(
             settings_overrides=settings_overrides,
-            writer=_silent_writer,
+            writer=writer,
             source=rst_input,
         )
 
