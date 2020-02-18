@@ -73,23 +73,10 @@ class BuildEnvironment:
 
         self.patch_contents()
 
-    def Content_on_change_handler(self, content, key, item):
-        if key == 'template_context':
-            return
-
-        if not content['url']:
-            return
-
-        self.server.rpc.notify('status', {
-            'changed_paths': content['url'],
-        })
-
     def patch_contents(self):
         logger.debug('patch Contents')
 
         for content in self.context.contents:
-            content.on_change = self.Content_on_change_handler
-
             # content.edit
             if content['path']:
                 path = os.path.join(self.server.settings.CONTENT_ROOT,

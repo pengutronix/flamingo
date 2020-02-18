@@ -49,10 +49,6 @@ LOGIC_FUNCTIONS = {
 }
 
 
-def Content_default_on_change_handler(content, key, item):
-    pass
-
-
 class F:
     def __init__(self, name):
         self.name = name
@@ -159,7 +155,6 @@ class Q:
 class Content:
     def __init__(self, **data):
         self.data = data
-        self.on_change = Content_default_on_change_handler
 
     def __repr__(self, pretty=True, recursion_stack=None):
         if pretty:
@@ -199,7 +194,6 @@ class Content:
 
     def __setitem__(self, key, item):
         return_value = self.data.__setitem__(key, item)
-        self.on_change(self, key, item)
 
         return return_value
 
