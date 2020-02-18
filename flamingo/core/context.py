@@ -170,13 +170,14 @@ class Context(OverlayObject):
         if self.settings.PRE_RENDER_CONTENT:
             self.logger.debug('pre rendering %s', content['path'] or content)
 
-            exitcode = self.templating_engine.pre_render_content(
+            exitcode, output = self.templating_engine.pre_render_content(
                 content, template_context)
 
-            if not exitcode:
-                content['template_context'] = template_context
+            if exitcode:
+                content['content_body'] = output
 
-                return content['content_body']
+            else:
+                return output
 
         output = self.templating_engine.render(template_name, template_context)
         content['template_context'] = template_context

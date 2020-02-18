@@ -304,9 +304,8 @@ class Jinja2(TemplatingEngine):
            not self.context.settings.JINJA2_TRACEBACKS):
 
             template = self.env.from_string(content['content_body'])
-            content['content_body'] = template.render(**template_context)
 
-            return True
+            return True, template.render(**template_context)
 
         path = ''
 
@@ -331,10 +330,7 @@ class Jinja2(TemplatingEngine):
             with open(path, 'w+') as f:
                 f.write(content['content_body'])
 
-            exit_code, output = self._render(name, template_context)
-            content['content_body'] = output
-
-            return exit_code
+            return self._render(name, template_context)
 
         finally:
             if path and path in self.contents:
