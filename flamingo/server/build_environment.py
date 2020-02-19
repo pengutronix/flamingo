@@ -58,18 +58,49 @@ class BuildEnvironment:
         self.context.settings.overlay_reset()
 
         self.raw_contents = self.raw_contents.exclude(path__in=paths)
-        self.context.contents = deepcopy(self.raw_contents)
 
-        # build
+        # find new contents
         self.context.settings.CONTENT_PATHS = paths
 
-        self.context.plugins.run_plugin_hook('setup')
-        self.context.plugins.run_plugin_hook('settings_setup')
+        source_paths = [
+            os.path.relpath(i, self.context.settings.CONTENT_ROOT)
+            for i in self.context.get_source_paths()
+        ]
 
-        self.context.parse_all()
+        for path in source_paths:
+            self.raw_contents.add(path=path)
 
+        # parse
+        self.context.settings.SKIP_HOOKS = ['content_parsed']
+
+        for content in self.raw_contents:
+            if content['path'] not in source_paths:
+                continue
+
+            if content['content_body']:
+                continue
+
+            self.context.parse(content)
+
+        # run hooks
+        self.context.contents = deepcopy(self.raw_contents)
+
+        for content in self.context.contents:
+            if content['path'] not in source_paths:
+                continue
+
+            self.context.content = content
+            self.context.plugins.run_plugin_hook('content_parsed', content)
+
+        self.context.content = None
+
+        self.context.plugins.run_plugin_hook('contents_parsed')
         self.context.plugins.run_plugin_hook('pre_build')
         self.context.plugins.run_plugin_hook('post_build')
+
+        # finish
+        self.context.settings.CONTENT_PATHS = []
+        self.context.settings.SKIP_HOOKS = []
 
         self.patch_contents()
 
