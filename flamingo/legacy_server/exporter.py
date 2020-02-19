@@ -182,7 +182,7 @@ class ContentExporter:
             )
 
         except CancelledError:
-            response = Response(text='500: Cancelled', status=500)
+            response = Response(text='499: Client Closed Request', status=499)
 
         except Exception as e:
             if isinstance(e, HTTPFound):  # redirects
