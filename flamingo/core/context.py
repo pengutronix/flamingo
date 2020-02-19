@@ -168,6 +168,7 @@ class Context(OverlayObject):
         }
 
         if(self.settings.PRE_RENDER_CONTENT and
+           content.get('is_template', True) and
            not content['_content_body_rendered']):
 
             self.logger.debug('pre rendering %s', content['path'] or content)
