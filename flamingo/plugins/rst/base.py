@@ -9,7 +9,7 @@ from docutils.core import publish_parts
 
 from flamingo.core.parser import ContentParser, ParsingError
 
-SYSTEM_MESSAGE_RE = re.compile(r'^(?P<name>[^:]+):(?P<line>\d+): \((?P<level_name>[^/)]+)/(?P<level>\d+)\) (?P<short_description>[^\t\n]+)(?P<long_description>.*)?$', re.DOTALL)  # NOQA
+SYSTEM_MESSAGE_RE = re.compile(r'^(?P<name>[^:]+):(?P<line>\d+)?: \((?P<level_name>[^/)]+)/(?P<level>\d+)\) (?P<short_description>[^\t\n]+)(?P<long_description>.*)?$', re.DOTALL)  # NOQA
 logger = logging.getLogger('flamingo.plugins.reStructuredText')
 
 
@@ -55,7 +55,7 @@ def parse_system_message(raw_message, system_message_re=SYSTEM_MESSAGE_RE):
         result = result.groupdict()
 
         result['level'] = int(result['level'])
-        result['line'] = int(result['line'])
+        result['line'] = int(result['line'] or '0')
 
         if result['short_description'][-1] == '.':
             result['short_description'] = result['short_description'][:-1]
