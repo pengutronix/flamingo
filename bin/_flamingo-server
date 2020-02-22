@@ -39,7 +39,7 @@ log_level = {
     'FATAL': logging.FATAL,
 }[namespace.log_level]
 
-rpc_logging_handler.set_internal_level(log_level)
+rpc_logging_handler.internal_level = log_level
 rpc_logging_handler.buffer_max_size = namespace.log_backlog
 rpc_logging_handler.loggers = namespace.loggers
 

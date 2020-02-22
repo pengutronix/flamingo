@@ -389,10 +389,16 @@ rpc.on('open', function(rpc) {
         add_logger(data.logger);
 
         log.stats = data.stats;
-        log.records = log.records.concat(data.records);
 
-        log.records = log.records.slice(
-            server_settings.log_buffer_max_size * -1);
+        if(data.initial) {
+            log.records = data.records;
+
+        } else {
+            log.records = log.records.concat(data.records);
+
+            log.records = log.records.slice(
+                server_settings.log_buffer_max_size * -1);
+        }
 
         ractive.set('log', log);
     };

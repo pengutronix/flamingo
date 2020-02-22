@@ -41,6 +41,9 @@ class Server:
     def __init__(self, app, settings, rpc_logging_handler, loop=None,
                  rpc_max_workers=6, logger=default_logger):
 
+        self.build_environment = None
+        rpc_logging_handler.server = self
+
         self.app = app
         self.settings_paths = settings
         self.loop = loop or app.loop
@@ -55,7 +58,7 @@ class Server:
         # setup rpc
         self.rpc = JsonRpc(loop=self.loop, max_workers=rpc_max_workers)
         self.rpc_logging_handler = rpc_logging_handler
-        self.rpc_logging_handler.set_rpc(self.rpc)
+        self.rpc_logging_handler.rpc = self.rpc
 
         self.app['rpc'] = self.rpc
 
@@ -112,7 +115,10 @@ class Server:
 
             # setup build environment
             self.logger.debug('setup build environment')
-            self.build_environment = BuildEnvironment(self)
+
+            self.build_environment = BuildEnvironment(self, setup=False)
+            self.build_environment.setup()
+
             self.context = self.build_environment.context
 
             # setup content exporter

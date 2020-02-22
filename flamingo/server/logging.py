@@ -13,7 +13,9 @@ class RPCHandler(logging.Handler):
 
         self.buffer_max_size = 2500
         self.internal_level = None
+
         self.rpc = None
+        self.server = None
 
         self._setup(initial=True)
 
@@ -31,21 +33,16 @@ class RPCHandler(logging.Handler):
             'critical': 0,
         }
 
-    def _notify(self, records=None):
+    def _notify(self, records=None, initial=False):
         if not self.rpc:
             return
 
         self.rpc.notify('log', {
+            'initial': initial,
             'stats': self.stats,
             'logger': self.logger,
             'records': records or [],
         })
-
-    def set_rpc(self, rpc):
-        self.rpc = rpc
-
-    def set_internal_level(self, level):
-        self.internal_level = level
 
     def handle(self, record):
         if self.internal_level and record.levelno < self.internal_level:
@@ -60,7 +57,21 @@ class RPCHandler(logging.Handler):
             'name': record.name,
             'level': record.levelname.lower(),
             'message': record.getMessage(),
+            'content_path': '',
+            'hook': '',
         }
+
+        if(self.server and
+           self.server.build_environment and
+           self.server.build_environment.context):
+
+            if self.server.build_environment.context.content:
+                record_args['content_path'] = \
+                    self.server.build_environment.context.content['path']
+
+            if self.server.build_environment.context.plugins:
+                record_args['hook'] = \
+                    self.server.build_environment.context.plugins.running_hook
 
         # exc_info
         if record.exc_info:
@@ -146,3 +157,19 @@ class RPCHandler(logging.Handler):
         self._notify()
 
         return True
+
+    def filter(self, paths):
+        hooks = [
+            'contents_parsed',
+            'pre_build',
+            'post_build',
+        ]
+
+        for record in self.buffer[::]:
+            if(record['hook'] in hooks or
+               record['content_path'] in paths):
+
+                self.buffer.remove(record)
+                self.stats[record['level']] -= 1
+
+        self._notify(records=self.buffer, initial=True)

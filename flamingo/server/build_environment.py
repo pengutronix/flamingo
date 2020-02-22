@@ -10,15 +10,20 @@ logger = logging.getLogger('flamingo.server.BuildEnvironment')
 
 
 class BuildEnvironment:
-    def __init__(self, server):
+    def __init__(self, server, setup=True):
         self.server = server
+        self.context = None
 
+        if setup:
+            self.setup()
+
+    def setup(self):
         # configure
-        server.settings.LIVE_SERVER_RUNNING = True
-        server.settings.SKIP_FILE_OPERATIONS = True
-        server.settings.CONTENT_PATHS = []
+        self.server.settings.LIVE_SERVER_RUNNING = True
+        self.server.settings.SKIP_FILE_OPERATIONS = True
+        self.server.settings.CONTENT_PATHS = []
 
-        server.settings.SKIP_HOOKS = [
+        self.server.settings.SKIP_HOOKS = [
             'content_parsed',
             'contents_parsed',
             'pre_build',
@@ -26,7 +31,9 @@ class BuildEnvironment:
         ]
 
         # setup context and contents
-        self.context = Context(settings=server.settings)
+        self.context = Context(settings=self.server.settings, setup=False)
+        self.context.setup()
+
         self.raw_contents = deepcopy(self.context.contents)
 
         # configure
@@ -48,6 +55,8 @@ class BuildEnvironment:
         self.patch_contents()
 
     def build(self, paths):
+        self.server.rpc_logging_handler.filter(paths)
+
         logger.debug('rebuilding %s', paths)
 
         # reset

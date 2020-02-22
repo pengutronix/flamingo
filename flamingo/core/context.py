@@ -15,10 +15,18 @@ class Context(OverlayObject):
         'contents',
     ]
 
-    def __init__(self, settings, contents=None):
+    def __init__(self, settings, contents=None, setup=True):
         super().__init__()
 
         self.settings = settings
+        self.contents = contents
+        self.content = None
+        self.plugins = None
+
+        if setup:
+            self.setup()
+
+    def setup(self):
         self.errors = []
 
         # setup logging
@@ -35,14 +43,16 @@ class Context(OverlayObject):
         self.plugins.run_plugin_hook('parser_setup')
 
         # setup templating engine
-        templating_engine_class, path = acquire(settings.TEMPLATING_ENGINE)
+        templating_engine_class, path = acquire(
+            self.settings.TEMPLATING_ENGINE)
+
         self.templating_engine = templating_engine_class(self)
 
         self.plugins.run_plugin_hook('templating_engine_setup',
                                      self.templating_engine)
 
         # parse contents
-        self.contents = contents or ContentSet()
+        self.contents = self.contents or ContentSet()
         self.parse_all()
 
         # context ready
