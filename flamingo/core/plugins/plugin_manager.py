@@ -42,6 +42,7 @@ class PluginManager:
         self._plugins = []
         self._plugin_paths = []
         self._hooks = {key: [] for key in HOOK_NAMES}
+        self._running_hook = ''
 
         self.THEME_PATHS = []
         self.PLUGIN_PATHS = []
@@ -138,6 +139,10 @@ class PluginManager:
                     ('settings', attr, ),
                 )
 
+    @property
+    def running_hook(self):
+        return self._running_hook
+
     def run_plugin_hook(self, name, *args, **kwargs):
         if name in self._context.settings.SKIP_HOOKS:
             logger.debug("'%s' skipped because of settings.SKIP_HOOKS", name)
@@ -152,17 +157,24 @@ class PluginManager:
         if not self._hooks[name]:
             return
 
-        logger.debug("running plugin hook '%s'", name)
-        args = (self._context, *args)
+        try:
+            logger.debug("running plugin hook '%s'", name)
+            self._running_hook = name
 
-        for plugin_name, hook in self._hooks[name]:
-            logger.debug('running %s.%s', plugin_name, name)
+            args = (self._context, *args)
 
-            try:
-                hook(*args, **kwargs)
+            for plugin_name, hook in self._hooks[name]:
+                logger.debug('running %s.%s', plugin_name, name)
 
-            except Exception:
-                logger.error('%s.%s failed', plugin_name, name, exc_info=True)
+                try:
+                    hook(*args, **kwargs)
+
+                except Exception:
+                    logger.error('%s.%s failed', plugin_name, name,
+                                 exc_info=True)
+
+        finally:
+            self._running_hook = ''
 
     def get_plugin(self, name):
         for plugin_name, plugin_object in self._plugins:
