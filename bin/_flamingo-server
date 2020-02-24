@@ -27,6 +27,7 @@ parser.add_argument('--port', type=int, default=8080)
 parser.add_argument('--host', type=str, default='localhost')
 parser.add_argument('--disable-overlay', action='store_true')
 parser.add_argument('--enable-browser-caching', action='store_true')
+parser.add_argument('--refresh-interval', type=float, default=0.25)
 parser.add_argument('--log-backlog', type=int, default=2500)
 parser.add_argument('--shell', action='store_true')
 parser.add_argument('--shell-history', action='store_true')
@@ -57,6 +58,7 @@ try:
         settings=namespace.settings or [],
         disable_overlay=namespace.disable_overlay,
         enable_browser_caching=namespace.enable_browser_caching,
+        watcher_interval=namespace.refresh_interval,
         rpc_logging_handler=rpc_logging_handler,
     )
 

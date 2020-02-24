@@ -40,7 +40,8 @@ default_logger = logging.getLogger('flamingo.server')
 class Server:
     def __init__(self, app, settings, rpc_logging_handler,
                  disable_overlay=False, enable_browser_caching=False,
-                 loop=None, rpc_max_workers=6, logger=default_logger):
+                 watcher_interval=0.25, loop=None, rpc_max_workers=6,
+                 logger=default_logger):
 
         self.build_environment = None
         rpc_logging_handler.server = self
@@ -54,6 +55,7 @@ class Server:
         # options
         self.overlay = not disable_overlay
         self.browser_caching = enable_browser_caching
+        self.watcher_interval = watcher_interval
 
         # locks
         self._shell_running = False
@@ -137,7 +139,11 @@ class Server:
             # setup watcher
             if initial:
                 self.logger.debug('setup watcher')
-                self.watcher = DiscoveryWatcher(context=self.context)
+
+                self.watcher = DiscoveryWatcher(
+                    context=self.context,
+                    interval=self.watcher_interval,
+                )
 
             self.logger.debug('setup watcher task')
 
