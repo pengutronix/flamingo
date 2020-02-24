@@ -38,8 +38,9 @@ default_logger = logging.getLogger('flamingo.server')
 
 
 class Server:
-    def __init__(self, app, settings, rpc_logging_handler, loop=None,
-                 rpc_max_workers=6, logger=default_logger):
+    def __init__(self, app, settings, rpc_logging_handler,
+                 disable_overlay=False, loop=None, rpc_max_workers=6,
+                 logger=default_logger):
 
         self.build_environment = None
         rpc_logging_handler.server = self
@@ -49,6 +50,9 @@ class Server:
         self.loop = loop or app.loop
         self.logger = logger
         self.frontend_controller = FrontendController(self)
+
+        # options
+        self.overlay = not disable_overlay
 
         # locks
         self._shell_running = False
@@ -62,29 +66,32 @@ class Server:
 
         self.app['rpc'] = self.rpc
 
-        # setup rpc methods and topics
-        self.rpc.add_topics(
-            ('status',),
-            ('log',),
-            ('messages',),
-            ('commands',),
-        )
-
-        self.rpc.add_methods(
-            ('', self.get_meta_data),
-            ('', self.start_shell),
-            ('', self.rpc_logging_handler.setup_log),
-            ('', self.rpc_logging_handler.clear_log),
-        )
-
         # setup aiohttp
-        app.router.add_route('*', '/_flamingo/rpc/', self.rpc)
+        if self.overlay:
 
-        app.router.add_route(
-            '*', '/_flamingo/settings.js', self.frontend_settings)
+            # setup rpc methods and topics
+            self.rpc.add_topics(
+                ('status',),
+                ('log',),
+                ('messages',),
+                ('commands',),
+            )
 
-        app.router.add_route(
-            '*', '/_flamingo/static/{path_info:.*}', self.static)
+            self.rpc.add_methods(
+                ('', self.get_meta_data),
+                ('', self.start_shell),
+                ('', self.rpc_logging_handler.setup_log),
+                ('', self.rpc_logging_handler.clear_log),
+            )
+
+            app.router.add_route('*', '/_flamingo/rpc/', self.rpc)
+
+            # setup overlay views
+            app.router.add_route(
+                '*', '/_flamingo/settings.js', self.frontend_settings)
+
+            app.router.add_route(
+                '*', '/_flamingo/static/{path_info:.*}', self.static)
 
         app.router.add_route('*', '/{path_info:.*}', self.serve)
 
@@ -220,10 +227,11 @@ class Server:
     async def serve(self, request):
         await self.await_unlock()
 
-        extension = os.path.splitext(request.path)[1] or '.html'
+        if self.overlay:
+            extension = os.path.splitext(request.path)[1] or '.html'
 
-        if extension == '.html' and 'Referer' not in request.headers:
-            return FileResponse(INDEX_HTML)
+            if extension == '.html' and 'Referer' not in request.headers:
+                return FileResponse(INDEX_HTML)
 
         response = await self.content_exporter(request)
 
@@ -321,6 +329,9 @@ class Server:
 
     # watcher events ##########################################################
     def handle_watcher_events(self, events):
+        if not self.overlay:
+            return
+
         paths = []
         code_event = False
         non_content_event = False
@@ -414,4 +425,7 @@ class Server:
             })
 
     def handle_watcher_notifications(self, flags, message):
+        if not self.overlay:
+            return
+
         self.rpc.notify('messages', message)
