@@ -39,8 +39,8 @@ default_logger = logging.getLogger('flamingo.server')
 
 class Server:
     def __init__(self, app, settings, rpc_logging_handler,
-                 disable_overlay=False, loop=None, rpc_max_workers=6,
-                 logger=default_logger):
+                 disable_overlay=False, enable_browser_caching=False,
+                 loop=None, rpc_max_workers=6, logger=default_logger):
 
         self.build_environment = None
         rpc_logging_handler.server = self
@@ -53,6 +53,7 @@ class Server:
 
         # options
         self.overlay = not disable_overlay
+        self.browser_caching = enable_browser_caching
 
         # locks
         self._shell_running = False
@@ -223,7 +224,6 @@ class Server:
 
         return FileResponse(path)
 
-    @no_cache()
     async def serve(self, request):
         await self.await_unlock()
 
@@ -231,15 +231,24 @@ class Server:
             extension = os.path.splitext(request.path)[1] or '.html'
 
             if extension == '.html' and 'Referer' not in request.headers:
-                return FileResponse(INDEX_HTML)
+                response = FileResponse(INDEX_HTML)
+
+                response.headers['Cache-Control'] = \
+                    'no-cache, no-store, must-revalidate'
+
+                return response
 
         response = await self.content_exporter(request)
 
         if response.status == 404:
-            return FileResponse(HTTP_404_HTML, status=404)
+            response = FileResponse(HTTP_404_HTML, status=404)
 
         if response.status == 500:
-            return FileResponse(HTTP_500_HTML, status=500)
+            response = FileResponse(HTTP_500_HTML, status=500)
+
+        if not self.browser_caching:
+            response.headers['Cache-Control'] = \
+                'no-cache, no-store, must-revalidate'
 
         return response
 

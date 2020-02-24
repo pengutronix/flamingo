@@ -5,7 +5,6 @@ import os
 
 from aiohttp.web import FileResponse, HTTPFound, Response
 
-from flamingo.core.utils.aiohttp import no_cache
 from flamingo.core.data_model import Content
 
 
@@ -138,7 +137,6 @@ class ContentExporter:
 
             return path
 
-    @no_cache()
     async def __call__(self, request):
         def _404():
             self.logger.debug('404: not found')
