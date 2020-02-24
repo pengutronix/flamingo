@@ -28,11 +28,15 @@ parser.add_argument('--host', type=str, default='localhost')
 parser.add_argument('--disable-overlay', action='store_true')
 parser.add_argument('--enable-browser-caching', action='store_true')
 parser.add_argument('--refresh-interval', type=float, default=0.25)
+parser.add_argument('--threads', type=int, default=6)
 parser.add_argument('--log-backlog', type=int, default=2500)
 parser.add_argument('--shell', action='store_true')
 parser.add_argument('--shell-history', action='store_true')
 
 namespace, settings = parse_args(parser, setup_logging=False)
+
+if namespace.threads < 4:
+    exit(error('at least 4 threads are required to run properly'))
 
 log_level = {
     'DEBUG': logging.DEBUG,
@@ -55,6 +59,7 @@ try:
     server = Server(
         app=app,
         loop=loop,
+        rpc_max_workers=namespace.threads,
         settings=namespace.settings or [],
         disable_overlay=namespace.disable_overlay,
         enable_browser_caching=namespace.enable_browser_caching,
