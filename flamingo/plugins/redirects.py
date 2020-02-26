@@ -54,6 +54,7 @@ class Redirects:
                 'type': 'redirect-rule',
                 'output': source,
                 'content': HTML_TEMPLATE.format(destination),
+                'redirect': destination,
             }
 
             context.contents.add(**content)
