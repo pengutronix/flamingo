@@ -34,8 +34,13 @@ def add_media(context, content, name, **extra_meta_data):
     if not content['media']:
         content['media'] = ContentSet()
 
-    media_content = Content(path=path, output=output, url=url,
-                            **extra_meta_data)
+    media_content = Content(
+        path=path,
+        output=output,
+        url=url,
+        content=content,
+        **extra_meta_data,
+    )
 
     content['media'].add(media_content)
 
