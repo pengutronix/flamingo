@@ -11,17 +11,20 @@ QUOTE_KEYS = ('content_body', 'template_context', )
 
 def quote(value):
     types = {
-        str: '<str(...)>',
-        list: '<[...]>',
-        dict: '<{...}>',
-        tuple: '<(...)>',
+        str: lambda v: '<str({})>'.format(len(v)),
+        list: lambda v: '<list({})>'.format(len(v)),
+        tuple: lambda v: '<tuple({})>'.format(len(v)),
+        dict: '<dict(...)>',
         Content: '<Content(...)>',
-        ContentSet: '<ContentSet(...)>',
+        ContentSet: lambda v: '<ContentSet({})>'.format(len(v)),
     }
 
     t = type(value)
 
     if t in types:
+        if callable(types[t]):
+            return types[t](value)
+
         return types[t]
 
     return str(value)

@@ -259,7 +259,9 @@ class Server:
         return response
 
     # rpc methods #############################################################
-    def get_meta_data(self, request, url):
+    def get_meta_data(self, request, url, full_content_repr=False,
+                      internal_meta_data=False):
+
         meta_data = {
             'meta_data': [],
             'template_context': [],
@@ -286,12 +288,25 @@ class Server:
                 }
 
         meta_data['meta_data'] = sorted([
-            {'key': k, 'value': pformat(v), 'type': type(v).__name__}
+            {
+                'key': k,
+                'value': pformat(v, full_content_repr=full_content_repr),
+                'type': type(v).__name__,
+            }
             for k, v in content.data.items() if k not in QUOTE_KEYS
         ], key=lambda v: v['key'])
 
+        if not internal_meta_data:
+            for i in list(meta_data['meta_data']):
+                if i['key'].startswith('_'):
+                    meta_data['meta_data'].remove(i)
+
         meta_data['template_context'] = sorted([
-            {'key': k, 'value': pformat(v), 'type': type(v).__name__}
+            {
+                'key': k,
+                'value': pformat(v, full_content_repr=full_content_repr),
+                'type': type(v).__name__,
+            }
             for k, v in (content['template_context'] or {}).items()
         ], key=lambda v: v['key'])
 
@@ -306,7 +321,7 @@ class Server:
 
             meta_data['settings'].append({
                 'key': key,
-                'value': pformat(value),
+                'value': pformat(value, full_content_repr=full_content_repr),
                 'type': value_type.__name__,
             })
 

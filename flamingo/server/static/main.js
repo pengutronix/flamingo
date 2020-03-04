@@ -32,6 +32,8 @@ var _default_settings = {
         },
     },
     keyboard_shortcuts: true,
+    show_full_content_repr: false,
+    show_internal_meta_data: false,
 };
 
 function get_default_settings() {
@@ -91,6 +93,22 @@ ractive.on('start_shell', function(event) {
 var iframe = document.querySelector('iframe#content');
 var iframe_initial_setup = false;
 
+function iframe_update_meta_data() {
+    var settings = ractive.get('settings');
+
+    rpc.call(
+        'get_meta_data',
+        {
+            url: iframe.contentWindow.location.pathname,
+            full_content_repr: settings.show_full_content_repr,
+            internal_meta_data: settings.show_internal_meta_data,
+        },
+        function(data) {
+            ractive.set('content', data);
+        }
+    );
+};
+
 function iframe_onload(iframe) {
     // detect iframe recursion
     if(iframe.contentDocument.body.classList.contains('flamingo-server')) {
@@ -136,14 +154,7 @@ function iframe_onload(iframe) {
         ractive.set('settings.overlay.open', false);
     });
 
-    // iframe meta data
-    rpc.call(
-        'get_meta_data',
-        iframe.contentWindow.location.pathname,
-        function(data) {
-            ractive.set('content', data);
-        }
-    );
+    iframe_update_meta_data();
 };
 
 function iframe_set_url(url) {
@@ -180,6 +191,18 @@ window.onpopstate = function(event) {
 window.onhashchange = function(event) {
     iframe_set_url(document.location.href);
 };
+
+ractive.observe('settings.show_full_content_repr', function() {
+    if(iframe.contentDocument.readyState == 'complete') {
+        iframe_update_meta_data();
+    }
+});
+
+ractive.observe('settings.show_internal_meta_data', function() {
+    if(iframe.contentDocument.readyState == 'complete') {
+        iframe_update_meta_data();
+    }
+});
 
 // messages -------------------------------------------------------------------
 var message_id = 1;

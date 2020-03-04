@@ -123,8 +123,10 @@
               {{elseif settings.overlay.tab == 'settings'}}
                 <div id="meta-data">
                   <input type="checkbox" checked="{{settings.keyboard_shortcuts}}" /> Keyboard Shortcuts<br/>
+                  <input type="checkbox" checked="{{settings.show_full_content_repr}}" /> Show full content object representations<br/>
+                  <input type="checkbox" checked="{{settings.show_internal_meta_data}}" /> Show internal meta data<br/>
                   <br/>
-                  <button on-click="@.fire('reset_settings')">Reset Settings</button>
+                  <button on-click="@.fire('reset_settings')">Reset to defaults</button>
                 </div>
               {{/if}}
             {{/if}}

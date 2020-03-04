@@ -105,6 +105,11 @@ def _format_Content_items(cls, items, stream, indent, allowance, context,
 
 
 def _pprint_Content(cls, object, stream, indent, allowance, context, level):
+    if not cls._full_content_repr:
+        stream.write(quote(object))
+
+        return
+
     indent += 1
 
     write = stream.write
@@ -122,6 +127,11 @@ def _pprint_Content(cls, object, stream, indent, allowance, context, level):
 
 
 def _pprint_ContentSet(cls, object, stream, indent, allowance, context, level):
+    if not cls._full_content_repr:
+        stream.write(quote(object))
+
+        return
+
     indent += 1
 
     stream.write('<ContentSet(\n{}'.format(' ' * (indent + 1)))
@@ -132,8 +142,10 @@ def _pprint_ContentSet(cls, object, stream, indent, allowance, context, level):
 
 
 class FlamingoPrettyPrinter(PrettyPrinter):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, full_content_repr=True, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self._full_content_repr = full_content_repr
 
         self._dispatch[Content.__repr__] = _pprint_Content
         self._dispatch[ContentSet.__repr__] = _pprint_ContentSet
@@ -143,7 +155,7 @@ class FlamingoPrettyPrinter(PrettyPrinter):
 
 
 def pprint(object, stream=None, indent=1, width=80, depth=None, *,
-           compact=False):
+           compact=False, full_content_repr=True):
 
     FlamingoPrettyPrinter(
         stream=stream,
@@ -151,13 +163,17 @@ def pprint(object, stream=None, indent=1, width=80, depth=None, *,
         width=width,
         depth=depth,
         compact=compact,
+        full_content_repr=full_content_repr,
     ).pprint(object)
 
 
-def pformat(object, indent=1, width=80, depth=None, *, compact=False):
+def pformat(object, indent=1, width=80, depth=None, *, compact=False,
+            full_content_repr=True):
+
     return FlamingoPrettyPrinter(
         indent=indent,
         width=width,
         depth=depth,
         compact=compact,
+        full_content_repr=full_content_repr,
     ).pformat(object)
