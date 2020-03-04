@@ -163,6 +163,8 @@ class RPCHandler(logging.Handler):
             'contents_parsed',
             'pre_build',
             'post_build',
+            'render_content',
+            'render_media_content',
         ]
 
         for record in self.buffer[::]:
