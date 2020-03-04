@@ -47,6 +47,8 @@ class PluginManager:
         self.THEME_PATHS = []
         self.PLUGIN_PATHS = []
 
+        self.content = None
+
         # setup plugins
         plugins = (self._context.settings.CORE_PLUGINS_PRE +
                    self._context.settings.DEFAULT_PLUGINS +
@@ -161,6 +163,10 @@ class PluginManager:
             logger.debug("running plugin hook '%s'", name)
             self._running_hook = name
 
+            # make current content object available for logging
+            if name == 'media_added':
+                self.content = args[0]
+
             args = (self._context, *args)
 
             for plugin_name, hook in self._hooks[name]:
@@ -175,6 +181,7 @@ class PluginManager:
 
         finally:
             self._running_hook = ''
+            self.content = None
 
     def get_plugin(self, name):
         for plugin_name, plugin_object in self._plugins:
