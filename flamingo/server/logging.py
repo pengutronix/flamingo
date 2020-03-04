@@ -61,17 +61,23 @@ class RPCHandler(logging.Handler):
             'hook': '',
         }
 
+        # find current hook name and content path
         if(self.server and
            self.server.build_environment and
            self.server.build_environment.context):
 
-            if self.server.build_environment.context.content:
-                record_args['content_path'] = \
-                    self.server.build_environment.context.content['path']
+            context = self.server.build_environment.context
 
-            if self.server.build_environment.context.plugins:
-                record_args['hook'] = \
-                    self.server.build_environment.context.plugins.running_hook
+            if context.content:
+                record_args['content_path'] = context.content['path']
+
+            if context.plugins:
+                plugins = self.server.build_environment.context.plugins
+
+                record_args['hook'] = plugins.running_hook
+
+                if plugins.running_hook == 'media_added':
+                    record_args['content_path'] = plugins.content['path']
 
         # exc_info
         if record.exc_info:
