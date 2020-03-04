@@ -144,8 +144,17 @@ class Thumbnails:
         height = parse_dimensions(media_content['height'])
 
         # scale image
-        image = PillowImage.open(
-            os.path.join(context.settings.CONTENT_ROOT, media_content['path']))
+        path = os.path.join(context.settings.CONTENT_ROOT,
+                            media_content['path'])
+
+        try:
+            image = PillowImage.open(path)
+
+        except FileNotFoundError:
+            logger.error('%s not found. Used in %s',
+                         path, media_content['content']['path'])
+
+            return
 
         width, height = scale_image(image.size, width=width, height=height)
 
@@ -202,9 +211,21 @@ class Thumbnails:
         self.gen_thumbnail(context, media_content, image=image)
 
     def gen_thumbnail(self, context, media_content, image=None):
-        image = image or PillowImage.open(
-            os.path.join(context.settings.CONTENT_ROOT,
-                         media_content['original']['path']))
+        if not image:
+            path = os.path.join(context.settings.CONTENT_ROOT,
+                                media_content['original']['path'])
+
+            try:
+                image = PillowImage.open(path)
+
+            except FileNotFoundError:
+                logger.error(
+                    '%s not found. Used in %s',
+                    path,
+                    media_content['original']['content']['path'],
+                )
+
+                return
 
         # check if thumbnail already exists
         output = os.path.join(context.settings.CONTENT_ROOT,
