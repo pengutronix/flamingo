@@ -12,7 +12,19 @@ body,
 body {
     font-size: 16px;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
 
+button {
+    background: transparent;
+    border: 1px solid grey;
+    color: white;
+    outline: none;
+    cursor: pointer;
+}
+
+button:active {
+    background-color: grey;
+    outline: none;
 }
 
 /* MAIN GRID --------------------------------------------------------------- */
@@ -192,7 +204,7 @@ table.attributes {
 }
 
 table.attributes tr:nth-child(even) {
-    background-color: grey;
+    background-color: rgba(128, 128, 128, 0.75);
 }
 
 table.attributes td,
