@@ -94,6 +94,9 @@ class Server:
                 '*', '/_flamingo/settings.js', self.frontend_settings)
 
             app.router.add_route(
+                '*', '/_flamingo/cmd/{cmd:.*}', self.cmd)
+
+            app.router.add_route(
                 '*', '/_flamingo/static/{path_info:.*}', self.static)
 
         app.router.add_route('*', '/{path_info:.*}', self.serve)
@@ -257,6 +260,29 @@ class Server:
                 'no-cache, no-store, must-revalidate'
 
         return response
+
+    async def cmd(self, request):
+        try:
+            command = request.match_info.get('cmd')
+
+            if command == 'show':
+                abs_path = request.query.get('path')
+                abs_content_root = os.path.abspath(self.settings.CONTENT_ROOT)
+
+                common_prefix = os.path.commonprefix([abs_content_root,
+                                                      abs_path])
+
+                if common_prefix == abs_content_root:
+                    path = abs_path[len(common_prefix)+1:]
+                    contents = self.context.contents.filter(path=path)
+
+                    if contents.count() == 1:
+                        contents[0].show()
+
+        except Exception as e:
+            self.logger.error(e, exc_info=True)
+
+        return Response(text='')
 
     # rpc methods #############################################################
     def get_meta_data(self, request, url, full_content_repr=False,
