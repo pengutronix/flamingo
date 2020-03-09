@@ -17,6 +17,7 @@ function get_cookie(name, default_value) {
 Ractive.DEBUG = false;
 
 var _default_settings = {
+    _version: 1,
     overlay: {
         open: false,
         tab: 'meta-data',
@@ -41,6 +42,19 @@ function get_default_settings() {
     return JSON.parse(JSON.stringify(_default_settings));
 }
 
+function generate_settings() {
+    var default_settings = get_default_settings();
+    var settings = get_cookie('flamingo_settings', default_settings);
+
+    if(settings._version != default_settings._version) {
+        set_cookie('flamingo_settings', default_settings);
+
+        return default_settings;
+    }
+
+    return settings;
+}
+
 var ractive = Ractive({
     target: '#ractive',
     template: '#main',
@@ -49,7 +63,7 @@ var ractive = Ractive({
         connected: true,
         dots: [],
         messages: [],
-        settings: get_cookie('flamingo_settings', get_default_settings()),
+        settings: generate_settings(),
         content: {},
         log: {
             logger: [],
