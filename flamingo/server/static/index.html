@@ -11,13 +11,13 @@
         <div id="top">
           <span id="logo" on-click="toggle_overlay">Flamingo</span>
           {{#if log.stats.critical > 0}}
-            <span id="critical-errors" on-click="@.fire('log_show', 'critical')">{{log.stats.critical}} Critical Error{{#if log.stats.critical > 1}}s{{/if}}</span>
+            <span id="critical-errors" {{#if settings.pulsing_errors }}class="pulsing" {{/if }}on-click="@.fire('log_show', 'critical')">{{log.stats.critical}} Critical Error{{#if log.stats.critical > 1}}s{{/if}}</span>
           {{/if}}
           {{#if log.stats.error > 0}}
-            <span id="errors" on-click="@.fire('log_show', 'error')">{{log.stats.error}} Error{{#if log.stats.error > 1}}s{{/if}}</span>
+            <span id="errors" {{#if settings.pulsing_errors }}class="pulsing" {{/if }}on-click="@.fire('log_show', 'error')">{{log.stats.error}} Error{{#if log.stats.error > 1}}s{{/if}}</span>
           {{/if}}
           {{#if log.stats.warning > 0}}
-            <span id="warnings" on-click="@.fire('log_show', 'warning')">{{log.stats.warning}} Warning{{#if log.stats.warning > 1}}s{{/if}}</span>
+            <span id="warnings" {{#if settings.pulsing_errors }}class="pulsing" {{/if }}on-click="@.fire('log_show', 'warning')">{{log.stats.warning}} Warning{{#if log.stats.warning > 1}}s{{/if}}</span>
           {{/if}}
         </div>
         <div id="overlay"{{#if connected && !settings.overlay.open}} style="display: none;"{{/if}}>
@@ -123,6 +123,7 @@
               {{elseif settings.overlay.tab == 'settings'}}
                 <div id="meta-data">
                   <input type="checkbox" checked="{{settings.keyboard_shortcuts}}" /> Keyboard Shortcuts<br/>
+                  <input type="checkbox" checked="{{settings.pulsing_errors}}" /> Pulsing errors<br/>
                   <input type="checkbox" checked="{{settings.show_full_content_repr}}" /> Show full content object representations<br/>
                   <input type="checkbox" checked="{{settings.show_internal_meta_data}}" /> Show internal meta data<br/>
                   <br/>

@@ -34,6 +34,7 @@ var _default_settings = {
     keyboard_shortcuts: true,
     show_full_content_repr: false,
     show_internal_meta_data: false,
+    pulsing_errors: true,
 };
 
 function get_default_settings() {
