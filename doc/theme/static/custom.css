@@ -1,10 +1,57 @@
-.data .highlight {
+table p {
+    margin: 0;
+    padding: 0;
+}
+
+.clearfix:after {
+    content: ".";
+    clear: both;
+    display: block;
+    visibility: hidden;
+    height: 0px;
+}
+
+.raw-setting .highlight {
     border-top: 2px solid #2881b9 !important;
     font-weight: bold;
     display: inline-block;
     margin-bottom: 0.2em !important;
 }
 
-.data .description {
+.raw-setting .description {
     margin-left: 2em;
+}
+
+.setting {
+    float: left;
+    border-top: 2px solid #2881b9 !important;
+    display: inline-block;
+}
+
+.setting .highlight {
+    margin: 0 !important;
+    padding: 12px;
+}
+
+.setting pre {
+    float: left;
+    font-weight: bold;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.setting-description {
+    margin-top: 0.5em;
+    margin-left: 2em;
+    margin-bottom: 2em;
+}
+
+.setting-description p {
+    margin: 0;
+}
+
+.rst-content a,
+.rst-content a:active,
+.rst-content a:visited {
+    color: #2980B9 !important;
 }

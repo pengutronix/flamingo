@@ -14,6 +14,7 @@ Installation
         'flamingo.plugins.Markdown',
     ]
 
+
 Plugins
 -----------------------
 

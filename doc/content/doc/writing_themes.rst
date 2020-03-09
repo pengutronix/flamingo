@@ -1,6 +1,0 @@
-
-
-Writing themes
-==============
-
-FIXME

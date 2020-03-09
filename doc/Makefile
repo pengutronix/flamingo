@@ -1,4 +1,4 @@
-FLAMINGO_SETTINGS=settings.py
+FLAMINGO_ARGS=-s settings.py menu.py
 FLAMINGO_SERVER_ARGS=--host=localhost --port=8080
 
 PYTHON=python3
@@ -19,16 +19,16 @@ clean:
 
 html: env
 	. $(PYTHON_VENV)/bin/activate && \
-	flamingo build $(FLAMINGO_ARGS) -s $(FLAMINGO_SETTINGS) $(args)
+	flamingo build $(FLAMINGO_ARGS) $(args)
 
 legacy-server: env
 	. $(PYTHON_VENV)/bin/activate && \
-	flamingo legacy-server $(FLAMINGO_ARGS) $(FLAMINGO_SERVER_ARGS) -s $(FLAMINGO_SETTINGS) $(args)
+	flamingo legacy-server $(FLAMINGO_ARGS) $(FLAMINGO_SERVER_ARGS) $(args)
 
 server: env
 	. $(PYTHON_VENV)/bin/activate && \
-	flamingo server $(FLAMINGO_ARGS) $(FLAMINGO_SERVER_ARGS) -s $(FLAMINGO_SETTINGS) $(args)
+	flamingo server $(FLAMINGO_ARGS) $(FLAMINGO_SERVER_ARGS) $(args)
 
 shell: env
 	. $(PYTHON_VENV)/bin/activate && \
-	flamingo shell $(FLAMINGO_ARGS) -s $(FLAMINGO_SETTINGS) $(args)
+	flamingo shell $(FLAMINGO_ARGS) $(args)

@@ -1,3 +1,4 @@
+is_template: False
 
 
 Writing Content
@@ -24,7 +25,7 @@ start with two or more blank lines.
 
     Lorem Ipsum
 
-The parsed ``flamingo.core.data_model.Content`` object will look like this:
+The parsed ``flamingo.Content`` object will look like this:
 
 .. code-block:: python
 
@@ -41,8 +42,8 @@ The parsed ``flamingo.core.data_model.Content`` object will look like this:
     Out[4]: '<p>Lorem Ipsum</p>'
 
 
-Reserved Attributes
--------------------
+Special Attributes
+------------------
 
 .. table::
 
@@ -53,7 +54,8 @@ Reserved Attributes
 
     ``path``
 
-    Contains the path to this content, relative to the ``CONTENT_ROOT``.
+    Contains the path to this content, relative to the ``CONTENT_ROOT``. This
+    attribute is set by flamingo and is not meant to be set in a content file.
         
 
     ``output``
@@ -121,12 +123,13 @@ template:
 Generating links
 ````````````````
 
-.. code-block:: jinja
+.. code-block:: rst
 
-    # content/link.html
+    # content/link.rst
     title: link
 
 
-    <h1>Link to first Content with the tag "foo"</h1>
+    Link to "Test document"
+    =======================
 
-    {{ link('content/test.html', 'Test document') }}
+    {{ link('content/test.rst', 'Test document') }}

@@ -3,7 +3,9 @@
 I18N
 ====
 
-I18N is a plugin for internationalisation
+I18N finds translations of contents that share the same ``CONTENT_KEY``, and
+links them together in a meta date: ``content['translations']``.
+
 
 Installation
 ------------
@@ -19,31 +21,60 @@ Installation
 Settings
 --------
 
-.. data::
+.. raw-setting::
 
     I18N_CONTENT_KEY = 'id'
 
     Controls which meta data key I18N should use to associate contents
 
-.. data::
+.. raw-setting::
 
     I18N_LANGUAGES = ['en', 'de']
 
     List of all available languages as language codes
 
-.. data::
+.. raw-setting::
 
     I18N_DEFAULT_LANGUAGE = 'en'
 
     Lang code of the default language
 
-.. data::
+.. raw-setting::
 
     I18N_ENFORCE_REDIRECT = True
 
-.. data::
+    If set to True, ``/`` will redirect to ``/{{ I18N_DEFAULT_LANGUAGE }}/``
+
+.. raw-setting::
 
     I18N_IGNORE = {'i18n_ignore__isnull': False}
 
-I18N finds translations of contents that share the same ``CONTENT_KEY``, and
-links them together.
+    This setting contains a query which contents should be ignored and not be
+    translated.
+    {{ link('developer/data_model.rst', 'How to make queries') }}
+
+
+Usage
+-----
+
+.. code-block:: rst
+
+    id: my-blog-post
+    lang: de
+
+
+    Hallo Welt
+    ==========
+
+    German lorem ipsum
+
+.. code-block:: rst
+
+    id: my-blog-post
+    lang: en
+
+
+    Hello World
+    ===========
+
+    English lorem ipsum

@@ -3,6 +3,11 @@
 Settings
 ========
 
+Flamingo manages its settings in plain python files. Settings are project
+specific and hold informations like where the content files are stored, where
+the output should be written to and which plugins are installed.
+
+
 Naming Conventions
 ------------------
 
@@ -71,108 +76,110 @@ Default Settings
 Paths
 ~~~~~
 
-.. data::
+.. setting::
+    :name: DEFAULT_PLUGINS
+    :path: flamingo.core.settings.defaults.DEFAULT_PLUGINS
 
-    CONTENT_ROOT = 'content'
+    this are the default plugins
+
+.. setting::
+    :name: CONTENT_ROOT
+    :path: flamingo.core.settings.defaults.CONTENT_ROOT
 
     flamingo will search for content here recursivly
 
-.. data::
-
-    CONTENT_PATHS = []
+.. setting::
+    :name: CONTENT_PATHS
+    :path: flamingo.core.settings.defaults.CONTENT_PATHS
 
     if set, flamingo will only parse the defined paths
 
-.. data::
-
-    OUTPUT_ROOT = 'output'
+.. setting::
+    :name: OUTPUT_ROOT
+    :path: flamingo.core.settings.defaults.OUTPUT_ROOT
 
     flamingo will write the rendered HTML here
 
-.. data::
-
-    MEDIA_ROOT = 'output/media'
+.. setting::
+    :name: MEDIA_ROOT
+    :path: flamingo.core.settings.defaults.MEDIA_ROOT
 
     flamingo will copy all media files used in content objects here
 
-.. data::
-
-    STATIC_ROOT = 'output/static'
+.. setting::
+    :name: STATIC_ROOT
+    :path: flamingo.core.settings.defaults.STATIC_ROOT
 
     flamingo will copy all static files of activated themes here
+
 
 Plugins
 ~~~~~~~
 
-.. data::
-
-    CORE_PLUGINS = [
-        'flamingo.core.plugins.MetaDataProcessor',
-        'flamingo.core.plugins.Hooks',
-        'flamingo.core.plugins.Media',
-        'flamingo.core.plugins.Static',
-    ]
+.. setting::
+    :name: CORE_PLUGINS_PRE
+    :path: flamingo.core.settings.defaults.CORE_PLUGINS_PRE
 
     these plugins implement basic flamingo features
 
     you can change this list if you are a developer and know what you are
     doing
 
-.. data::
-
-    DEFAULT_PLUGINS = [
-        'flamingo.plugins.HTML',
-        'flamingo.plugins.Yaml',
-        'flamingo.plugins.reStructuredText',
-        'flamingo.plugins.rstInclude',
-        'flamingo.plugins.rstImage',
-        'flamingo.plugins.rstFile',
-    ]
+.. setting::
+    :name: DEFAULT_PLUGINS
+    :path: flamingo.core.settings.defaults.DEFAULT_PLUGINS
 
     these plugins are the default selection of flaming plugins, the most users
     will need
 
     you are free to change this list
 
-.. data::
-
-    PLUGINS = []
+.. setting::
+    :name: PLUGINS
+    :path: flamingo.core.settings.defaults.PLUGINS
 
     list of user installed plugins
 
-.. data::
+.. setting::
+    :name: CORE_PLUGINS_POST
+    :path: flamingo.core.settings.defaults.CORE_PLUGINS_POST
 
-    CACHE_HOOKS = True
+    these plugins implement basic flamingo features
 
-    control wether hooks should re discoverd on every hook run
+    you can change this list if you are a developer and know what you are
+    doing
+
+.. setting::
+    :name: SKIP_HOOKS
+    :path: flamingo.core.settings.defaults.SKIP_HOOKS
 
 
 Parsing
 ~~~~~~~
 
-.. data::
-
-    USE_CHARDET = False
+.. setting::
+    :name: USE_CHARDET
+    :path: flamingo.core.settings.defaults.USE_CHARDET
 
     if enabled, `chardet <https://pypi.org/project/chardet/>`__ gets used to
     detect file types while parsing content files
 
-.. data::
-
-    FOLLOW_LINKS = True
+.. setting::
+    :name: FOLLOW_LINKS
+    :path: flamingo.core.settings.defaults.FOLLOW_LINKS
 
     control if flamingo should follow filesystem links while searching for
     content files
 
-.. data::
-
-    DEDENT_INPUT = False
+.. setting::
+    :name: DEDENT_INPUT
+    :path: flamingo.core.settings.defaults.DEDENT_INPUT
 
     control if flamingo should try to dedent a content file while parsing
 
-.. data::
-
-    HTML_PARSER_RAW_HTML = False
+.. setting::
+    :name: HTML_PARSER_RAW_HTML
+    :path: flamingo.core.settings.defaults.HTML_PARSER_RAW_HTML
 
     if set to True the HTML parser won't process the HTML content of html
     content files
@@ -181,34 +188,32 @@ Parsing
 Templating
 ~~~~~~~~~~
 
-.. data::
+.. setting::
+    :name: TEMPLATING_ENGINE
+    :path: flamingo.core.settings.defaults.TEMPLATING_ENGINE
 
-    TEMPLATING_ENGINE = 'flamingo.core.templating.Jinja2'
-
-.. data::
-
-    PRE_RENDER_CONTENT = True
+.. setting::
+    :name: PRE_RENDER_CONTENT
+    :path: flamingo.core.settings.defaults.PRE_RENDER_CONTENT
 
     if set to True, templating syntax in content files is available
 
-.. data::
+.. setting::
+    :name: CORE_THEME_PATHS
+    :path: flamingo.core.settings.defaults.CORE_THEME_PATHS
 
-    CORE_THEME_PATHS = [
-        flamingo.THEME_ROOT,
-    ]
+.. setting::
+    :name: THEME_PATHS
+    :path: flamingo.core.settings.defaults.THEME_PATHS
 
-.. data::
+.. setting::
+    :name: DEFAULT_TEMPLATE
+    :path: flamingo.core.settings.defaults.DEFAULT_TEMPLATE
 
-    THEME_PATHS = []
+.. setting::
+    :name: DEFAULT_PAGINATION
+    :path: flamingo.core.settings.defaults.DEFAULT_PAGINATION
 
-.. data::
-
-    DEFAULT_TEMPLATE = 'page.html'
-
-.. data::
-
-    DEFAULT_PAGINATION = 25
-
-.. data::
-
-    EXTRA_CONTEXT = {}
+.. setting::
+    :name: EXTRA_CONTEXT
+    :path: flamingo.core.settings.defaults.EXTRA_CONTEXT
