@@ -1,9 +1,6 @@
-FLAMINGO_SETTINGS=settings.py
-FLAMINGO_ARGS=--log-level=INFO
-FLAMINGO_SERVER_ARGS=--host=localhost --port=8080
-
 PYTHON={{ python_version }}
 PYTHON_VENV=env
+FLAMINGO_ARGS=-s settings.py
 
 $(PYTHON_VENV)/.created: REQUIREMENTS.txt
 	rm -rf $(PYTHON_VENV) && \
@@ -20,12 +17,12 @@ clean:
 
 html: env
 	. $(PYTHON_VENV)/bin/activate && \
-	flamingo build $(FLAMINGO_ARGS) -s $(FLAMINGO_SETTINGS)
+	flamingo build $(FLAMINGO_ARGS) $(args)
 
 server: env
 	. $(PYTHON_VENV)/bin/activate && \
-	flamingo server $(FLAMINGO_ARGS) $(FLAMINGO_SERVER_ARGS) -s $(FLAMINGO_SETTINGS)
+	flamingo server $(FLAMINGO_ARGS) $(args)
 
 shell: env
 	. $(PYTHON_VENV)/bin/activate && \
-	flamingo shell $(FLAMINGO_ARGS) -s $(FLAMINGO_SETTINGS)
+	flamingo shell $(FLAMINGO_ARGS) $(args)
