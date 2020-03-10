@@ -8,7 +8,7 @@ THEME_PATHS = [
 ]
 
 PLUGINS = [
-    'flamingo.plugins.SimpleMenu',
+    'flamingo.plugins.Menu',
     'flamingo.plugins.Bootstrap4',
     'flamingo.plugins.jQuery3',
 

@@ -13,7 +13,7 @@
       <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ name }}</a>
       <div class="dropdown-menu" aria-labelledby="navbarDropdown">
         {% with menu=item, level=level+1 %}
-          {% include "simple_menu/bootstrap4.html" %}
+          {% include "menu/bootstrap4.html" %}
         {% endwith %}
       </div>
     </li>

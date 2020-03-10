@@ -4,10 +4,10 @@ import os
 from flamingo.core.errors import MultipleObjectsReturned, ObjectDoesNotExist
 from flamingo.core.data_model import Content, Q
 
-logger = logging.getLogger('flamingo.plugins.SimpleMenu')
+logger = logging.getLogger('flamingo.plugins.Menu')
 
 
-class SimpleMenu:
+class Menu:
     THEME_PATHS = [
         os.path.join(os.path.dirname(__file__), 'theme'),
     ]
