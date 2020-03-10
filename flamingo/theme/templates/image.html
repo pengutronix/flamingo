@@ -39,6 +39,20 @@
         height: {{ content.height }};
       {% endif %}
     {% endif %}
+    {% if not content.caption %}
+      {% if align == 'left' %}
+        float: left;
+        margin-right: 1em;
+        clear: both;
+      {% elif align == 'right' %}
+        float: right;
+        margin-left: 1em;
+        clear: both;
+      {% elif align == 'center' %}
+        width: 100%;
+        text-align: center;
+      {% endif %}
+    {% endif %}
   ">
 {% if content.link or content.is_thumbnail %}
   </a>
