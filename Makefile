@@ -1,4 +1,4 @@
-PYTHON=python3.5
+PYTHON=python3
 PYTHON_VENV=env
 
 $(PYTHON_VENV)/.created: REQUIREMENTS.dev.txt
@@ -26,10 +26,6 @@ ci-test: env
 	. $(PYTHON_VENV)/bin/activate && \
 	EXTENDED_BUILD_TESTS=1 JENKINS_URL=1 tox -r $(args)
 
-edit: env
-	. $(PYTHON_VENV)/bin/activate && \
-	$$EDITOR
-
 shell: env
 	. $(PYTHON_VENV)/bin/activate && \
 	ipython
@@ -41,12 +37,10 @@ freeze: env
 test-site: env
 	. $(PYTHON_VENV)/bin/activate && \
 	rm -rf test-site && \
-	flamingo init test-site debug=True
+	flamingo init test-site debug=True $(args)
 
 server: test-site
 	cd test-site && \
 	make server
 
-check-manifest: env
-	. $(PYTHON_VENV)/bin/activate && \
-	check-manifest --ignore "flamingo-web.org/*,tests/*,*.swp,.*"
+.PHONY: test-site
