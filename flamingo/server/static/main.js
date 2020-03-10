@@ -384,7 +384,10 @@ ractive.on({
 
 // Connection Handling --------------------------------------------------------
 rpc.on('close', function(rpc) {
-    ractive.set('connected', false);
+    ractive.set({
+        connected: false,
+        log: {},
+    });
 
     setTimeout(function() {
         var dots = ractive.get('dots');

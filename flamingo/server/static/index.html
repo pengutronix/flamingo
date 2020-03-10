@@ -10,14 +10,16 @@
       <div id="main-grid">
         <div id="top">
           <span id="logo" on-click="toggle_overlay">Flamingo</span>
-          {{#if log.stats.critical > 0}}
-            <span id="critical-errors" {{#if settings.pulsing_errors }}class="pulsing" {{/if }}on-click="@.fire('log_show', 'critical')">{{log.stats.critical}} Critical Error{{#if log.stats.critical > 1}}s{{/if}}</span>
-          {{/if}}
-          {{#if log.stats.error > 0}}
-            <span id="errors" {{#if settings.pulsing_errors }}class="pulsing" {{/if }}on-click="@.fire('log_show', 'error')">{{log.stats.error}} Error{{#if log.stats.error > 1}}s{{/if}}</span>
-          {{/if}}
-          {{#if log.stats.warning > 0}}
-            <span id="warnings" {{#if settings.pulsing_errors }}class="pulsing" {{/if }}on-click="@.fire('log_show', 'warning')">{{log.stats.warning}} Warning{{#if log.stats.warning > 1}}s{{/if}}</span>
+          {{#if connected }}
+            {{#if log.stats.critical > 0}}
+              <span id="critical-errors" {{#if settings.pulsing_errors }}class="pulsing" {{/if }}on-click="@.fire('log_show', 'critical')">{{log.stats.critical}} Critical Error{{#if log.stats.critical > 1}}s{{/if}}</span>
+            {{/if}}
+            {{#if log.stats.error > 0}}
+              <span id="errors" {{#if settings.pulsing_errors }}class="pulsing" {{/if }}on-click="@.fire('log_show', 'error')">{{log.stats.error}} Error{{#if log.stats.error > 1}}s{{/if}}</span>
+            {{/if}}
+            {{#if log.stats.warning > 0}}
+              <span id="warnings" {{#if settings.pulsing_errors }}class="pulsing" {{/if }}on-click="@.fire('log_show', 'warning')">{{log.stats.warning}} Warning{{#if log.stats.warning > 1}}s{{/if}}</span>
+            {{/if}}
           {{/if}}
         </div>
         <div id="overlay"{{#if connected && !settings.overlay.open}} style="display: none;"{{/if}}>
