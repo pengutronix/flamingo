@@ -1,3 +1,5 @@
+import os
+
 from docutils.parsers.rst import Directive, directives
 from docutils.nodes import raw
 
@@ -15,21 +17,38 @@ def code_block(context):
         option_spec = {
             'license': directives.unchanged,
             'template': directives.unchanged,
+            'include': directives.unchanged,
         }
 
         def run(self):
+            content = ''
+
+            if self.content:
+                content += '\n'.join(self.content)
+
+            if 'include' in self.options:
+                if content:
+                    content += '\n'
+
+                path = os.path.join(
+                    os.path.dirname(context.content['path']),
+                    self.options['include'],
+                )
+
+                content += open(path, 'r').read()
+
             try:
                 if self.arguments:
                     lexer = get_lexer_by_name(self.arguments[0])
 
                 else:
-                    lexer = guess_lexer('\n'.join(self.content))
+                    lexer = guess_lexer(content)
 
             except (ClassNotFound, IndexError):
                 lexer = get_lexer_by_name('text')
 
             formatter = HtmlFormatter()
-            content = highlight('\n'.join(self.content), lexer, formatter)
+            content = highlight(content, lexer, formatter)
 
             # find template
             template = self.options.get(
