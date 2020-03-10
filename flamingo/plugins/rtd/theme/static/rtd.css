@@ -5,3 +5,15 @@ mark {
     font-weight: bold;
     padding: 0 6px;
 }
+
+.wy-nav-side {
+    padding-bottom: 0;
+}
+
+.wy-side-scroll {
+    padding-bottom: 1em;
+}
+
+.rst-content table {
+    margin-bottom: 24px !important;
+}
