@@ -5,6 +5,7 @@ import os
 from flamingo.core.data_model import ContentSet, AND, NOT, OR, Q, F
 from flamingo.core.plugins.plugin_manager import PluginManager
 from flamingo.core.parser import FileParser, ParsingError
+from flamingo.core.plugins.media import add_media
 from flamingo.core.utils.imports import acquire
 from flamingo.core.types import OverlayObject
 
@@ -236,6 +237,12 @@ class Context(OverlayObject):
 
         with open(path, mode) as f:
             f.write(text)
+
+    def add_media(self, name, content=None, **extra_meta_data):
+        content = content or self.content
+
+        return add_media(name=name, context=self, content=content,
+                         **extra_meta_data)
 
     def build(self, clean=True):
         self.plugins.run_plugin_hook('pre_build')
