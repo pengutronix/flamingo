@@ -5,7 +5,6 @@ import os
 from docutils.parsers.rst import Directive, directives
 from docutils.nodes import raw
 
-from flamingo.core.plugins.media import add_media
 from flamingo.core.data_model import ContentSet
 
 from flamingo.plugins.rst.base import parse_rst
@@ -133,8 +132,7 @@ def gen_directives(context, plugin):
             if path in plugin.galleries:
                 meta['gallery'] = True
 
-            media_content = add_media(context, context.content,
-                                      self.arguments[0], **meta)
+            media_content = context.add_media(name=self.arguments[0], **meta)
 
             # gallery
             if path in plugin.galleries:
