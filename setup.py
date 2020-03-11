@@ -67,7 +67,6 @@ setup(
         'bin/_flamingo-init',
         'bin/_flamingo-build',
         'bin/_flamingo-shell',
-        'bin/_flamingo-legacy-server',
         'bin/_flamingo-server',
     ],
     entry_points={
