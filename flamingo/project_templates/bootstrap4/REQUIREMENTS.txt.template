@@ -1,5 +1,5 @@
 {%- if debug -%}
-    -e ..[full]
+    -e ..[live-server]
 {%- else -%}
-    flamingo[full]=={{flamingo.VERSION_STRING}}
+    flamingo[live-server]=={{flamingo.VERSION_STRING}}
 {%- endif -%}
