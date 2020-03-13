@@ -130,6 +130,9 @@ class FlamingoWriter(Writer):
 
         remove_system_messages(document.children)
 
+        self.flamingo_context.plugins.run_plugin_hook('rst_document_parsed',
+                                                      document)
+
         return super().write(document, destination)
 
 
