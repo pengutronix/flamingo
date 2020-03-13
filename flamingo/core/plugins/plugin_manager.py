@@ -26,9 +26,6 @@ HOOK_NAMES = [
 
 def hook(name):
     def decorator(function):
-        if name not in HOOK_NAMES:
-            logger.warn("hook '%s' is unknown", name)
-
         function.flamingo_hook_name = name
 
         return function
@@ -36,12 +33,16 @@ def hook(name):
     return decorator
 
 
+class SettingsHook:
+    pass
+
+
 class PluginManager:
     def __init__(self, context):
         self._context = context
         self._plugins = []
         self._plugin_paths = []
-        self._hooks = {key: [] for key in HOOK_NAMES}
+        self._hooks = {}
         self._running_hook = ''
 
         self.THEME_PATHS = []
@@ -55,15 +56,13 @@ class PluginManager:
                    self._context.settings.PLUGINS +
                    self._context.settings.CORE_PLUGINS_POST)
 
-        discovered_local_hooks = []
-
         for plugin in plugins:
             logger.debug("setting up plugin '%s' ", plugin)
 
             try:
-                # local hooks
+                # settings hooks
                 if isinstance(plugin, str) and plugin.startswith('.'):
-                    logger.debug("'%s' gets handled as local hook", plugin)
+                    logger.debug("'%s' gets handled as settings hook", plugin)
 
                     plugin = plugin[1:]
 
@@ -79,14 +78,14 @@ class PluginManager:
 
                         continue
 
-                    if hook.flamingo_hook_name not in self._hooks:
-                        self._hooks[hook.flamingo_hook_name] = []
+                    settings_hook = SettingsHook()
 
-                    self._hooks[hook.flamingo_hook_name].append(
-                        ('settings', hook, ),
+                    hook_name = getattr(hook, 'flamingo_hook_name')
+                    setattr(settings_hook, hook_name, hook)
+
+                    self._plugins.append(
+                        (hook.__name__, settings_hook, )
                     )
-
-                    discovered_local_hooks.append(plugin)
 
                 # plugin classes
                 else:
@@ -99,16 +98,6 @@ class PluginManager:
                     if hasattr(plugin_object, 'THEME_PATHS'):
                         self.THEME_PATHS.extend(plugin_object.THEME_PATHS)
 
-                    # discover hooks
-                    for hook_name in HOOK_NAMES:
-                        if hasattr(plugin_object, hook_name):
-                            logger.debug('%s.%s discoverd', plugin, hook_name)
-
-                            self._hooks[hook_name].append(
-                                (plugin_object.__class__.__name__,
-                                 getattr(plugin_object, hook_name), )
-                            )
-
                     self._plugins.append(
                         (plugin_object.__class__.__name__, plugin_object, )
                     )
@@ -118,28 +107,45 @@ class PluginManager:
             except Exception:
                 logger.error("setup of '%s' failed", plugin, exc_info=True)
 
-        # discover local hooks
-        logger.debug('discover local hooks')
+        self._discover(HOOK_NAMES)
+
+    def _discover(self, names):
+        hook_names_to_discover = []
+
+        for hook_name in names:
+            if hook_name not in self._hooks:
+                hook_names_to_discover.append(hook_name)
+                self._hooks[hook_name] = []
+
+        for hook_name in hook_names_to_discover:
+            logger.debug("searching for '%s' hooks", hook_name)
+
+            for plugin_path, plugin_object in self._plugins:
+                if hasattr(plugin_object, hook_name):
+                    logger.debug('%s.%s discoverd', plugin_object, hook_name)
+
+                    self._hooks[hook_name].append(
+                        (plugin_object.__class__.__name__,
+                         getattr(plugin_object, hook_name), )
+                    )
+
+        # settings hooks
+        logger.debug('searching for settings hooks')
 
         for attr_name in dir(self._context.settings):
             attr = getattr(self._context.settings, attr_name)
 
-            if attr_name in discovered_local_hooks:
-                logger.debug('settings.%s skipped. already discovered',
-                             attr_name)
+            if(not hasattr(attr, 'flamingo_hook_name') or
+               attr.flamingo_hook_name not in hook_names_to_discover or
+               attr in self._hooks[attr.flamingo_hook_name]):
 
                 continue
 
-            if hasattr(attr, 'flamingo_hook_name'):
-                logger.debug("settings.%s discoverd as",
-                             attr.flamingo_hook_name)
+            logger.debug("settings.%s discoverd as", attr.flamingo_hook_name)
 
-                if attr.flamingo_hook_name not in self._hooks:
-                    self._hooks[attr.flamingo_hook_name] = []
-
-                self._hooks[attr.flamingo_hook_name].append(
-                    ('settings', attr, ),
-                )
+            self._hooks[attr.flamingo_hook_name].append(
+                ('settings', attr, ),
+            )
 
     @property
     def running_hook(self):
@@ -152,9 +158,7 @@ class PluginManager:
             return
 
         if name not in self._hooks:
-            logger.error("unknown hook name '%s'", name)
-
-            return
+            self._discover([name])
 
         if not self._hooks[name]:
             return
@@ -189,3 +193,6 @@ class PluginManager:
                 return plugin_object
 
         raise ValueError("unknown plugin '{}'".format(name))
+
+    def run_hook(self, *args, **kwargs):
+        return self.run_plugin_hook(*args, **kwargs)
