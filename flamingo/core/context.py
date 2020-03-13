@@ -184,8 +184,20 @@ class Context(OverlayObject):
 
             self.logger.debug('pre rendering %s', content['path'] or content)
 
-            exitcode, output = self.templating_engine.pre_render_content(
-                content, template_context)
+            try:
+                exitcode, output = self.templating_engine.pre_render_content(
+                    content, template_context)
+
+            except Exception as e:
+                self.logger.error(
+                    '%s: exception raised while pre rendering content',
+                    content['path'],
+                    exc_info=True,
+                )
+
+                self.errors.append(e)
+
+                return content['content_body']
 
             if exitcode:
                 content['content_body'] = output
