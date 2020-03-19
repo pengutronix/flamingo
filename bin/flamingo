@@ -5,7 +5,10 @@ import runpy
 import sys
 import os
 
-from flamingo.core.utils.cli import get_raw_parser
+from flamingo.core.utils.cli import get_raw_parser, error
+
+if not sys.version_info >= (3, 5, 3):
+    exit(error('flamingo needs at least python3.5 to run properly'))
 
 PREFIX = '_flamingo-'
 PATH = os.path.dirname(sys.argv[0])
