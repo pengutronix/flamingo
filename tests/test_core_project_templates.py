@@ -26,6 +26,8 @@ def test_project_template(template_name, run):
     if not os.environ.get('EXTENDED_BUILD_TESTS', ''):
         pytest.skip('EXTENDED_BUILD_TESTS is disabeld')
 
+    flamingo_path = os.path.dirname(os.path.dirname(__file__))
+
     with TemporaryDirectory() as tmp_dir:
         # setup environment
         executable = 'python{}.{}'.format(sys.version_info.major,
@@ -41,10 +43,12 @@ def test_project_template(template_name, run):
                 --project-template="{template_name}" \
                 "wobsite" \
                 python_version="{executable}" \
+                flamingo_path="{flamingo_path}" \
         """.format(
             executable=executable,
             package=package,
             template_name=template_name,
+            flamingo_path=flamingo_path,
         ).strip()
 
         returncode, output = run(command, cwd=tmp_dir, clean_env=True)

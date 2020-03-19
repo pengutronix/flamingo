@@ -1,5 +1,7 @@
 {%- if debug -%}
     -e ..[live-server,pygments]
+{%- elif flamingo_path -%}
+    {{ flamingo_path }}
 {%- else -%}
     flamingo[live-server,pygments]=={{flamingo.VERSION_STRING}}
 {%- endif -%}
