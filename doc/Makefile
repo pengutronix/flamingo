@@ -1,7 +1,7 @@
 FLAMINGO_SETTINGS=settings.py
 FLAMINGO_SERVER_ARGS=--host=localhost --port=8080
 
-PYTHON=python3.7
+PYTHON=python3
 PYTHON_VENV=env
 
 $(PYTHON_VENV)/.created: REQUIREMENTS.txt
