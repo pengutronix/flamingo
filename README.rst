@@ -37,4 +37,4 @@ Websites powered by flamingo:
  - `pengutronix.de <https://www.pengutronix.de>`__
  - `linux-automation.com <https://www.linux-automation.com/de/>`__
 
-Documentation: `flamingo-web.org <http://new.flamingo-web.org>`__
+Documentation: `flamingo-web.org <https://flamingo-web.org>`__
