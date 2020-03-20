@@ -105,7 +105,8 @@ class WarningStream:
 
 class FlamingoWriter(Writer):
     """
-    This writer subclass removes all SystemMessages from its doctree
+    This writer subclass runs flamingo hook 'rst_document_parsed' for every
+    docutils document, before writing it.
     """
 
     def __init__(self, flamingo_context, *args, **kwargs):
@@ -114,22 +115,6 @@ class FlamingoWriter(Writer):
         super().__init__(*args, **kwargs)
 
     def write(self, document, destination):
-        def remove_system_messages(children):
-            for child in children[::]:
-                if isinstance(child, system_message):
-                    children.remove(child)
-
-                elif(hasattr(child, 'attributes') and
-                     'classes' in child.attributes and
-                     'system-messages' in child.attributes['classes']):
-
-                    children.remove(child)
-
-                elif child.children:
-                    remove_system_messages(child.children)
-
-        remove_system_messages(document.children)
-
         self.flamingo_context.plugins.run_plugin_hook('rst_document_parsed',
                                                       document)
 
@@ -280,3 +265,38 @@ class reStructuredText:
     def parser_setup(self, context):
         context.parser.add_parser(RSTParser(context))
         directives.register_directive('div', _container(context))
+
+    def rst_document_parsed(self, context, document):
+        """
+        This hook removes all docutils system messages from docutils documents
+        """
+
+        if(not context.settings.get(
+               'RST_REMOVE_SYSTEM_MESSAGES_FROM_OUPUT', True)):
+
+            return
+
+        logger.debug('%s: removing system messages', context.content['path'])
+
+        removed = [0]
+
+        def remove_system_messages(children, removed):
+            for child in children[::]:
+                if isinstance(child, system_message):
+                    children.remove(child)
+                    removed[0] += 1
+
+                elif(hasattr(child, 'attributes') and
+                     'classes' in child.attributes and
+                     'system-messages' in child.attributes['classes']):
+
+                    children.remove(child)
+                    removed[0] += 1
+
+                elif child.children:
+                    remove_system_messages(child.children, removed)
+
+        remove_system_messages(document.children, removed)
+
+        logger.debug('%s: %s system messages removed',
+                     context.content['path'], removed[0])

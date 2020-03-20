@@ -59,6 +59,12 @@ Settings
 
     When set to ``True`` no inline rst is allowed in image captions
 
+.. raw-setting::
+
+    RST_REMOVE_SYSTEM_MESSAGES_FROM_OUPUT = True
+
+    By default reStructuredText adds system messages to the HTML output
+
 
 Images
 ------
