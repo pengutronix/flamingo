@@ -1,4 +1,7 @@
 import os
+import logging
+
+logger = logging.getLogger("flamingo.core.layers")
 
 
 def _cp(context, source, destination):
@@ -17,6 +20,9 @@ class PreBuildLayers:
         OUTPUT_ROOT = context.settings.OUTPUT_ROOT
 
         for layer in context.settings.PRE_BUILD_LAYERS:
+            if not os.path.exists(layer):
+                logger.error("PreBuildLayer '%s' not found.", layer)
+                continue
             _cp(context, layer, OUTPUT_ROOT)
 
 
@@ -25,4 +31,7 @@ class PostBuildLayers:
         OUTPUT_ROOT = context.settings.OUTPUT_ROOT
 
         for layer in context.settings.POST_BUILD_LAYERS:
+            if not os.path.exists(layer):
+                logger.error("PostBuildLayer '%s' not found.", layer)
+                continue
             _cp(context, layer, OUTPUT_ROOT)
