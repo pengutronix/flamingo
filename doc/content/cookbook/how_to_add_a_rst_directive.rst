@@ -85,8 +85,9 @@ useful if you have more complex directives.
 
 .. code-block:: python
 
-    from docutils.parsers.rst import Directive, directives
+    from docutils.parsers.rst import directives
     from docutils.nodes import raw
+    from flamingo.plugins.rst.base import NestedDirective
 
 
     def div(context):
