@@ -42,7 +42,10 @@ EXTRAS_REQUIRE = {
     ],
     'ipython': [
         'ipython<7',
-    ]
+    ],
+    'sphinx-themes': [
+        'sphinx',
+    ],
 }
 
 EXTRAS_REQUIRE['full'] = sum([v for k, v in EXTRAS_REQUIRE.items()], [])

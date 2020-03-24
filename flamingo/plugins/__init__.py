@@ -37,8 +37,16 @@ try:
 except ImportError:  # pragma: no cover
     pass
 
+
 try:
     from .thumbnails import Thumbnails  # NOQA
+
+except ImportError:  # pragma: no cover
+    pass
+
+
+try:
+    from .sphinx_themes.plugin import SphinxThemes  # NOQA
 
 except ImportError:  # pragma: no cover
     pass

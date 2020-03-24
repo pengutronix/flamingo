@@ -1,0 +1,21 @@
+{% if settings.SPHINX_THEMES_TOC_CAPTION %}
+  <p class="caption"><span class="caption-text">{{ settings.SPHINX_THEMES_TOC_CAPTION }}</span></p>
+{% endif %}
+<ul>
+  {% for section_l1, menus_l1 in context.settings.MENU.main %}
+  <li class="toctree-l1{% if is_active(section_l1, menus_l1, content) %} current{% endif %}">
+      <a href="{{ section_l1.content.url }}" class="reference internal">{{ section_l1.name }}</a>
+      <ul{% if is_active(section_l1, menus_l1, content) %} class="current"{% endif %}>
+        {% for section_l2, menus_l2 in menus_l1 %}
+          <li class="toctree-l2{% if is_active(section_l2, menus_l2, content) %} current{% endif %}">
+            {% if section_l2.content %}
+              <a href="{{ section_l2.content.url }}" class="reference internal">{{ section_l2.name }}</a>
+            {% else %}
+              <a href="{{ menus_l2.url }}" class="reference internal">{{ section_l2 }}</a>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </li>
+  {% endfor %}
+</ul>
