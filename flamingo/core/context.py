@@ -252,6 +252,9 @@ class Context(OverlayObject):
             else:
                 return output
 
+        self.plugins.run_hook('template_context_setup',
+                              content, template_name, template_context)
+
         output = self.templating_engine.render(template_name, template_context)
         content['template_context'] = template_context
 

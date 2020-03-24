@@ -75,6 +75,15 @@ All hooks get the ``context`` object passed in. Some hooks get
 
             pass
 
+        def template_context_setup(self, content, template_name,
+                                   template_context):
+
+            # Gets called while rendering a content object. When rendering a
+            # content object a template context gets created. You can use this
+            # hook to change or extend templating contexts
+
+            pass
+
         def post_build(self, context):
             # Gets called after building.
 
