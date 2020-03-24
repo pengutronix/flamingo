@@ -144,6 +144,7 @@ class Jinja2(TemplatingEngine):
             context,
             loader=FileSystemLoader(template_dirs),
             finalize=silent_none,
+            extensions=context.settings.JINJA2_EXTENSIONS,
         )
 
         self.env.globals['link'] = link

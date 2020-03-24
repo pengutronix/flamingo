@@ -217,3 +217,7 @@ Templating
 .. setting::
     :name: EXTRA_CONTEXT
     :path: flamingo.core.settings.defaults.EXTRA_CONTEXT
+
+.. setting::
+    :name: JINJA2_EXTENSIONS
+    :path: flamingo.core.settings.defaults.JINJA2_EXTENSIONS
