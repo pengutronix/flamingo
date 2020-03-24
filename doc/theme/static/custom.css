@@ -1,3 +1,7 @@
+a.icon-home img {
+    max-width: 150px !important;
+}
+
 table p {
     margin: 0;
     padding: 0;

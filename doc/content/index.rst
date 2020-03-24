@@ -3,11 +3,6 @@
 Welcome to flamingo!
 ====================
 
-.. img:: /images/flamingo.svg
-    :height: 128px
-    :width: 128px
-    :align: right
-    :thumbnail: false
 
 Flamingo is a python3-based, pelican-inspired static site generator, made by
 `Pengutronix <https://www.pengutronix.de>`__

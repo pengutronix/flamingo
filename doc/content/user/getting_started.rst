@@ -95,49 +95,11 @@ List of optional features
 
 .. table::
 
-    Name
-
-    Description
-
-
-    live-server
-
-    Required for ``flamingo server``.
-    Installs `aiohttp <https://aiohttp.readthedocs.io/en/stable/>`_,
-    `aiohttp-json-rpc <https://github.com/pengutronix/aiohttp-json-rpc>`_ and
-    `IPython <https://ipython.org/>`_
-
-
-    ipython
-
-    Required for ``flamingo shell``. Installs `IPython <https://ipython.org/>`_
-
-
-    chardet
-
-    Adds support for
-    `chardet <https://chardet.readthedocs.io/en/latest/index.html>`_
-    Needed for ``settings.USE_CHARDET``
-
-
-    pygments
-
-    Adds support for `pygments <http://pygments.org/>`_
-
-
-    thumbnails
-
-    Adds support for image scaling. Installs
-    `pillow <https://pillow.readthedocs.io/en/stable/>`_
-
-
-    markdown
-
-    Adds support for `markdown <https://www.markdownguide.org/>`_
-    using `python-markdown <https://python-markdown.github.io/>`_
-
-
-    coloredlogs
-
-    Adds support for
-    `coloredlogs <https://coloredlogs.readthedocs.io/en/latest/>`_
+    ^Name ^Description
+    |live-server |Required for flamingo server.  Installs aiohttp, aiohttp-json-rpc and IPython
+    |ipython |Required for flamingo shell. Installs IPython
+    |chardet |Adds support for chardet. Needed for settings.USE_CHARDET
+    |pygments |Adds support for pygments
+    |thumbnails |Adds support for image scaling. Installs pillow
+    |markdown |Adds support for markdown using python-markdown
+    |coloredlogs |Adds support for coloredlogs

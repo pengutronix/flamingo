@@ -50,56 +50,15 @@ Special Attributes
 
 .. table::
 
-    Name
-
-    Description
-
-
-    ``path``
-
-    Contains the path to this content, relative to the ``CONTENT_ROOT``. This
-    attribute is set by flamingo and is not meant to be set in a content file.
-        
-
-    ``output``
-
-    Contains the output path of this content. If not set it gets auto generated
-    from its path.  When the path is ``foo/bar/bar.rst`` the output would be
-    ``foo/bar/bar.html``
-
-
-    ``url``
-
-    a linkable url to this content
-
-
-    ``title``
-
-    content of the HTML title tag when rendering
-
-
-    ``template``
-
-    template name that gets used to render the content. Default is
-    ``page.html``. You can change this to your own template name
-
-
-    ``content_title``
-
-    all parsers split the content in its first heading and all following
-    content. ``content_title`` holds the first heading of the content
-
-
-    ``content_body``
-
-    all parsers split the content in its first heading and all following
-    content. ``content_body`` holds the all content but the first heading
-
-
-    ``media``
-
-    a ``flamingo.core.data_model.ContentSet`` that holds all paths of media
-    files used in this content
+    ^Name ^Description
+    |path |Contains the path to this content, relative to the CONTENT_ROOT. This attribute is set by flamingo and is not meant to be set in a content file.
+    |output |Contains the output path of this content. If not set it gets auto generated from its path.  When the path is foo/bar/bar.rst the output would be foo/bar/bar.html
+    |url |a linkable url to this content
+    |title |content of the HTML title tag when rendering
+    |template |template name that gets used to render the content. Default is page.html. You can change this to your own template name
+    |content_title |all parsers split the content in its first heading and all following content. content_title holds the first heading of the content
+    |content_body |all parsers split the content in its first heading and all following content. content_body holds the all content but the first heading
+    |media |a flamingo.core.data_model.ContentSet that holds all paths of media files used in this content
 
 
 Using Jinja2 Syntax

@@ -9,14 +9,24 @@ THEME_PATHS = [
 PLUGINS = [
     'flamingo.plugins.rstPygments',
     'flamingo.plugins.Menu',
-    'flamingo.plugins.ReadTheDocs',
     'flamingo.plugins.Git',
     'flamingo.plugins.Thumbnails',
+    'flamingo.plugins.SphinxThemes',
 
     'plugins/rst_setting.py::rstSetting',
-    'plugins/rst_table.py::rstTable',
 ]
 
 POST_BUILD_LAYERS = [
     'overlay',
+]
+
+# sphinx theme
+SPHINX_THEMES_HTML_THEME = 'sphinx_rtd_theme'
+SPHINX_THEMES_LOGO = 'flamingo.svg'
+SPHINX_THEMES_DOCSTITLE = 'Flamingo'
+SPHINX_THEMES_SHORTTITLE = 'Flamingo'
+SPHINX_THEMES_PROJECT = 'Flamingo'
+
+SPHINX_THEMES_EXTRA_STYLESHEETS = [
+    '/static/custom.css',
 ]

@@ -153,109 +153,21 @@ Available Lookups
 
 .. table::
 
-    Name
-
-    Operation
-
-    Description
-
-
-    ``eq``
-
-    ``==``
-
-    ``A`` is equal ``B``
-
-
-    ``ne``
-
-    ``!=``
-
-    ``A`` is unequal ``B``
-
-
-    ``lt``
-
-    ``<``
-
-    ``A`` is lower than ``B``
-
-
-    ``lte``
-
-    ``<=``
-
-    ``A`` is lower equal than ``B``
-
-
-    ``gt``
-
-    ``>``
-
-    ``A`` is greater than ``B``
-
-
-    ``gte``
-
-    ``>=``
-
-    ``A`` is greater equal than ``B``
-
-
-    ``in``
-
-    ``in``
-
-    ``A`` is in ``B``
-
-
-    ``isnull``
-
-    ``is None``
-
-    ``A`` is ``None``
-
-
-    ``isfalse``
-
-    ``is False``
-
-    ``A`` is ``False``
-
-
-    ``contains``
-
-    ``str(A) in str(B)``
-
-    ``A`` contains ``B`` as string, case sensitive
-
-
-    ``icontains``
-
-    ``str(A).lower() in str(B).lower()``
-
-    ``A`` contains ``B`` as string, case insensitive
-
-
-    ``startswith``
-
-    ``str(A).startswith(str(B))``
-
-    ``A`` startswith ``B`` as string, case sensitive
-
-
-    ``istartswith``
-
-    ``str(A).lower().startswith(str(B).lower())``
-
-    ``A`` startswith ``B`` as string, case insensitive
-
-
-    ``passes``
-
-    ``B(A)``
-
-    ``A`` passes ``B``
+    ^Name   ^Operation ^Description
+    |eq  |== |A is equal B |
+    |ne  |!= |A is unequal B |
+    |lt  |<  |A is lower than B |
+    |lte |<= |A is lower equal than B
+    |gt  |>  |A is greater than B |
+    |gte |>= |A is greater equal than B |
+    |in  |in |A is in B |
+    |isnull |is None |A is None |
+    |isfalse |is False |A is False |
+    |contains |str(A) in str(B) |A contains B as string, case sensitive |
+    |icontains |str(A).lower() in str(B).lower() |A contains B as string, case insensitive |
+    |startswith |str(A).startswith(str(B)) |A startswith B as string, case sensitive |
+    |istartswith |str(A).lower().startswith(str(B).lower()) |A startswith B as string, case insensitive |
+    |passes |B(A) |A passes B |
 
 
 Content / ContentSet API
