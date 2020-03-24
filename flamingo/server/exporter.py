@@ -149,7 +149,9 @@ class ContentExporter:
 
             # file response
             if isinstance(content, str):
-                if not os.path.exists(content):
+                if(not os.path.exists(content) or
+                   os.path.isdir(content)):
+
                     return _404()
 
                 return FileResponse(content)
