@@ -45,7 +45,6 @@ class PluginManager:
         self._hooks = {}
         self._running_hook = ''
 
-        self.THEME_PATHS = []
         self.PLUGIN_PATHS = []
 
         self.content = None
@@ -93,10 +92,6 @@ class PluginManager:
                     plugin_object = plugin_class()
 
                     self.PLUGIN_PATHS.append(plugin_path)
-
-                    # find theme_paths
-                    if hasattr(plugin_object, 'THEME_PATHS'):
-                        self.THEME_PATHS.extend(plugin_object.THEME_PATHS)
 
                     self._plugins.append(
                         (plugin_object.__class__.__name__, plugin_object, )
@@ -150,6 +145,16 @@ class PluginManager:
     @property
     def running_hook(self):
         return self._running_hook
+
+    @property
+    def THEME_PATHS(self):
+        paths = []
+
+        for plugin_path, plugin_object in self._plugins:
+            if hasattr(plugin_object, 'THEME_PATHS'):
+                paths.extend(plugin_object.THEME_PATHS)
+
+        return paths
 
     def run_plugin_hook(self, name, *args, **kwargs):
         if name in self._context.settings.SKIP_HOOKS:
