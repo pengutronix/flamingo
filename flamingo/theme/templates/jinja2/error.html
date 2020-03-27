@@ -114,7 +114,11 @@
     {% endif %}
 
     {% if isinstance(exception, LinkError) %}
-      <h2>Supported formats:</h2>
+      <h2>Supported reStructuredText formats:</h2>
+      <pre>{{ html_escape(':link:`home.rst`') }}
+{{ html_escape(':link:`Link to home <home.rst>') }}`</pre>
+
+      <h2>Supported templating formats:</h2>
       <pre>{{ html_escape("{{ link('home.rst') }}") }}
 {{ html_escape("{{ link('home.rst', 'Link to home') }}") }}</pre>
       <br>

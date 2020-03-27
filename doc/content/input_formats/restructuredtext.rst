@@ -66,6 +66,59 @@ Settings
     By default reStructuredText adds system messages to the HTML output
 
 
+Links
+-----
+
+The reStructuredText subsystem uses a text role named ``:link:`` for internal
+and external links.
+
+Link support gets handled by ``flamingo.plugins.rstLink``.
+
+
+External links
+~~~~~~~~~~~~~~
+
+Flamingo determines if a link is external by checking if the link target
+defines a protocol like ``http://``, ``ftp://`` or ``mailto:``.
+
+If no link title is given, the target is used as title.
+
+.. code-block:: rst
+
+    Link with title
+    ===============
+
+    :link:`Flamingo documentation <http://flamingo.org>`
+
+
+    Link without Title
+    ==================
+
+    :link:`http://flamingo.org`
+
+
+Internal links
+~~~~~~~~~~~~~~
+
+Internal links always have to point to real paths in ``settings.CONTENT_ROOT``.
+Paths are always relative to the current file, except if the path starts with
+``/``. In this case it has to be a absolute path 
+
+
+.. code-block:: rst
+
+    Link with title
+    ===============
+
+    :link:`home.rst`
+
+
+    Link without Title
+    ==================
+
+    :link:`Link to home <home.rst>`
+
+
 Images
 ------
 

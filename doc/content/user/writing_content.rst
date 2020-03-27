@@ -4,6 +4,9 @@ is_template: False
 Writing Content
 ===============
 
+**Note:** The syntax for features like HTML links or images may vary between
+different input formats.
+
 Content files consists of two sections: Meta data and content. The meta data
 get parsed by `YAML <https://pyyaml.org/wiki/PyYAMLDocumentation>`_, the
 content according to the file extension.

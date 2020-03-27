@@ -13,6 +13,7 @@ DEFAULT_PLUGINS = [
     'flamingo.plugins.rstInclude',
     'flamingo.plugins.rstImage',
     'flamingo.plugins.rstFile',
+    'flamingo.plugins.rstLink',
 ]
 
 PLUGINS = []
