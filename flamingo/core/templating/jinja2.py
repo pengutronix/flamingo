@@ -11,7 +11,6 @@ from jinja2 import Environment, FileSystemLoader, contextfunction
 from jinja2 import TemplateNotFound, TemplateSyntaxError
 
 from flamingo.core.templating.base import TemplatingEngine
-from flamingo.core.errors import ObjectDoesNotExist
 from flamingo.core.utils.imports import acquire
 from flamingo.core.utils.pprint import pformat
 from flamingo import THEME_ROOT
@@ -38,6 +37,20 @@ except ImportError:
 ERROR_TEMPLATE = os.path.join(os.path.dirname(__file__), 'jinja2_error.html')
 
 logger = logging.getLogger('flamingo.core.templating.Jinja2')
+
+
+class TemplatingError(Exception):
+    def __init__(self, *args, content_path=None, content_lineno=None,
+                 **kwargs):
+
+        super().__init__(*args, **kwargs)
+
+        self.content_path = content_path
+        self.content_lineno = content_lineno
+
+
+class LinkError(TemplatingError):
+    pass
 
 
 def silent_none(value):
@@ -68,37 +81,89 @@ def _import(*args, **kwargs):
 
 
 @contextfunction
-def link(context, path, name='', lang=''):
-    i18n = 'flamingo.plugins.I18N' in context['context'].settings.PLUGINS
+def link(context, path, *args, name='', lang='', i18n=True, find_name=False,
+         _content_path=None, _content_lineno=None, **kwargs):
 
-    try:
-        content = context['context'].contents.get(path=path)
+    def _link_error(message):
+        error = LinkError(
+            message,
+            content_path=_content_path,
+            content_lineno=_content_lineno,
+        )
 
-    except ObjectDoesNotExist:
-        content = None
+        # live server
+        if context['context'].settings.LIVE_SERVER_RUNNING:
+            raise error
 
-    if content and i18n:
-        lang = lang or context['content']['lang']
+        # logging
+        context['context'].errors.append(error)
 
-        if content['lang'] != lang:
-            content = context['context'].contents.get(id=content['id'],
-                                                      lang=lang)
+        if _content_path and _content_lineno:
+            context['context'].logger.error(
+                '%s:%s: LinkError: %s',
+                _content_path,
+                _content_lineno,
+                message,
+            )
 
-    if not content:
-        content_path = context['content']['path']
-
-        if not content_path and i18n and context['content']['translations']:
-            content_path = context['content']['translations'].values('path')[0]
-
-        context['context'].logger.error('%s: can not resolve link target ("%s", "%s")',  # NOQA
-            content_path, path, name)
+        else:
+            context['context'].logger.error(
+                '%s: LinkError: %s',
+                context['content']['path'],
+                message,
+            )
 
         return ''
 
-    if not name:
-        return content['url']
+    if args and not name:
+        name = args[0]
+        args = args[1:]
 
-    return '<a href="{}">{}</a>'.format(content['url'], name)
+    if args:
+        return _link_error('unknown arguments: {}'.format(', '.join(args)))
+
+    if kwargs:
+        return _link_error(
+            'unknown options: {}'.format(', '.join(kwargs.keys())))
+
+    # resolving content path
+    current_content = None
+
+    if _content_path:
+        current_content = context['context'].contents.get(path=_content_path)
+
+    content = context['context'].resolve_content_path(path,
+                                                      content=current_content)
+
+    if not content:
+        return _link_error(
+            "can not resolve link target '{}'".format(path))
+
+    # translate link
+    if i18n and ('flamingo.plugins.I18N' in
+                 context['context'].settings.PLUGINS):
+
+        lang = lang or context['content']['lang']
+
+        i18n_content_key = getattr(
+            context['context'].settings, 'I18N_CONTENT_KEY', 'id')
+
+        if content['lang'] != lang:
+            content = context['context'].contents.get({
+                i18n_content_key: content[i18n_content_key],
+                'lang': lang
+            })
+
+    # render link tag
+    target = content['url']
+
+    if find_name:
+        name = name or content['title'] or content['content_title']
+
+    if name:
+        return '<a href="{}">{}</a>'.format(target, name)
+
+    return target
 
 
 class FlamingoEnvironment(Environment):
@@ -217,7 +282,12 @@ class Jinja2(TemplatingEngine):
         return pygments_highlight(snippet, lexer, formatter)
 
     def _render_exception(self, exception):
-        stack = []
+        stack = [
+            # stack items are tuples containing the full path to a frame,
+            # its lineno and its display name
+
+            # example: ('content/index.rst', 20, 'index.rst'),
+        ]
 
         for frame in traceback.extract_tb(exception.__traceback__)[::-1]:
             filename = frame.filename
@@ -235,7 +305,30 @@ class Jinja2(TemplatingEngine):
                 (filename, frame.lineno, content_path, )
             )
 
+        if isinstance(exception, TemplatingError):
+            # TemplatingError objects can contain information about the
+            # content file that caused this error.
+            # Even if not, the stack gets striped down to only the template
+            # file to make the stacktrace easier to read.
+
+            if exception.content_path and exception.content_lineno:
+                content_abspath = os.path.join(
+                    self.context.settings.CONTENT_ROOT,
+                    exception.content_path,
+                )
+
+                stack = [
+                    (content_abspath, exception.content_lineno, '')
+                ]
+
+            else:
+                stack = [stack[1]]
+
         if isinstance(exception, (TemplateSyntaxError, TemplateNotFound, )):
+            # In TemplateSyntaxError and TemplateNotFound error objects only
+            # the template files are interesting. Because of this the python
+            # code stack items get scraped
+
             stack = [
                 i for i in stack
                 if os.path.splitext(i[0])[1] != '.py'
@@ -255,6 +348,7 @@ class Jinja2(TemplatingEngine):
             exception=exception,
             stack=stack,
             TemplateNotFound=TemplateNotFound,
+            LinkError=LinkError,
             isinstance=isinstance,
         )
 

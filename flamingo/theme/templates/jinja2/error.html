@@ -106,10 +106,20 @@
     {% else %}
       <h1>{{ exception.__class__.__name__ }}{% if exception.message %}: {{ exception.message }}{% elif exception.args %}: {% for arg in exception.args %}{{ html_escape(arg) }}{% endfor %}{% endif %}</h1>
     {% endif %}
+
+    {# help text #}
     {% if isinstance(exception, TemplateNotFound) %}
       <h2>Theme paths:</h2>
       <pre>{{ pformat(context.templating_engine.theme_paths) }}</pre>
     {% endif %}
+
+    {% if isinstance(exception, LinkError) %}
+      <h2>Supported formats:</h2>
+      <pre>{{ html_escape("{{ link('home.rst') }}") }}
+{{ html_escape("{{ link('home.rst', 'Link to home') }}") }}</pre>
+      <br>
+    {% endif %}
+
     {% for path, lineno, content_path in stack %}
       {% if content_path %}
         <h2>{{ content_path }}</h2>
