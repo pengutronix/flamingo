@@ -59,6 +59,52 @@ class Context(OverlayObject):
         # context ready
         self.plugins.run_plugin_hook('context_setup')
 
+    def resolve_content_path(self, path, content=None):
+        """
+        supported formats:
+
+            index.rst           relative path (only available if self.content
+                                               is set or content is given)
+
+            /index.rst          absolute path
+            content/index.rst   absolute path with CONTENT_ROOT given without /
+            /content/index.rst  absolute path with CONTENT_ROOT given with /
+        """
+
+        current_content = content or self.content
+
+        def _try_relative_path(path):
+            path = os.path.join(os.path.dirname(current_content['path']), path)
+            content_set = self.contents.filter(path=path)
+
+            if content_set.exists():
+                return content_set.get()
+
+        def _try_absolute_path(path):
+            if path.startswith('/'):
+                path = path[1:]
+
+            if path.startswith(self.settings.CONTENT_ROOT):
+                path = os.path.relpath(path, self.settings.CONTENT_ROOT)
+
+            content_set = self.contents.filter(path=path)
+
+            if content_set.exists():
+                return content_set.get()
+
+        # relative paths
+        if current_content and not path.startswith('/'):
+            content = _try_relative_path(path)
+
+            if content:
+                return content
+
+        # try absolute
+        content = _try_absolute_path(path)
+
+        if content:
+            return content
+
     def parse(self, content):
         previous_content = self.content
         self.content = content
