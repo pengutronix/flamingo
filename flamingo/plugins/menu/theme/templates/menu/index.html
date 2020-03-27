@@ -1,0 +1,12 @@
+{% extends "DEFAULT_TEMPLATE" %}
+
+{% block body %}
+  <h1>{{ content.title }}</h1>
+  <ul>
+    {% for i in content.menu %}
+      {% for item_name, item_content in i %}
+        <li><a href="{{ item_content.url }}">{{ item_name }}</a>
+      {% endfor %}
+    {% endfor %}
+  </ul>
+{% endblock %}
