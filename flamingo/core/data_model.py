@@ -47,7 +47,7 @@ LOGIC_FUNCTIONS = {
     'isnull': lambda a, b: a is None if b else a is not None,
     'isfalse': lambda a, b: not bool(a) if b else bool(a),
     'startswith': lambda a, b: _str(a).startswith(b),
-    'endswith': lambda a, b: _str(a).startswith(b),
+    'endswith': lambda a, b: _str(a).endswith(b),
     'passes': lambda a, b: b(a),
 }
 
