@@ -27,6 +27,21 @@ button:active {
     outline: none;
 }
 
+noscript h1 {
+    padding-top: 0.5em;
+    padding-left: 10px;
+    color: black;
+    font-family: monospace;
+    font-size: 22px;
+}
+
+noscript span {
+    color: black;
+    padding: 10px;
+    font-family: monospace;
+    font-size: 12px;
+}
+
 /* ANIMATIONS -------------------------------------------------------------- */
 @keyframes pulse {
     0% {
