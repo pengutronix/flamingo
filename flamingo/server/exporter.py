@@ -63,8 +63,16 @@ class ContentExporter:
             for path in paths[::-1]:
                 path = os.path.join(path, request_path)
 
-                if os.path.exists(path):
-                    return path
+                if not os.path.exists(path):
+                    continue
+
+                if os.path.isdir(path):
+                    index_path = os.path.join(path, 'index.html')
+
+                    if os.path.exists(index_path):
+                        return index_path
+
+                return path
 
             return ''
 
