@@ -53,7 +53,7 @@ class Redirects:
             content = {
                 'type': 'redirect-rule',
                 'output': source,
-                'content': HTML_TEMPLATE.format(destination),
+                'content_body': HTML_TEMPLATE.format(destination),
                 'redirect': destination,
             }
 
