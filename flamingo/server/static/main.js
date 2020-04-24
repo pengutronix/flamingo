@@ -111,6 +111,10 @@ var iframe_initial_setup = false;
 function iframe_update_meta_data() {
     var settings = ractive.get('settings');
 
+    if(!rpc || !rpc._ws || rpc._ws.readyState != rpc._ws.OPEN) {
+        return;
+    }
+
     rpc.call(
         'get_meta_data',
         {
@@ -132,7 +136,7 @@ function iframe_onload(iframe) {
         return;
     }
 
-    if(rpc._ws.readyState != rpc._ws.OPEN) {
+    if(!rpc || !rpc._ws || rpc._ws.readyState != rpc._ws.OPEN) {
         return;
     }
 
