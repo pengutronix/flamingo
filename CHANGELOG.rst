@@ -3,6 +3,25 @@
 Changelog
 =========
 
+`v1.2 <https://github.com/pengutronix/flamingo/compare/v1.1...v1.2>`_ (2020-04-25)
+----------------------------------------------------------------------------------
+
+Changes
+~~~~~~~
+
+* server: exporter: search for a ``index.html`` if an empty directory is requested
+
+Bugfixes
+~~~~~~~~
+
+* server: frontend: fix rpc race condition while iframe setup
+
+* plugins: Redirects: fix empty HTML files
+
+  In early versions of flamingo page contents were stored in
+  ``content['content']``.  Now they are stored in ``content['content_body']``.
+
+
 
 `v1.1 <https://github.com/pengutronix/flamingo/compare/v1.0...v1.1>`_ (2020-03-29)
 ----------------------------------------------------------------------------------
