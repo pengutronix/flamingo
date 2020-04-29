@@ -14,7 +14,7 @@ def file(context):
 
             return [
                 raw('', '<a href="{}">{}</a>'.format(
-                        media['link'], ' '.join(self.content).strip()),
+                        media['url'], ' '.join(self.content).strip()),
                     format='html'),
             ]
 
