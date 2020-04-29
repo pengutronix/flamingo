@@ -3,6 +3,16 @@
 Changelog
 =========
 
+`v1.2.1 <https://github.com/pengutronix/flamingo/compare/v1.2...v1.2.1>`_ (2020-04-29)
+--------------------------------------------------------------------------------------
+
+Bugfixes
+~~~~~~~~
+
+* plugins: reStructuredText: rstFile: fix broken links
+
+
+
 `v1.2 <https://github.com/pengutronix/flamingo/compare/v1.1...v1.2>`_ (2020-04-25)
 ----------------------------------------------------------------------------------
 
