@@ -58,18 +58,13 @@ class LinkRole:
         options['_content_path'] = self.context.content['path']
         options['_content_lineno'] = abs_lineno
 
-        # parse boolean values
+        # generate html node
         if 'i18n' in options:
             options['i18n'] = parse_bool(options['i18n'])
 
-        if 'find_name' in options:
-            options['find_name'] = parse_bool(options['find_name'])
-
-        # enable find_name feature if not set
-        if 'find_name' not in options:
+        if not name:
             options['find_name'] = True
 
-        # generate html node
         return [raw(
             '',
             "{{{{ link(path='{}', name='{}', {}) }}}}".format(
