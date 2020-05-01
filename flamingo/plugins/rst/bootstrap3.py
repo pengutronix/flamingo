@@ -3,6 +3,7 @@ import re
 from docutils.parsers.rst import directives
 from docutils.nodes import raw
 
+from flamingo.plugins.rst import register_directive
 from .base import NestedDirective
 
 
@@ -139,8 +140,8 @@ class rstBootstrap3:
             Youtube, \
             Alert = _gen_directives(context)
 
-        directives.register_directive('div', Container)
-        directives.register_directive('row', BootstrapRow)
-        directives.register_directive('col', BootstrapCol)
-        directives.register_directive('youtube', Youtube)
-        directives.register_directive('alert', Alert)
+        register_directive('div', Container)
+        register_directive('row', BootstrapRow)
+        register_directive('col', BootstrapCol)
+        register_directive('youtube', Youtube)
+        register_directive('alert', Alert)

@@ -8,6 +8,7 @@ from flamingo.core.utils.html import (
     TitleNotFoundError,
 )
 
+from flamingo.plugins.rst import register_directive
 from flamingo.plugins.rst.base import parse_rst
 
 logger = logging.getLogger('flamingo.plugins.rst.parser.include')
@@ -69,4 +70,4 @@ def include(context):
 
 class rstInclude:
     def parser_setup(self, context):
-        directives.register_directive('inc', include(context))
+        register_directive('inc', include(context))

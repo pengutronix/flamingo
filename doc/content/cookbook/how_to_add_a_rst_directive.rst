@@ -16,8 +16,10 @@ tag.
 
 .. code-block:: python
 
-    from docutils.parsers.rst import Directive, directives
+    from docutils.parsers.rst import Directive
     from docutils.nodes import raw
+
+    from flamingo.plugins.rst import register_directive
 
 
     class Pre(Directive):
@@ -32,7 +34,7 @@ tag.
 
     class rstPre:
         def parser_setup(self, context):
-            directives.register_directive('pre', Pre)
+            register_directive('pre', Pre)
 
 
 .. code-block:: rst
@@ -55,8 +57,10 @@ its settings.
 
 .. code-block:: python
 
-    from docutils.parsers.rst import Directive, directives
+    from docutils.parsers.rst import Directive
     from docutils.nodes import raw
+
+    from flamingo.plugins.rst import register_directive
 
 
     def pre(context):
@@ -74,7 +78,7 @@ its settings.
 
     class rstPre:
         def parser_setup(self, context):
-            directives.register_directive('pre', pre(context))
+            register_directive('pre', pre(context))
 
 
 Directive that allows rst syntax
@@ -85,9 +89,10 @@ useful if you have more complex directives.
 
 .. code-block:: python
 
-    from docutils.parsers.rst import directives
     from docutils.nodes import raw
+
     from flamingo.plugins.rst.base import NestedDirective
+    from flamingo.plugins.rst import register_directive
 
 
     def div(context):
@@ -104,7 +109,7 @@ useful if you have more complex directives.
 
     class rstDiv:
         def parser_setup(self, context):
-            directives.register_directive('div', div(context))
+            register_directive('div', div(context))
 
 
 .. code-block:: rst

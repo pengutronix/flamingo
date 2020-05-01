@@ -8,6 +8,7 @@ from docutils.utils import SystemMessage
 from docutils.core import publish_parts
 
 from flamingo.core.parser import ContentParser, ParsingError
+from flamingo.plugins.rst import register_directive
 
 SYSTEM_MESSAGE_RE = re.compile(r'^(?P<name>[^:]+):(?P<line>\d+)?: \((?P<level_name>[^/)]+)/(?P<level>\d+)\) (?P<short_description>[^\t\n]+)(?P<long_description>.*)?$', re.DOTALL)  # NOQA
 logger = logging.getLogger('flamingo.plugins.reStructuredText')
@@ -264,7 +265,7 @@ class reStructuredText:
 
     def parser_setup(self, context):
         context.parser.add_parser(RSTParser(context))
-        directives.register_directive('div', _container(context))
+        register_directive('div', _container(context))
 
     def rst_document_parsed(self, context, document):
         """

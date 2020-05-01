@@ -1,5 +1,7 @@
 import re
 
+from docutils.parsers.rst import roles, directives
+
 ROLE_RE = re.compile(r'^(?P<arg0>[^<]+)((\s+)?<(?P<arg1>[^>]+)>)?((\s+)?(?P<options>.*))?$')  # NOQA
 ROLE_OPTIONS_RE = re.compile(r'((?P<name>[^=]+)=(?P<value>[^\s,]+)([\s,]+)?)')
 
@@ -55,3 +57,23 @@ def parse_bool(value):
             pass
 
     return bool(value)
+
+
+def register_canonical_role(name, role):
+    if name in roles._roles:
+        roles._roles.pop(name)
+
+    if name in roles._role_registry:
+        roles._role_registry.pop(name)
+
+    roles.register_canonical_role(name, role)
+
+
+def register_directive(name, directive):
+    if name in directives._directives:
+        directives._directives.pop(name)
+
+    if name in directives._directive_registry:
+        directives._directive_registry.pop(name)
+
+    directives.register_directive(name, directive)

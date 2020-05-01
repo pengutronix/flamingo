@@ -7,6 +7,7 @@ from docutils.nodes import raw
 
 from flamingo.core.data_model import ContentSet
 
+from flamingo.plugins.rst import register_directive
 from flamingo.plugins.rst.base import parse_rst
 
 logger = logging.getLogger('flamingo.plugins.RSTImage')
@@ -191,7 +192,7 @@ class rstImage:
         _Gallery, _Image = gen_directives(context, self)
 
         for name in RST_GALLERY_DIRECTIVE_NAMES:
-            directives.register_directive(name, _Gallery)
+            register_directive(name, _Gallery)
 
         for name in RST_IMAGE_DIRECTIVE_NAMES:
-            directives.register_directive(name, _Image)
+            register_directive(name, _Image)

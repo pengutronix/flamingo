@@ -3,10 +3,12 @@ import os
 from docutils.parsers.rst import Directive, directives
 from docutils.nodes import raw
 
-from pygments.formatters import HtmlFormatter
 from pygments.lexers import get_lexer_by_name, guess_lexer
+from pygments.formatters import HtmlFormatter
 from pygments.util import ClassNotFound
 from pygments import highlight
+
+from flamingo.plugins.rst import register_directive
 
 
 def code_block(context):
@@ -73,4 +75,4 @@ def code_block(context):
 
 class rstPygments:
     def parser_setup(self, context):
-        directives.register_directive('code-block', code_block(context))
+        register_directive('code-block', code_block(context))

@@ -1,9 +1,8 @@
 from urllib.parse import urlparse
 
-from docutils.parsers.rst import roles
 from docutils.nodes import raw
 
-from .utils import parse_role_text, parse_bool
+from .utils import parse_role_text, parse_bool, register_canonical_role
 
 
 class LinkRole:
@@ -87,4 +86,4 @@ class LinkRole:
 
 class rstLink:
     def parser_setup(self, context):
-        roles.register_canonical_role('link', LinkRole(context))
+        register_canonical_role('link', LinkRole(context))
