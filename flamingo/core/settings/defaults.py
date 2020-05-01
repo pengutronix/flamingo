@@ -12,7 +12,6 @@ DEFAULT_PLUGINS = [
     'flamingo.plugins.reStructuredText',
     'flamingo.plugins.rstInclude',
     'flamingo.plugins.rstImage',
-    'flamingo.plugins.rstFile',
     'flamingo.plugins.rstLink',
 ]
 

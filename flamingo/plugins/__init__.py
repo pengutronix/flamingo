@@ -6,10 +6,9 @@ from .rst.plugin import reStructuredText  # NOQA
 from .authors.authors import Authors  # NOQA
 from .rst.include import rstInclude  # NOQA
 from .rtd.plugin import ReadTheDocs  # NOQA
-from .rst.image import rstImage  # NOQA
-from .rst.file import rstFile  # NOQA
-from .rst.link import rstLink  # NOQA
 from .redirects import Redirects  # NOQA
+from .rst.image import rstImage  # NOQA
+from .rst.link import rstLink  # NOQA
 from .tags.tags import Tags  # NOQA
 from .menu.menu import Menu  # NOQA
 from .html import HTML  # NOQA
