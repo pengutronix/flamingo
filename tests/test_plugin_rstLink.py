@@ -150,6 +150,41 @@ def test_i18n_links(flamingo_env):
     assert links[1].attrs['href'] == '/de/article1.html'
 
 
+def test_downloads(flamingo_env):
+    from bs4 import BeautifulSoup
+
+    flamingo_env.write('/content/download.txt', '1')
+
+    flamingo_env.write('/content/article.rst', """
+
+    Article
+    =======
+
+    :link:`download.txt`
+    :link:`/download.txt`
+    :link:`Download <download.txt>`
+
+    """)
+
+    flamingo_env.build()
+
+    # run tests
+    html = flamingo_env.read('/output/article.html')
+    soup = BeautifulSoup(html, 'html.parser')
+    links = soup.findAll('a')
+
+    assert links[0].get_text() == 'download.txt'
+    assert links[0].attrs['href'] == '/media/download.txt'
+
+    assert links[1].get_text() == 'download.txt'
+    assert links[1].attrs['href'] == '/media/download.txt'
+
+    assert links[2].get_text() == 'Download'
+    assert links[2].attrs['href'] == '/media/download.txt'
+
+    assert flamingo_env.read('/output/media/download.txt') == '1'
+
+
 def test_rendering_error(flamingo_env, caplog):
     flamingo_env.settings.PRE_RENDER_CONTENT = False
 

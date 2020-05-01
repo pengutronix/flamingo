@@ -97,12 +97,14 @@ If no link title is given, the target is used as title.
     :link:`http://flamingo.org`
 
 
-Internal links
-~~~~~~~~~~~~~~
+Internal links, downloads
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Internal links always have to point to real paths in ``settings.CONTENT_ROOT``.
 Paths are always relative to the current file, except if the path starts with
-``/``. In this case it has to be a absolute path 
+``/``. In this case it has to be a absolute path.
+
+Link targets can be downloadable files.
 
 
 .. code-block:: rst

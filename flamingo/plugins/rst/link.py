@@ -1,4 +1,5 @@
 from urllib.parse import urlparse
+import os
 
 from docutils.nodes import raw
 
@@ -10,9 +11,28 @@ class LinkRole:
 
     def __init__(self, context):
         self.context = context
+        self.rst_base_plugin = context.plugins.get_plugin('reStructuredText')
+        self.file_extensions = context.parser.get_extensions()
 
-        self.rst_base_plugin = \
-            self.context.plugins.get_plugin('reStructuredText')
+    def is_media_target(self, target):
+        if os.path.splitext(target)[1][1:] in self.file_extensions:
+            return False
+
+        if target.startswith('/'):
+            path = target[1:]
+
+        else:
+            path = os.path.join(
+                os.path.dirname(self.context.content['path']),
+                target,
+            )
+
+        path = os.path.join(
+            self.context.settings.CONTENT_ROOT,
+            os.path.normpath(path),
+        )
+
+        return os.path.exists(path)
 
     def __call__(self, name, rawtext, text, lineno, inliner):
         role_args = parse_role_text(text)
@@ -35,6 +55,19 @@ class LinkRole:
             return [raw(
                 '',
                 '<a href="{}">{}</a>'.format(target, name),
+                format='html')
+            ], []
+
+        # handle media files (downloads)
+        if self.is_media_target(target):
+            if not name:
+                name = os.path.basename(target)
+
+            media_content = self.context.add_media(target)
+
+            return [raw(
+                '',
+                '<a href="{}">{}</a>'.format(media_content['url'], name),
                 format='html')
             ], []
 
