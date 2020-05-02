@@ -11,7 +11,7 @@ Content files consists of two sections: Meta data and content. The meta data
 get parsed by `YAML <https://pyyaml.org/wiki/PyYAMLDocumentation>`_, the
 content according to the file extension.
 
-The meta data block comes first and is divided by from the content block by two
+The meta data block comes first and is divided from the content block by two
 or more blank lines. If you won't set any meta data your content file has to
 start with two or more blank lines.
 
