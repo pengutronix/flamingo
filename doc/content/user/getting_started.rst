@@ -75,7 +75,7 @@ Flamingo supports `setuptools <https://setuptools.readthedocs.io/en/latest/>`_
 optional features for having support for 3rd party libraries without defining
 hard dependencies.
 
-For example: If you want install flamingo with markdown support you have to
+For example: If you want to install flamingo with markdown support you have to
 change your ``REQUIREMENTS.txt`` like this:
 
 .. code-block:: txt
