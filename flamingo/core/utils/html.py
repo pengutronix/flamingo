@@ -36,4 +36,4 @@ def process_media_links(context, content, html):
 
     for img in html.find_all('img'):
         media_content = add_media(context, content, img['src'])
-        img['src'] = media_content['link']
+        img['src'] = media_content['url']
