@@ -3,6 +3,24 @@
 Changelog
 =========
 
+`v1.2.2 <https://github.com/pengutronix/flamingo/compare/v1.2.1...v1.2.2>`_ (2020-05-04)
+----------------------------------------------------------------------------------------
+
+Changes
+~~~~~~~
+
+* tests: plugins: Markdown: test image tag rendering
+
+
+Bugfixes
+~~~~~~~~
+
+* core: utils: html: process_media_links(): fix broken media meta data
+
+  This fixes broken image tags in Markdown files
+
+
+
 `v1.2.1 <https://github.com/pengutronix/flamingo/compare/v1.2...v1.2.1>`_ (2020-04-29)
 --------------------------------------------------------------------------------------
 
