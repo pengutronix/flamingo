@@ -31,6 +31,8 @@ def test_second_stage_templating(flamingo_env):
 
 
 def test_images(flamingo_env):
+    from bs4 import BeautifulSoup
+
     flamingo_env.settings.PLUGINS = ['flamingo.plugins.Markdown']
 
     flamingo_env.write('/content/home.png', '1')
@@ -56,3 +58,10 @@ def test_images(flamingo_env):
 
     # home-2.png is not referenced, so it should not be part of the output
     assert not flamingo_env.exists('/output/media/home-2.png')
+
+    # check rendered html
+    html = flamingo_env.read('/output/home.html')
+    soup = BeautifulSoup(html, 'html.parser')
+    img = soup.findAll('img')[0]
+
+    assert img.attrs['src'] == '/media/home.png'
