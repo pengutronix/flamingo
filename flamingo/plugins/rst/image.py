@@ -7,8 +7,7 @@ from docutils.nodes import raw
 
 from flamingo.core.data_model import ContentSet
 
-from flamingo.plugins.rst import register_directive
-from flamingo.plugins.rst.base import parse_rst
+from flamingo.plugins.rst import register_directive, parse_rst
 
 logger = logging.getLogger('flamingo.plugins.RSTImage')
 

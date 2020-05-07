@@ -5,9 +5,9 @@ from pygments.formatters import HtmlFormatter
 from pygments.lexers import get_lexer_by_name
 from pygments import highlight
 
-from flamingo.plugins.rst.base import parse_rst
 from flamingo.core.utils.imports import acquire
 from flamingo.core.utils.pprint import pformat
+from flamingo.plugins.rst import parse_rst
 
 RAW_SETTING_TEMPLATE = """
 <div class="raw-setting">

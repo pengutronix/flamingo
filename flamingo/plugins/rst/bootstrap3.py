@@ -3,8 +3,7 @@ import re
 from docutils.parsers.rst import directives
 from docutils.nodes import raw
 
-from flamingo.plugins.rst import register_directive
-from .base import NestedDirective
+from flamingo.plugins.rst import NestedDirective, register_directive
 
 
 def _gen_directives(context):

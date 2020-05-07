@@ -91,8 +91,7 @@ useful if you have more complex directives.
 
     from docutils.nodes import raw
 
-    from flamingo.plugins.rst.base import NestedDirective
-    from flamingo.plugins.rst import register_directive
+    from flamingo.plugins.rst import NestedDirective, register_directive
 
 
     def div(context):

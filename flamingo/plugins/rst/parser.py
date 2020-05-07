@@ -1,14 +1,11 @@
 import logging
 import re
 
-from docutils.parsers.rst import Directive, directives
-from docutils.nodes import raw, system_message
 from docutils.writers.html4css1 import Writer
 from docutils.utils import SystemMessage
 from docutils.core import publish_parts
 
-from flamingo.core.parser import ContentParser, ParsingError
-from flamingo.plugins.rst import register_directive
+from flamingo.core.parser import ParsingError
 
 SYSTEM_MESSAGE_RE = re.compile(r'^(?P<name>[^:]+):(?P<line>\d+)?: \((?P<level_name>[^/)]+)/(?P<level>\d+)\) (?P<short_description>[^\t\n]+)(?P<long_description>.*)?$', re.DOTALL)  # NOQA
 logger = logging.getLogger('flamingo.plugins.reStructuredText')
@@ -191,113 +188,3 @@ def parse_rst(*args, **kwargs):
     html += parts['body']
 
     return html
-
-
-class RSTParser(ContentParser):
-    FILE_EXTENSIONS = ['rst']
-
-    def parse(self, file_content, content):
-        plugin = self.context.plugins.get_plugin('reStructuredText')
-        path = content['path']
-
-        try:
-            markup_string = self.parse_meta_data(file_content, content)
-            parts = parse_rst_parts(markup_string, self.context)
-
-            content['content_title'] = parts['title']
-            content['content_body'] = ''
-
-            if parts['html_subtitle']:
-                content['content_body'] += parts['html_subtitle']
-
-            content['content_body'] += parts['body']
-
-        finally:
-            if path in plugin.offsets:
-                plugin.offsets.pop(path)
-
-
-class NestedDirective(Directive):
-    has_content = True
-
-    def parse_content(self, context):
-        plugin = context.plugins.get_plugin('reStructuredText')
-        path = context.content['path']
-
-        try:
-            plugin.offsets[path] += self.content_offset
-
-            return parse_rst(self.content, context)
-
-        finally:
-            plugin.offsets[path] -= self.content_offset
-
-    def run(self, context=None):
-        return [
-            raw('', self.parse_content(context), format='html'),
-        ]
-
-
-def _container(context):
-    class Container(NestedDirective):
-        option_spec = {
-            'id': directives.unchanged,
-            'style': directives.unchanged,
-        }
-
-        def run(self):
-            html = self.parse_content(context)
-
-            return [
-                raw('', '<div>', format='html'),
-                raw('', html, format='html'),
-                raw('', '</div>', format='html'),
-            ]
-
-    return Container
-
-
-class reStructuredText:
-    def setup(self, context):
-        logger.debug('reset offsets')
-
-        self.offsets = {}
-
-    def parser_setup(self, context):
-        context.parser.add_parser(RSTParser(context))
-        register_directive('div', _container(context))
-
-    def rst_document_parsed(self, context, document):
-        """
-        This hook removes all docutils system messages from docutils documents
-        """
-
-        if(not context.settings.get(
-               'RST_REMOVE_SYSTEM_MESSAGES_FROM_OUPUT', True)):
-
-            return
-
-        logger.debug('%s: removing system messages', context.content['path'])
-
-        removed = [0]
-
-        def remove_system_messages(children, removed):
-            for child in children[::]:
-                if isinstance(child, system_message):
-                    children.remove(child)
-                    removed[0] += 1
-
-                elif(hasattr(child, 'attributes') and
-                     'classes' in child.attributes and
-                     'system-messages' in child.attributes['classes']):
-
-                    children.remove(child)
-                    removed[0] += 1
-
-                elif child.children:
-                    remove_system_messages(child.children, removed)
-
-        remove_system_messages(document.children, removed)
-
-        logger.debug('%s: %s system messages removed',
-                     context.content['path'], removed[0])

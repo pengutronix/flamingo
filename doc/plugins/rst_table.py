@@ -3,7 +3,7 @@ from docutils.nodes import raw
 
 from jinja2 import Template
 
-from flamingo.plugins.rst.base import parse_rst
+from flamingo.plugins.rst import parse_rst
 
 
 TEMPLATE = Template("""
