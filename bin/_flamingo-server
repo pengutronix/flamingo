@@ -60,7 +60,7 @@ try:
         app=app,
         loop=loop,
         rpc_max_workers=namespace.threads,
-        settings=namespace.settings or [],
+        settings_paths=namespace.settings or [],
         disable_overlay=namespace.disable_overlay,
         enable_browser_caching=namespace.enable_browser_caching,
         watcher_interval=namespace.refresh_interval,

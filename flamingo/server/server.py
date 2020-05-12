@@ -38,16 +38,17 @@ default_logger = logging.getLogger('flamingo.server')
 
 
 class Server:
-    def __init__(self, app, settings, rpc_logging_handler,
-                 disable_overlay=False, enable_browser_caching=False,
-                 watcher_interval=0.25, loop=None, rpc_max_workers=6,
-                 logger=default_logger):
+    def __init__(self, app, rpc_logging_handler, settings=None,
+                 settings_paths=[], disable_overlay=False,
+                 enable_browser_caching=False, watcher_interval=0.25,
+                 loop=None, rpc_max_workers=6, logger=default_logger):
 
         self.build_environment = None
         rpc_logging_handler.server = self
 
         self.app = app
-        self.settings_paths = settings
+        self.settings = settings
+        self.settings_paths = settings_paths
         self.loop = loop or app.loop
         self.logger = logger
         self.frontend_controller = FrontendController(self)
@@ -119,12 +120,13 @@ class Server:
                 self.rpc.start_notification_worker(1)
 
             # setup settings
-            self.logger.debug('setup settings')
-            self.settings = Settings()
+            if not isinstance(self.settings, Settings):
+                self.logger.debug('setup settings')
+                self.settings = Settings()
 
-            for module in self.settings_paths:
-                self.logger.debug("add '%s' to settings", module)
-                self.settings.add(module)
+                for module in self.settings_paths:
+                    self.logger.debug("add '%s' to settings", module)
+                    self.settings.add(module)
 
             # setup build environment
             self.logger.debug('setup build environment')
