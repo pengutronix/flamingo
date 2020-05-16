@@ -56,8 +56,8 @@ class Tags:
             if GENERATE_PAGE_ZERO and page == 1:
                 context.contents.add(**{
                     CONTENT_KEY: '_tags/0',
-                    'output': 'tags.html'.format(page),
-                    'url': '/tags.html'.format(page),
+                    'output': 'tags.html',
+                    'url': '/tags.html',
                     'tags': tags,
                     'template': 'tags.html',
                     'pagination': {
