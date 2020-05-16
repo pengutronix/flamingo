@@ -83,8 +83,8 @@ class LinkRole:
                 self.context.content['path'],
                 abs_lineno,
                 ('settings'
-                  if not self.context.settings.PRE_RENDER_CONTENT else
-                  'content file'),
+                 if not self.context.settings.PRE_RENDER_CONTENT else
+                 'content file'),
             )
 
         # add content path and lineno for better error reporting
