@@ -43,8 +43,8 @@ class I18N:
                 **{content_key: content[content_key]}).values('lang')
 
             # add missings translations
-            for l in languages:
-                if l not in translation_langs:
+            for language in languages:
+                if language not in translation_langs:
                     content_data = copy(content.data)
 
                     content_data['original_path'] = content['path']
@@ -53,7 +53,7 @@ class I18N:
                         content_data['i18n_path'] = content_data['path']
                         del content_data['path']
 
-                    content_data['lang'] = l
+                    content_data['lang'] = language
 
                     context.contents.add(**content_data)
 
