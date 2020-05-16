@@ -13,6 +13,10 @@ env: $(PYTHON_VENV)/.created
 clean:
 	rm -rf $(PYTHON_VENV)
 
+lint: env
+	. $(PYTHON_VENV)/bin/activate && \
+	tox -e lint
+
 lazy-test: env
 	. $(PYTHON_VENV)/bin/activate && \
 	tox $(args)
