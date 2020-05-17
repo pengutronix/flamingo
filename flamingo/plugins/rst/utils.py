@@ -35,7 +35,9 @@ def parse_role_text(role_text):
 
     if role_parts['options']:
         for parts in ROLE_OPTIONS_RE.finditer(role_parts['options']):
-            role_args['options'][parts[2]] = parts[3]
+            groups = parts.groups()
+
+            role_args['options'][groups[1]] = groups[2]
 
     return role_args
 
