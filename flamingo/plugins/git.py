@@ -27,7 +27,7 @@ class Git:
                 shell=False,
             ).decode().strip()
 
-        except FileNotFoundError:
+        except FileNotFoundError:  # pragma: no cover
             logger.error('git seems not to be installed')
 
             return
