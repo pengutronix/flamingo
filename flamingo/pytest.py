@@ -90,6 +90,11 @@ class FlamingoBuildEnvironment:
 
         return open(path, *args, mode=mode, **kwargs).write(text)
 
+    def touch(self, path):
+        self.write(path, '')
+
+        return self.gen_path(path)
+
     def exists(self, path):
         return os.path.exists(self.gen_path(path))
 
