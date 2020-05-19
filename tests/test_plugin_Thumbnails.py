@@ -1,4 +1,6 @@
 def test_basic_thumnail_generating(flamingo_env):
+    import os
+
     from PIL import Image
 
     flamingo_env.settings.PLUGINS = [
@@ -29,8 +31,9 @@ def test_basic_thumnail_generating(flamingo_env):
     assert flamingo_env.exists('/output/media/image.png')
     assert flamingo_env.exists('/output/media/image.thumb.png')
 
-    assert flamingo_env.exists(
-        '/content/thumbs/d3ae2781bef71c56c98b977830a00b9d.png')
+    thumbnail_cache_path = flamingo_env.gen_path('/content/thumbs')
+
+    assert len(os.listdir(thumbnail_cache_path)) == 1
 
     original_pillow_image = Image.open(
         flamingo_env.gen_path('/output/media/image.png'))
