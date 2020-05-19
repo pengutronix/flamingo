@@ -23,7 +23,7 @@ class TemplatingEngine:
         return static_dirs
 
     def render(self, template_name, template_context):
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     def render_string(self, string, template_context):
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover

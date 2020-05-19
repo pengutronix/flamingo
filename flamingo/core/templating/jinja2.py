@@ -23,7 +23,7 @@ try:
 
     PYGMENTS = True
 
-except ImportError:
+except ImportError:  # pragma: no cover
     PYGMENTS = False
 
 try:
@@ -31,7 +31,7 @@ try:
 
     IPYTHON = True
 
-except ImportError:
+except ImportError:  # pragma: no cover
     IPYTHON = False
 
 ERROR_TEMPLATE = os.path.join(os.path.dirname(__file__), 'jinja2_error.html')
