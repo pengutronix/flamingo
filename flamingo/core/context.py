@@ -303,11 +303,12 @@ class Context(OverlayObject):
                          **extra_meta_data)
 
     def build(self, clean=True):
-        self.plugins.run_plugin_hook('pre_build')
-
         # remove previous artifacts
         if clean and os.path.exists(self.settings.OUTPUT_ROOT):
             self.rm_rf(self.settings.OUTPUT_ROOT)
+
+        # run pre build hooks
+        self.plugins.run_plugin_hook('pre_build')
 
         # render contents
         if self.settings.CONTENT_PATHS:
