@@ -104,6 +104,19 @@ class PluginManager:
 
         self._discover(HOOK_NAMES)
 
+    def __dir__(self):
+        return [
+            *super().__dir__(),
+            *[i[0] for i in self._plugins],
+        ]
+
+    def __getattr__(self, name):
+        for plugin_name, plugin_object in self._plugins:
+            if name == plugin_name:
+                return plugin_object
+
+        return super().__getattr__(name)
+
     def _discover(self, names):
         hook_names_to_discover = []
 
