@@ -1,5 +1,6 @@
 from functools import partial
 from copy import deepcopy
+import asyncio
 import logging
 import os
 
@@ -13,6 +14,10 @@ class BuildEnvironment:
     def __init__(self, server, setup=True):
         self.server = server
         self.context = None
+
+        self.pending = {
+            '*': [],
+        }
 
         if setup:
             self.setup()
@@ -113,6 +118,15 @@ class BuildEnvironment:
 
         self.patch_contents()
 
+        while self.pending['*']:
+            future = self.pending['*'].pop()
+            self.server.loop.call_soon_threadsafe(future.set_result, True)
+
+        for path in paths:
+            if path in self.pending:
+                future = self.pending.pop(path)
+                self.server.loop.call_soon_threadsafe(future.set_result, True)
+
     def patch_contents(self):
         logger.debug('patch Contents')
 
@@ -134,3 +148,27 @@ class BuildEnvironment:
 
             else:
                 content.show = partial(print, 'Content has no url')
+
+    def await_rebuild(self, paths=None):
+        futures = []
+
+        if isinstance(paths, str):
+            paths = [paths]
+
+        if paths:
+            for path in paths:
+                if path == '*':
+                    raise ValueError("'*' is a reserved value")
+
+                if path not in self.pending:
+                    self.pending[path] = asyncio.Future(loop=self.server.loop)
+
+                futures.append(self.pending[path])
+
+        else:
+            future = asyncio.Future(loop=self.server.loop)
+            futures.append(future)
+
+            self.pending['*'].append(future)
+
+        return asyncio.gather(*futures, loop=self.server.loop)
