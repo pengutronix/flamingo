@@ -31,7 +31,7 @@ class Feeds:
                     fe = fg.add_entry()
 
                     # setup required entry attributes
-                    fe_title = i['content_title']
+                    fe_title = i['title'] or i['content_title']
 
                     fe_link = {
                         'href': '{}{}'.format(FEEDS_DOMAIN, i['url']),
