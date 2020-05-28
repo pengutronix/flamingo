@@ -6,8 +6,12 @@ class MetaDataDefaults:
         for content in context.contents:
             # set output_path
             if not content['output']:
-                content['output'] = \
-                    os.path.splitext(content['path'])[0] + '.html'
+                if content['path']:
+                    content['output'] = \
+                        os.path.splitext(content['path'])[0] + '.html'
+
+                else:
+                    content['output'] = '/dev/null'
 
             # set url
             content['url'] = os.path.join('/', content['output'])
