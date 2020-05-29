@@ -11,6 +11,7 @@ class RPCHandler(logging.Handler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.loggers = []
         self.buffer_max_size = 2500
         self.internal_level = None
 
@@ -60,6 +61,10 @@ class RPCHandler(logging.Handler):
             'content_path': '',
             'hook': '',
         }
+
+        # filter log if self.loggers is set
+        if self.loggers and record_args['name'] not in self.loggers:
+            return
 
         # find current hook name and content path
         if(self.server and
