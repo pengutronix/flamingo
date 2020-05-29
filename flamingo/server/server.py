@@ -11,6 +11,7 @@ from aiohttp.web import FileResponse, Response
 from flamingo.server.frontend_controller import FrontendController
 from flamingo.server.build_environment import BuildEnvironment
 from flamingo.server.watcher import DiscoveryWatcher, Flags
+from flamingo.core.types import OverlayDict, OverlayList
 from flamingo.server.exporter import ContentExporter
 from flamingo.core.utils.aiohttp import no_cache
 from flamingo.core.data_model import QUOTE_KEYS
@@ -345,8 +346,16 @@ class Server:
             value = self.context.settings.get(key)
             value_type = type(value)
 
+            # skip modules and methods
             if value_type in (types.ModuleType, types.MethodType):
                 continue
+
+            # mask overlay types
+            if value_type == OverlayDict:
+                value_type = dict
+
+            elif value_type == OverlayList:
+                value_type = list
 
             meta_data['settings'].append({
                 'key': key,
