@@ -338,10 +338,11 @@ class Server:
             for k, v in (content['template_context'] or {}).items()
         ], key=lambda v: v['key'])
 
-        for key, value in self.context.settings._attrs.items():
-            if key.startswith('_') or key in ('add', 'modules', ):
+        for key in dir(self.context.settings):
+            if not key.isupper() or key.startswith('_'):
                 continue
 
+            value = self.context.settings.get(key)
             value_type = type(value)
 
             if value_type in (types.ModuleType, types.MethodType):
