@@ -30,10 +30,12 @@ try:
 except ImportError:
     IPYTHON = False
 
+TEMPLATE_ROOT = os.path.join(os.path.dirname(__file__), 'templates')
 STATIC_ROOT = os.path.join(os.path.dirname(__file__), 'static')
-INDEX_HTML = os.path.join(STATIC_ROOT, 'index.html')
-HTTP_404_HTML = os.path.join(STATIC_ROOT, '404.html')
-HTTP_500_HTML = os.path.join(STATIC_ROOT, '500.html')
+
+HTTP_404_HTML = os.path.join(TEMPLATE_ROOT, '404.html')
+HTTP_500_HTML = os.path.join(TEMPLATE_ROOT, '500.html')
+INDEX_HTML = os.path.join(TEMPLATE_ROOT, 'index.html')
 
 default_logger = logging.getLogger('flamingo.server')
 
