@@ -164,6 +164,11 @@ button:disabled {
     user-select: none;
 }
 
+/* CONTROLS ---------------------------------------------------------------- */
+#overlay #controls button {
+    margin-left: 0.25em;
+}
+
 /* TABS -------------------------------------------------------------------- */
 .tabs {
     grid-column-start: 1;

@@ -83,6 +83,14 @@ ractive.on('reset_settings', function() {
                  'Please reload the browser tab');
 });
 
+// server options -------------------------------------------------------------
+ractive.on('toggle_directory_index', function() {
+    rpc.call('toggle_option', 'directory_index');
+});
+
+ractive.on('toggle_directory_listing', function() {
+    rpc.call('toggle_option', 'directory_listing');
+});
 
 // RPC ------------------------------------------------------------------------
 var rpc_protocol = 'ws://';

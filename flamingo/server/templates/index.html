@@ -30,6 +30,8 @@
         <div id="overlay"{{#if connected && !settings.overlay.open}} style="display: none;"{{/if}}>
           <div id="status">{{#if connected }}Connected{{else}}Reconnecting{{#dots}}{{.}}{{/}}{{/if}}</div>
           <div id="controls"{{#if !connected}} style="display: none;"{{/if}}>
+            <button on-click="@.fire('toggle_directory_index')">{{#if server_options.directory_index}}Disable{{else}}Enable{{/if}} directory index</button>
+            <button on-click="@.fire('toggle_directory_listing')">{{#if server_options.directory_listing}}Disable{{else}}Enable{{/if}} directory listing</button>
             <button on-click="@.fire('start_shell')"{{#if server_options.shell_running}} disabled{{/if}}>Start Shell</button>
           </div>
           <div class="tabs"{{#if !connected}} style="display: none;"{{/if}}>

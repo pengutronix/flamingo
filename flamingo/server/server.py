@@ -42,6 +42,7 @@ default_logger = logging.getLogger('flamingo.server')
 class Server:
     def __init__(self, app, rpc_logging_handler, settings=None,
                  settings_paths=[], overlay=True, browser_caching=False,
+                 directory_listing=True, directory_index=True,
                  watcher_interval=0.25, loop=None, rpc_max_workers=6,
                  logger=default_logger):
 
@@ -61,6 +62,8 @@ class Server:
             'log_level': rpc_logging_handler.internal_level,
             'overlay': overlay,
             'browser_caching': browser_caching,
+            'directory_index': directory_index,
+            'directory_listing': directory_listing,
             'watcher_interval': watcher_interval,
             'shell_running': False,
         }
@@ -91,6 +94,7 @@ class Server:
             self.rpc.add_methods(
                 ('', self.get_options),
                 ('', self.set_option),
+                ('', self.toggle_option),
                 ('', self.get_meta_data),
                 ('', self.start_shell),
                 ('', self.rpc_logging_handler.setup_log),
@@ -142,10 +146,15 @@ class Server:
 
             self.context = self.build_environment.context
 
-            # setup content exporter
-            self.logger.debug('setup content exporter')
-            self.history = History()
-            self.content_exporter = ContentExporter(self.context, self.history)
+            # setup content exporter and history
+            if initial:
+                self.logger.debug('setup content exporter')
+                self.history = History()
+
+                self.content_exporter = ContentExporter(server=self)
+
+            else:
+                self.history.clear()
 
             # setup watcher
             if initial:
@@ -286,13 +295,19 @@ class Server:
         return self.options
 
     async def set_option(self, name, value):
-        if name not in ():
+        if name not in ('directory_listing', 'directory_index'):
             return False
 
         self.options[name] = value
         self.rpc.notify('options', {'name': name, 'value': value})
 
+        if name in ('directory_listing', 'directory_index'):
+            self.rpc.notify('status', {'changed_paths': '*'})
+
         return True
+
+    async def toggle_option(self, name):
+        return await self.set_option(name, not self.options.get(name, ''))
 
     # meta data
     def get_meta_data(self, request, url, full_content_repr=False,

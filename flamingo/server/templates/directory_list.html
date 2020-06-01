@@ -1,0 +1,46 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Index of {{ path }}</title>
+    <style>
+      html {
+          font-family: monospace;
+          background-color: #FFFFCC;
+          color: #474747;
+      }
+
+      h1 {
+          font-size: 21px;
+      }
+
+      a,
+      a:hover,
+      a:active,
+      a:visited {
+          color: #474747;
+          text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Index of {{ path }}</h1>
+    <table border="0">
+      {% if parent_directory %}
+        <tr>
+          <td>
+            <a href="{{ parent_directory }}"><strong>../</strong></a>
+          </td>
+        </tr>
+      {% endif %}
+      {% for name, issuer in directory_content %}
+        <tr>
+          {% if name.endswith('/') %}
+            <td><a href="{{ name }}"><strong>{{ name }}</strong></a></td>
+          {% else %}
+            <td><a href="{{ name }}">{{ name }}</a></td>
+          {% endif %}
+        </tr>
+      {% endfor %}
+    </table>
+  </body>
+</html>
