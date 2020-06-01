@@ -105,6 +105,19 @@ class Context(OverlayObject):
         if content:
             return content
 
+    @property
+    def media_contents(self):
+        _media_contents = ContentSet()
+
+        if self.contents:
+            for content in self.contents:
+                if not content['media']:
+                    continue
+
+                _media_contents.add(*content['media'])
+
+        return _media_contents
+
     def parse(self, content):
         previous_content = self.content
         self.content = content
