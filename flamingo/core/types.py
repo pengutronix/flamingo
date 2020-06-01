@@ -81,11 +81,11 @@ class OverlayObject:
         self._attrs[name] = value
 
     def __dir__(self):
-        return (
+        return list(set(
             super().__dir__() +
             list(self._attrs.keys()) +
             list(self._overlay_attrs.keys())
-        )
+        ))
 
     def overlay_enable(self):
         self._overlay_enabled = True
