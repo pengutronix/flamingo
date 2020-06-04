@@ -61,8 +61,8 @@ try:
         loop=loop,
         rpc_max_workers=namespace.threads,
         settings_paths=namespace.settings or [],
-        disable_overlay=namespace.disable_overlay,
-        enable_browser_caching=namespace.enable_browser_caching,
+        overlay=not namespace.disable_overlay,
+        browser_caching=namespace.enable_browser_caching,
         watcher_interval=namespace.refresh_interval,
         rpc_logging_handler=rpc_logging_handler,
     )

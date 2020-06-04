@@ -42,9 +42,9 @@ default_logger = logging.getLogger('flamingo.server')
 
 class Server:
     def __init__(self, app, rpc_logging_handler, settings=None,
-                 settings_paths=[], disable_overlay=False,
-                 enable_browser_caching=False, watcher_interval=0.25,
-                 loop=None, rpc_max_workers=6, logger=default_logger):
+                 settings_paths=[], overlay=True, browser_caching=False,
+                 watcher_interval=0.25, loop=None, rpc_max_workers=6,
+                 logger=default_logger):
 
         self.build_environment = None
         rpc_logging_handler.server = self
@@ -57,8 +57,8 @@ class Server:
         self.frontend_controller = FrontendController(self)
 
         # options
-        self.overlay = not disable_overlay
-        self.browser_caching = enable_browser_caching
+        self.overlay = overlay
+        self.browser_caching = browser_caching
         self.watcher_interval = watcher_interval
 
         # locks

@@ -6,7 +6,7 @@ async def test_server(flamingo_server_env):
 
     """)
 
-    await flamingo_server_env.setup_live_server(disable_overlay=True)
+    await flamingo_server_env.setup_live_server(overlay=False)
 
     response = await flamingo_server_env.client.get('/article.html')
     text = await response.text()
