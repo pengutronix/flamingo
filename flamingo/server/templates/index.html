@@ -30,7 +30,7 @@
         <div id="overlay"{{#if connected && !settings.overlay.open}} style="display: none;"{{/if}}>
           <div id="status">{{#if connected }}Connected{{else}}Reconnecting{{#dots}}{{.}}{{/}}{{/if}}</div>
           <div id="controls"{{#if !connected}} style="display: none;"{{/if}}>
-            <button on-click="@.fire('start_shell')">Start Shell</button>
+            <button on-click="@.fire('start_shell')"{{#if server_options.shell_running}} disabled{{/if}}>Start Shell</button>
           </div>
           <div class="tabs"{{#if !connected}} style="display: none;"{{/if}}>
             <div class="left">
@@ -94,19 +94,19 @@
                 <div id="log">
                   <div class="log">
                     <div class="level">
-                      {{#if server_settings.log_level == 10}}
+                      {{#if server_options.log_level == 10}}
                         DEBUG <input type="checkbox" checked="{{settings.log.level.debug}}" />
                       {{/if}}
-                      {{#if server_settings.log_level <= 20}}
+                      {{#if server_options.log_level <= 20}}
                         INFO <input type="checkbox" checked="{{settings.log.level.info}}" />
                       {{/if}}
-                      {{#if server_settings.log_level <= 30}}
+                      {{#if server_options.log_level <= 30}}
                         WARNING <input type="checkbox" checked="{{settings.log.level.warning}}" />
                       {{/if}}
-                      {{#if server_settings.log_level <= 40}}
+                      {{#if server_options.log_level <= 40}}
                         ERROR <input type="checkbox" checked="{{settings.log.level.error}}" />
                       {{/if}}
-                      {{#if server_settings.log_level <= 50}}
+                      {{#if server_options.log_level <= 50}}
                         CRITICAL <input type="checkbox" checked="{{settings.log.level.critical}}" />
                       {{/if}}
                       <div id="log-controls">
@@ -148,7 +148,6 @@
         </div>
       </div>
     </script>
-    <script src="/_flamingo/settings.js"></script>
     <script src="/_flamingo/static/lib/js.cookie-2.2.1.min.js"></script>
     <script src="/_flamingo/static/lib/ractive.min.js"></script>
     <script src="/_flamingo/static/lib/rpc.js"></script>

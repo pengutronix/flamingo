@@ -3,7 +3,6 @@ from asyncio import Future
 import logging
 import types
 import code
-import json
 import os
 
 from aiohttp.web import FileResponse, Response
@@ -57,12 +56,16 @@ class Server:
         self.frontend_controller = FrontendController(self)
 
         # options
-        self.overlay = overlay
-        self.browser_caching = browser_caching
-        self.watcher_interval = watcher_interval
+        self.options = {
+            'log_buffer_max_size': rpc_logging_handler.buffer_max_size,
+            'log_level': rpc_logging_handler.internal_level,
+            'overlay': overlay,
+            'browser_caching': browser_caching,
+            'watcher_interval': watcher_interval,
+            'shell_running': False,
+        }
 
         # locks
-        self._shell_running = False
         self._locked = True
         self._pending_locks = []
 
@@ -74,10 +77,11 @@ class Server:
         self.app['rpc'] = self.rpc
 
         # setup aiohttp
-        if self.overlay:
+        if self.options['overlay']:
 
             # setup rpc methods and topics
             self.rpc.add_topics(
+                ('options', ),
                 ('status',),
                 ('log',),
                 ('messages',),
@@ -85,6 +89,8 @@ class Server:
             )
 
             self.rpc.add_methods(
+                ('', self.get_options),
+                ('', self.set_option),
                 ('', self.get_meta_data),
                 ('', self.start_shell),
                 ('', self.rpc_logging_handler.setup_log),
@@ -94,9 +100,6 @@ class Server:
             app.router.add_route('*', '/_flamingo/rpc/', self.rpc)
 
             # setup overlay views
-            app.router.add_route(
-                '*', '/_flamingo/settings.js', self.frontend_settings)
-
             app.router.add_route(
                 '*', '/_flamingo/cmd/{cmd:.*}', self.cmd)
 
@@ -150,7 +153,7 @@ class Server:
 
                 self.watcher = DiscoveryWatcher(
                     context=self.context,
-                    interval=self.watcher_interval,
+                    interval=self.options['watcher_interval'],
                 )
 
             self.logger.debug('setup watcher task')
@@ -213,18 +216,6 @@ class Server:
 
     # views ###################################################################
     @no_cache()
-    async def frontend_settings(self, request):
-        settings = {
-            'log_buffer_max_size': self.rpc_logging_handler.buffer_max_size,
-            'log_level': self.rpc_logging_handler.internal_level,
-        }
-
-        settings_string = "var server_settings = JSON.parse('{}');".format(
-            json.dumps(settings))
-
-        return Response(text=settings_string)
-
-    @no_cache()
     async def static(self, request):
         await self.await_unlock()
 
@@ -241,7 +232,7 @@ class Server:
     async def serve(self, request):
         await self.await_unlock()
 
-        if self.overlay:
+        if self.options['overlay']:
             extension = os.path.splitext(request.path)[1] or '.html'
 
             if extension == '.html' and 'Referer' not in request.headers:
@@ -260,7 +251,7 @@ class Server:
         if response.status == 500:
             response = FileResponse(HTTP_500_HTML, status=500)
 
-        if not self.browser_caching:
+        if not self.options['browser_caching']:
             response.headers['Cache-Control'] = \
                 'no-cache, no-store, must-revalidate'
 
@@ -290,6 +281,20 @@ class Server:
         return Response(text='')
 
     # rpc methods #############################################################
+    # options
+    async def get_options(self):
+        return self.options
+
+    async def set_option(self, name, value):
+        if name not in ():
+            return False
+
+        self.options[name] = value
+        self.rpc.notify('options', {'name': name, 'value': value})
+
+        return True
+
+    # meta data
     def get_meta_data(self, request, url, full_content_repr=False,
                       internal_meta_data=False):
 
@@ -371,10 +376,11 @@ class Server:
         return meta_data
 
     def start_shell(self, request=None, history=False):
-        if self._shell_running:
+        if self.options['shell_running']:
             return
 
-        self._shell_running = True
+        self.options['shell_running'] = True
+        self.rpc.notify('options', {'name': 'shell_running', 'value': True})
 
         try:
             if IPYTHON:
@@ -395,11 +401,14 @@ class Server:
                 code.interact(local=globals())
 
         finally:
-            self._shell_running = False
+            self.options['shell_running'] = False
+
+            self.rpc.notify('options',
+                            {'name': 'shell_running', 'value': False})
 
     # watcher events ##########################################################
     def handle_watcher_events(self, events):
-        if not self.overlay:
+        if not self.options['overlay']:
             return
 
         paths = []
@@ -495,7 +504,7 @@ class Server:
             })
 
     def handle_watcher_notifications(self, flags, message):
-        if not self.overlay:
+        if not self.options['overlay']:
             return
 
         self.rpc.notify('messages', message)

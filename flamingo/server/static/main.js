@@ -59,7 +59,7 @@ var ractive = Ractive({
     target: '#ractive',
     template: '#main',
     data: {
-        server_settings: server_settings,
+        server_options: {},
         connected: true,
         dots: [],
         messages: [],
@@ -426,34 +426,10 @@ rpc.on('open', function(rpc) {
         show_message(data, 2000);
     });
 
-    // setup logging
-    rpc._topic_handler.log = function(data) {
-        var log = ractive.get('log')
-
-        log.logger = data.logger;
-        add_logger(data.logger);
-
-        log.stats = data.stats;
-
-        if(data.initial) {
-            log.records = data.records;
-
-        } else {
-            log.records = log.records.concat(data.records);
-
-            log.records = log.records.slice(
-                server_settings.log_buffer_max_size * -1);
-        }
-
-        ractive.set('log', log);
-    };
-
-    rpc.call('setup_log', undefined, function(data) {
-        add_logger(data.logger);
-        ractive.set('log', data);
+    rpc.subscribe('options', function(data) {
+        ractive.set('server_options.' + data.name, data.value);
     });
 
-    // frontend rpc
     rpc.subscribe('commands', function(data) {
         if(data.method == 'ractive_set') {
             ractive.set(data.keypath, data.value);
@@ -468,6 +444,39 @@ rpc.on('open', function(rpc) {
             iframe_reload();
 
         }
+    });
+
+    // setup logging
+    rpc.call('get_options', undefined, function(data) {
+        ractive.set('server_options', data);
+
+        rpc._topic_handler.log = function(data) {
+            var log = ractive.get('log')
+
+            log.logger = data.logger;
+            add_logger(data.logger);
+
+            log.stats = data.stats;
+
+            if(data.initial) {
+                log.records = data.records;
+
+            } else {
+                log.records = log.records.concat(data.records);
+
+                log.records = log.records.slice(
+                    server_options.log_buffer_max_size * -1);
+            }
+
+            ractive.set('log', log);
+        };
+
+        rpc.call('setup_log', undefined, function(data) {
+            add_logger(data.logger);
+            ractive.set('log', data);
+        });
+    });
+
     });
 });
 

@@ -42,6 +42,11 @@ noscript span {
     font-size: 12px;
 }
 
+button:disabled {
+    cursor: not-allowed;
+    color: grey;
+}
+
 /* ANIMATIONS -------------------------------------------------------------- */
 @keyframes pulse {
     0% {
