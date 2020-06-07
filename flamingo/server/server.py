@@ -6,6 +6,7 @@ import code
 import os
 
 from aiohttp.web import FileResponse, Response
+from jinja2 import Template
 
 from flamingo.server.frontend_controller import FrontendController
 from flamingo.server.build_environment import BuildEnvironment
@@ -32,6 +33,7 @@ except ImportError:
 TEMPLATE_ROOT = os.path.join(os.path.dirname(__file__), 'templates')
 STATIC_ROOT = os.path.join(os.path.dirname(__file__), 'static')
 
+PLUGIN_OPTIONS_HTML = os.path.join(TEMPLATE_ROOT, 'plugin_options.html')
 HTTP_404_HTML = os.path.join(TEMPLATE_ROOT, '404.html')
 HTTP_500_HTML = os.path.join(TEMPLATE_ROOT, '500.html')
 INDEX_HTML = os.path.join(TEMPLATE_ROOT, 'index.html')
@@ -95,6 +97,9 @@ class Server:
                 ('', self.get_options),
                 ('', self.set_option),
                 ('', self.toggle_option),
+                ('', self.get_plugin_options),
+                ('', self.set_plugin_option),
+                ('', self.reset_plugin_options),
                 ('', self.get_meta_data),
                 ('', self.start_shell),
                 ('', self.rpc_logging_handler.setup_log),
@@ -314,6 +319,50 @@ class Server:
     async def toggle_option(self, name):
         return await self.set_option(name, not self.options.get(name, ''))
 
+    # plugin options
+    def get_plugin_options(self, request):
+        self.await_unlock_sync()
+
+        plugin_options = self.build_environment.context.plugins.get_options()
+        template = Template(open(PLUGIN_OPTIONS_HTML, 'r').read())
+
+        html = template.render(
+            plugin_options=plugin_options,
+            is_list=lambda v: isinstance(v, list),
+        )
+
+        return html
+
+    def set_plugin_option(self, request, plugin_name, option_name, value):
+        self.await_unlock_sync()
+
+        self.build_environment.context.plugins.set_option(
+            plugin_name,
+            option_name,
+            value,
+        )
+
+        html = self.get_plugin_options(request)
+
+        self.rpc.notify('status', {
+            'changed_paths': '*',
+        })
+
+        return html
+
+    def reset_plugin_options(self, request, plugin_name):
+        self.await_unlock_sync()
+
+        self.build_environment.context.plugins.reset_options(plugin_name)
+
+        html = self.get_plugin_options(request)
+
+        self.rpc.notify('status', {
+            'changed_paths': '*',
+        })
+
+        return html
+
     # meta data
     def get_meta_data(self, request, url, full_content_repr=False,
                       internal_meta_data=False):
@@ -395,6 +444,7 @@ class Server:
 
         return meta_data
 
+    # shell
     def start_shell(self, request=None, history=False):
         if self.options['shell_running']:
             return

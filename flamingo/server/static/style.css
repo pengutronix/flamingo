@@ -14,19 +14,6 @@ body {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-button {
-    background: transparent;
-    border: 1px solid grey;
-    color: white;
-    outline: none;
-    cursor: pointer;
-}
-
-button:active {
-    background-color: grey;
-    outline: none;
-}
-
 noscript h1 {
     padding-top: 0.5em;
     padding-left: 10px;
@@ -42,9 +29,30 @@ noscript span {
     font-size: 12px;
 }
 
+/* INPUTS ------------------------------------------------------------------ */
+button {
+    background: transparent;
+    border: 1px solid grey;
+    color: white;
+    outline: none;
+    cursor: pointer;
+}
+
+button:active {
+    background-color: grey;
+    outline: none;
+}
+
 button:disabled {
     cursor: not-allowed;
     color: grey;
+}
+
+.disabled {
+    pointer-events: none;
+    cursor: not-allowed;
+    opacity: 0.65;
+    filter: alpha(opacity=65);
 }
 
 /* ANIMATIONS -------------------------------------------------------------- */
@@ -242,7 +250,7 @@ button:disabled {
     overflow: auto;
 }
 
-/* Attribute Table --------------------------------------------------------- */
+/* ATTRIBUTE TABLE --------------------------------------------------------- */
 table.attributes {
     border: 1px solid grey;
     font-family: Courier;
@@ -276,6 +284,46 @@ table.attributes .value pre {
 
 table.attributes .type {
     text-align: right;
+}
+
+table.attributes.editable td,
+table.attributes.editable th {
+    vertical-align: baseline;
+}
+
+table.attributes th.label {
+    text-align: left;
+    font-size: 130%;
+    padding: 0.2em;
+}
+
+/* plugin options ---------------------------------------------------------- */
+.plugin-options-help {
+    font-weight: normal;
+    margin-bottom: 1em;
+    font-size: 90%;
+}
+
+.plugin-options-help span.show,
+.plugin-options-help span.hide {
+    cursor: pointer;
+    user-select: none;
+}
+
+.plugin-options-help.hide span.hide {
+    display: none;
+}
+
+.plugin-options-help.show span.show {
+    display: none;
+}
+
+.plugin-options-help .help-text {
+    padding-left: 2em;
+}
+
+.plugin-options-help.hide .help-text {
+    display: none;
 }
 
 /* log --------------------------------------------------------------------- */

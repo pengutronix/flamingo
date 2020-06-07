@@ -65,6 +65,7 @@ var ractive = Ractive({
         messages: [],
         settings: generate_settings(),
         content: {},
+        plugin_options_html: '',
         log: {
             logger: [],
             records: [],
@@ -79,6 +80,10 @@ var ractive = Ractive({
                 'log',
                 'settings',
             ];
+
+            if(this.get('plugin_options_html')) {
+                tabs.unshift('plugin-options');
+            }
 
             return tabs;
         },
@@ -354,6 +359,42 @@ ractive.on('toggle_overlay', function(event) {
                 !ractive.get('settings.overlay.open'));
 });
 
+// plugin options -------------------------------------------------------------
+function set_plugin_option(plugin_name, option_name, value) {
+    document.querySelector('#plugin-options').classList.add('disabled');
+
+    rpc.call('set_plugin_option', {
+        plugin_name: plugin_name,
+        option_name: option_name,
+        value: value,
+
+    }, function(data) {
+        ractive.set('plugin_options_html', data);
+        document.querySelector('#plugin-options').classList.remove('disabled');
+
+    });
+}
+
+function reset_plugin_options(plugin_name) {
+    document.querySelector('#plugin-options').classList.add('disabled');
+
+    rpc.call('reset_plugin_options', {
+        plugin_name: plugin_name,
+
+    }, function(data) {
+        ractive.set('plugin_options_html', data);
+        document.querySelector('#plugin-options').classList.remove('disabled');
+
+    });
+}
+
+function toggle_plugin_help(toggle) {
+    var help_div = toggle.parentElement;
+
+    help_div.classList.toggle('hide');
+    help_div.classList.toggle('show');
+}
+
 // Logging --------------------------------------------------------------------
 function add_logger(logger) {
     var settings = ractive.get('settings.log.logger');
@@ -426,6 +467,7 @@ rpc.on('close', function(rpc) {
     ractive.set({
         connected: false,
         log: {},
+        plugin_options_html: '',
     });
 
     setTimeout(function() {
@@ -510,6 +552,11 @@ rpc.on('open', function(rpc) {
             add_logger(data.logger);
             ractive.set('log', data);
         });
+    });
+
+    // setup plugin options
+    rpc.call('get_plugin_options', undefined, function(data) {
+        ractive.set('plugin_options_html', data);
     });
 });
 

@@ -214,3 +214,147 @@ class PluginManager:
 
     def run_hook(self, *args, **kwargs):
         return self.run_plugin_hook(*args, **kwargs)
+
+    # options
+    def get_options(self):
+        """
+        returns: [
+            (
+                <str>  plugin_name,
+                <list> options,
+                <bool> editable,
+                <bool> resetable,
+                <str>  help_text,
+            ),
+            ...
+        ]
+        """
+
+        # setup cache
+        if not hasattr(self, '_options'):
+            self._options = []
+
+            for plugin_name, plugin_object in self._plugins:
+
+                # a plugin needs to implement at least 'get_options()'
+                # to get listed
+                if(not hasattr(plugin_object, 'get_options') or
+                   not callable(plugin_object.get_options)):
+
+                    continue
+
+                editable = (hasattr(plugin_object, 'set_option') and
+                            callable(plugin_object.get_options))
+
+                resetable = (hasattr(plugin_object, 'reset_options') and
+                             callable(plugin_object.reset_options))
+
+                has_help_text = (hasattr(plugin_object, 'get_options_help') and
+                                 callable(plugin_object.get_options_help))
+
+                self._options.append(
+                    (
+                        plugin_name,
+                        plugin_object,
+                        editable,
+                        resetable,
+                        has_help_text,
+                    ),
+                )
+
+            self._options = sorted(self._options, key=lambda v: v[0])
+
+        # collect options
+        options = []
+
+        for i in self._options:
+            plugin_name, \
+                plugin_object, \
+                editable, \
+                resetable, \
+                has_help_text = i
+
+            # options
+            try:
+                plugin_options = []
+
+                for option in plugin_object.get_options():
+                    if isinstance(option, str):
+                        plugin_options.append(
+                            (True, option, None, )
+                        )
+
+                    else:
+                        plugin_options.append(
+                            (False, option[0], option[1], ),
+                        )
+
+            except Exception:
+                logger.error(
+                    "Exception occurred while running '%s.get_options()'",
+                    plugin_name,
+                    exc_info=True,
+                )
+
+                plugin_options = []
+
+            # help text
+            if has_help_text:
+                try:
+                    help_text = plugin_object.get_options_help()
+
+                except Exception:
+                    logger.error(
+                        "Exception occurred while running '%s.get_options_help()'",  # NOQA
+                        plugin_name,
+                        exc_info=True,
+                    )
+
+                    help_text = ''
+
+            else:
+                help_text = ''
+
+            options.append(
+                (
+                    plugin_name,
+                    plugin_options,
+                    editable,
+                    resetable,
+                    help_text,
+                ),
+            )
+
+        return options
+
+    def set_option(self, plugin_name, name, value):
+        try:
+            self.get_plugin(plugin_name).set_option(name, value)
+
+            return True
+
+        except Exception:
+            logger.error(
+                "Exception occurred while running '%s.set_option(%s, %s)'",
+                plugin_name,
+                name,
+                value,
+                exc_info=True,
+            )
+
+            return False
+
+    def reset_options(self, plugin_name):
+        try:
+            self.get_plugin(plugin_name).reset_options()
+
+            return True
+
+        except Exception:
+            logger.error(
+                "Exception occurred while running '%s.reset_options()'",
+                plugin_name,
+                exc_info=True,
+            )
+
+            return False

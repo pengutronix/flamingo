@@ -1,0 +1,48 @@
+{% for plugin_name, options, editable, resetable, help_text in plugin_options %}
+  <h3>{{ plugin_name }}{% if resetable %} <button onclick="reset_plugin_options('{{ plugin_name }}');">Reset</button>{% endif %}</h3>
+  {% if help_text %}
+    <div class="plugin-options-help hide">
+      <span class="show" onclick="toggle_plugin_help(this);">Help &blacktriangleright;</span>
+      <span class="hide" onclick="toggle_plugin_help(this);">Help &blacktriangledown;</span>
+      <div class="help-text">{{ help_text }}</div>
+    </div>
+  {% endif %}
+  <table class="attributes{% if editable %} editable{% endif %}">
+    {% for is_label, option_name, option in options %}
+      {% if is_label %}
+        <tr>
+          <th colspan="2" class="label">{{ option_name }}</th>
+        </tr>
+      {% else %}
+        <tr>
+          <td class="key">{{ option_name }}</td>
+          <td class="value">
+            {% if editable %}
+              {% if is_list(option) %}
+                <select onchange="set_plugin_option('{{ plugin_name }}', '{{ option_name }}', this.options[this.selectedIndex].value);">
+                  {% for value, selected in option %}
+                    <option value="{{ value }}"{% if selected %} selected{% endif %}>{{ value }}</option>
+                  {% endfor %}
+                </select>
+              {% else %}
+                <input type="text" value="{{ option }}" placeholder="null" onchange="set_plugin_option('{{ plugin_name }}', '{{ option_name }}', this.value);" />
+              {% endif %}
+            {% else %}
+              {% if is_list(option) %}
+                {% for value, selected in option %}
+                  {% if selected %}<strong>{% endif %}{{ value }}{% if not loop.last %}, {% endif %}{% if selected %}</strong>{% endif %}
+                {% endfor %}
+              {% else %}
+                {% if option %}
+                  {{ option }}
+                {% else %}
+                  null
+                {% endif %}
+              {% endif %}
+            {% endif %}
+          </td>
+        </tr>
+      {% endif %}
+    {% endfor %}
+  </table>
+{% endfor %}

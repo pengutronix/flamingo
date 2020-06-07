@@ -36,6 +36,11 @@
           </div>
           <div class="tabs"{{#if !connected}} style="display: none;"{{/if}}>
             <div class="left">
+              {{#if plugin_options_html}}
+                <div class="spacer"></div>
+                <div class="tab{{#if tab == 'plugin-options'}} active{{/if}}" on-click="@.set('settings.overlay.tab', 'plugin-options')">Plugin Options</div>
+              {{/if}}
+
               <div class="spacer"></div>
               <div class="tab{{#if tab == 'meta-data'}} active{{/if}}" on-click="@.set('settings.overlay.tab', 'meta-data')">Meta Data</div>
 
@@ -60,7 +65,11 @@
           </div>
           <div id="tab-content">
             {{#if connected}}
-              {{#if tab == 'meta-data'}}
+              {{#if tab == 'plugin-options'}}
+                <div id="plugin-options">
+                  {{{plugin_options_html}}}
+                </div>
+              {{elseif tab == 'meta-data'}}
                 <div id="meta-data">
                   <table class="attributes">
                     {{#content.meta_data}}
