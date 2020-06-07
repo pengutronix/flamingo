@@ -37,26 +37,30 @@
           <div class="tabs"{{#if !connected}} style="display: none;"{{/if}}>
             <div class="left">
               <div class="spacer"></div>
-              <div class="tab{{#if settings.overlay.tab == 'meta-data'}} active{{/if}}" on-click="@.set('settings.overlay.tab', 'meta-data')">Meta Data</div>
+              <div class="tab{{#if tab == 'meta-data'}} active{{/if}}" on-click="@.set('settings.overlay.tab', 'meta-data')">Meta Data</div>
+
               <div class="spacer"></div>
-              <div class="tab{{#if settings.overlay.tab == 'template-context'}} active{{/if}}" on-click="@.set('settings.overlay.tab', 'template-context')">Template Context</div>
+              <div class="tab{{#if tab == 'template-context'}} active{{/if}}" on-click="@.set('settings.overlay.tab', 'template-context')">Template Context</div>
+
               <div class="spacer"></div>
-              <div class="tab{{#if settings.overlay.tab == 'project-settings'}} active{{/if}}" on-click="@.set('settings.overlay.tab', 'project-settings')">Settings</div>
+              <div class="tab{{#if tab == 'project-settings'}} active{{/if}}" on-click="@.set('settings.overlay.tab', 'project-settings')">Settings</div>
+
               <div class="spacer"></div>
-              <div class="tab{{#if settings.overlay.tab == 'log'}} active{{/if}}" on-click="@.set('settings.overlay.tab', 'log')">Log</div>
+              <div class="tab{{#if tab == 'log'}} active{{/if}}" on-click="@.set('settings.overlay.tab', 'log')">Log</div>
+
               <div class="clearfix"></div>
             </div>
             <div class="middle">
               <div class="spacer"></div>
             </div>
             <div class="right">
-              <div class="tab{{#if settings.overlay.tab == 'settings'}} active{{/if}}" on-click="@.set('settings.overlay.tab', 'settings')">Settings</div>
+              <div class="tab{{#if tab == 'settings'}} active{{/if}}" on-click="@.set('settings.overlay.tab', 'settings')">Settings</div>
               <div class="spacer"></div>
             </div>
           </div>
           <div id="tab-content">
             {{#if connected}}
-              {{#if settings.overlay.tab == 'meta-data'}}
+              {{#if tab == 'meta-data'}}
                 <div id="meta-data">
                   <table class="attributes">
                     {{#content.meta_data}}
@@ -68,8 +72,8 @@
                     {{/}}
                   </table>
                 </div>
-              {{elseif settings.overlay.tab == 'template-context'}}
-                <div id="meta-data">
+              {{elseif tab == 'template-context'}}
+                <div id="template-context">
                   <table class="attributes">
                     {{#content.template_context}}
                     <tr>
@@ -80,8 +84,8 @@
                     {{/}}
                   </table>
                 </div>
-              {{elseif settings.overlay.tab == 'project-settings'}}
-                <div id="meta-data">
+              {{elseif tab == 'project-settings'}}
+                <div id="project-settings">
                   <table class="attributes">
                     {{#content.settings}}
                     <tr>
@@ -92,7 +96,7 @@
                     {{/}}
                   </table>
                 </div>
-              {{elseif settings.overlay.tab == 'log'}}
+              {{elseif tab == 'log'}}
                 <div id="log">
                   <div class="log">
                     <div class="level">
@@ -129,7 +133,7 @@
                     </div>
                   </div>
                 </div>
-              {{elseif settings.overlay.tab == 'settings'}}
+              {{elseif tab == 'settings'}}
                 <div id="meta-data">
                   <input type="checkbox" checked="{{settings.keyboard_shortcuts}}" /> Keyboard Shortcuts<br/>
                   <input type="checkbox" checked="{{settings.pulsing_errors}}" /> Pulsing errors<br/>

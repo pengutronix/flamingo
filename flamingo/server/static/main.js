@@ -70,6 +70,30 @@ var ractive = Ractive({
             records: [],
         },
     },
+    computed: {
+        tabs: function() {
+            var tabs = [
+                'meta-data',
+                'template-context',
+                'project-settings',
+                'log',
+                'settings',
+            ];
+
+            return tabs;
+        },
+        tab: function() {
+            var selected_tab = this.get('settings.overlay.tab');
+            var tabs = this.get('tabs');
+            var tab_exists = tabs.indexOf(selected_tab) >= 0;
+
+            if(!tab_exists) {
+                selected_tab = tabs[0];
+            }
+
+            return selected_tab;
+        },
+    },
 });
 
 ractive.observe('settings', function () {
@@ -284,8 +308,10 @@ ractive.on({
 
 // Keyboard Shortcuts ---------------------------------------------------------
 function handle_keydown(event) {
+    var key_code = event.keyCode;
+
     // ESC
-    if(event.keyCode == 27) {
+    if(key_code == 27) {
         ractive.fire('toggle_overlay');
 
         return;
@@ -295,22 +321,23 @@ function handle_keydown(event) {
         return;
     }
 
-    switch(event.keyCode) {
-        case 49:  // 1
-            ractive.set('settings.overlay.tab', 'meta-data');
-            break;
+    // skip on user input
+    if(document.activeElement.tagName == 'INPUT' ||
+       document.activeElement.tagName == 'TEXTAREA') {
 
-        case 50:  // 2
-            ractive.set('settings.overlay.tab', 'template-context');
-            break;
+        return;
+    }
 
-        case 51:  // 3
-            ractive.set('settings.overlay.tab', 'project-settings');
-            break;
+    // numbers 1-9
+    if(key_code > 48 && key_code < 57) {
+        var tab_index = key_code - 48 - 1;
+        var tabs = ractive.get('tabs');
 
-        case 52:  // 4
-            ractive.set('settings.overlay.tab', 'log');
-            break;
+        if(tab_index >= tabs.length) {
+            return;
+        }
+
+        ractive.set('settings.overlay.tab', tabs[tab_index]);
     }
 }
 
