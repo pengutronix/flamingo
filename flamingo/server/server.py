@@ -1,5 +1,5 @@
+from asyncio import Future, run_coroutine_threadsafe
 from functools import partial
-from asyncio import Future
 import logging
 import types
 import code
@@ -222,6 +222,11 @@ class Server:
             await future
 
         return
+
+    def await_unlock_sync(self):
+        future = run_coroutine_threadsafe(self.await_unlock(), loop=self.loop)
+
+        return future.result()
 
     # views ###################################################################
     @no_cache()
