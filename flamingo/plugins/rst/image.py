@@ -151,6 +151,16 @@ def gen_directives(context, plugin):
             if not context.content['related_paths']:
                 context.content['related_paths'] = []
 
+            # add media path and template path to related paths
+            # this tells the live-server to rebuild the current content file
+            # when a image gets changed
+            context.content['related_paths'].append(
+                os.path.join(
+                    context.settings.CONTENT_ROOT,
+                    media_content['path'],
+                )
+            )
+
             context.content['related_paths'].append(template)
 
             return [

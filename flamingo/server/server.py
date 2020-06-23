@@ -526,6 +526,10 @@ class Server:
 
                 non_content_event = True
 
+                paths.append(
+                    os.path.relpath(path, self.context.settings.CONTENT_ROOT)
+                )
+
             elif Flags.CONTENT in flags:
                 paths.append(
                     os.path.relpath(path, self.context.settings.CONTENT_ROOT)
@@ -550,9 +554,14 @@ class Server:
             self.build_environment.build(paths)
             self.rpc.notify('messages', 'rebuilding successful')
 
+            query = Q(path__in=paths) | Q(i18n_path__in=paths)
+
+            for path in paths:
+                query = query | Q(related_paths__contains=path)
+
             changed_paths = [
                 '/' + i for i in self.context.contents.filter(
-                    Q(path__in=paths) | Q(i18n_path__in=paths)
+                    query,
                 ).values('output')
             ]
 
