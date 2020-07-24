@@ -8,6 +8,23 @@ OR = operator.or_
 
 QUOTE_KEYS = ('content_body', 'template_context', )
 
+LOGIC_FUNCTIONS = {
+    'eq': lambda a, b: a == b,
+    'ne': lambda a, b: a != b,
+    'lt': lambda a, b: a < b,
+    'lte': lambda a, b: a <= b,
+    'gt': lambda a, b: a > b,
+    'gte': lambda a, b: a >= b,
+    'in': lambda a, b: a in b,
+    'contains': lambda a, b: _str(b) in _str(a),
+    'icontains': lambda a, b: _str(b).lower() in _str(a).lower(),
+    'isnull': lambda a, b: a is None if b else a is not None,
+    'isfalse': lambda a, b: not bool(a) if b else bool(a),
+    'startswith': lambda a, b: _str(a).startswith(b),
+    'endswith': lambda a, b: _str(a).endswith(b),
+    'passes': lambda a, b: b(a),
+}
+
 
 def quote(value):
     types = {
@@ -32,24 +49,6 @@ def quote(value):
 
 def _str(s):
     return str(s) if s is not None else ''
-
-
-LOGIC_FUNCTIONS = {
-    'eq': lambda a, b: a == b,
-    'ne': lambda a, b: a != b,
-    'lt': lambda a, b: a < b,
-    'lte': lambda a, b: a <= b,
-    'gt': lambda a, b: a > b,
-    'gte': lambda a, b: a >= b,
-    'in': lambda a, b: a in b,
-    'contains': lambda a, b: _str(b) in _str(a),
-    'icontains': lambda a, b: _str(b).lower() in _str(a).lower(),
-    'isnull': lambda a, b: a is None if b else a is not None,
-    'isfalse': lambda a, b: not bool(a) if b else bool(a),
-    'startswith': lambda a, b: _str(a).startswith(b),
-    'endswith': lambda a, b: _str(a).endswith(b),
-    'passes': lambda a, b: b(a),
-}
 
 
 class F:
