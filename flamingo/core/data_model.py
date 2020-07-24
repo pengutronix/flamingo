@@ -59,6 +59,36 @@ class F:
         return "F('{}')".format(self.name)
 
 
+class Lookup:
+    def __init__(self, name, value):
+        field_name = name
+        logic_function = 'eq'
+
+        if '__' in name:
+            field_name, logic_function = field_name.split('__')
+
+        if logic_function not in LOGIC_FUNCTIONS:
+            raise ValueError(
+                "unknown logic function '{}'".format(logic_function))
+
+        self.name = name
+        self.field_name = field_name
+        self.logic_function = LOGIC_FUNCTIONS[logic_function]
+        self.value = value
+
+    def check(self, obj):
+        value = self.value
+
+        if isinstance(value, F):
+            value = obj[value.name]
+
+        try:
+            return self.logic_function(obj[self.field_name], value)
+
+        except TypeError:
+            return False
+
+
 class Q:
     def __init__(self, *qs, **lookups):
         self.connector = 'AND'
@@ -80,7 +110,10 @@ class Q:
             self.qs = qs
 
         if lookups:
-            self.lookups = lookups
+            self.lookups = []
+
+            for name, value in lookups.items():
+                self.lookups.append(Lookup(name, value))
 
     def __repr__(self):
         if self.qs:
@@ -90,7 +123,7 @@ class Q:
 
         elif self.lookups:
             repr_str = ', '.join([
-                '{}={}'.format(k, repr(v)) for k, v in self.lookups.items()
+                '{}={}'.format(i.name, repr(i.value)) for i in self.lookups
             ])
 
         return '<{}{}({})>'.format(
@@ -131,21 +164,8 @@ class Q:
 
         # keyword lookups
         elif self.lookups:
-            for field_name, value in self.lookups.items():
-                logic_function = 'eq'
-
-                if '__' in field_name:
-                    field_name, logic_function = field_name.split('__')
-
-                if isinstance(value, F):
-                    value = obj[value.name]
-
-                try:
-                    result = LOGIC_FUNCTIONS[logic_function](
-                        obj[field_name], value)
-
-                except TypeError:
-                    result = False
+            for lookup in self.lookups:
+                result = lookup.check(obj)
 
                 if result:
                     if self.connector == 'OR':
