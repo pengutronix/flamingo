@@ -511,8 +511,6 @@ rpc.on('open', function(rpc) {
             ractive.set('log', data);
         });
     });
-
-    });
 });
 
 rpc.connect();
