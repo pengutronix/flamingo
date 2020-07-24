@@ -16,7 +16,7 @@ Examples
 
     # all following examples use a ContentSet 'cs' created like this:
 
-    In [1]: from flamingo.core.data_model import ContentSet, Q
+    In [1]: from flamingo import ContentSet, Q
 
     In [2]: cs = ContentSet()
 
@@ -131,7 +131,7 @@ F objects
 
     # find all content objects with a equal b
 
-    In [1]: from flamingo.core.data_model import ContentSet, Q, F
+    In [1]: from flamingo import ContentSet, Q, F
 
     In [2]: cs = ContentSet()
 
@@ -269,7 +269,7 @@ Add Contents to ContentSets
     # ContentSet.add() takes Content objects or keyword arguments to create
     # a Content object on the fly
 
-    In [1]: from flamingo.core.data_model import ContentSet, Content
+    In [1]: from flamingo import ContentSet, Content
 
     In [2]: cs = ContentSet()
     Out[2]: <ContentSet()>
@@ -287,7 +287,7 @@ First / Last
 
 .. code-block:: python
 
-    In [1]: from flamingo.core.data_model import ContentSet
+    In [1]: from flamingo import ContentSet
 
     In [2]: cs = ContentSet()
 
@@ -310,7 +310,7 @@ Count
 
 .. code-block:: python
 
-    In [1]: from flamingo.core.data_model import ContentSet
+    In [1]: from flamingo import ContentSet
 
     In [2]: cs = ContentSet()
 
