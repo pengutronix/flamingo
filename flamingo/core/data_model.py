@@ -114,13 +114,22 @@ class Q:
         return self
 
     def check(self, obj):
-        results = []
-        end_result = None
+        result = None
 
+        # Q objects
         if self.qs:
             for q in self.qs:
-                results.append(q.check(obj))
+                result = q.check(obj)
 
+                if result:
+                    if self.connector == 'OR':
+                        break
+
+                else:
+                    if self.connector == 'AND':
+                        break
+
+        # keyword lookups
         elif self.lookups:
             for field_name, value in self.lookups.items():
                 logic_function = 'eq'
@@ -132,26 +141,24 @@ class Q:
                     value = obj[value.name]
 
                 try:
-                    results.append(
-                        LOGIC_FUNCTIONS[logic_function](
-                            obj[field_name], value))
+                    result = LOGIC_FUNCTIONS[logic_function](
+                        obj[field_name], value)
 
                 except TypeError:
-                    results.append(False)
+                    result = False
 
-        if self.connector == 'AND':
-            end_result = all(results)
+                if result:
+                    if self.connector == 'OR':
+                        break
 
-        elif self.connector == 'OR':
-            end_result = any(results)
-
-        else:
-            raise ValueError("unknown connector '{}'".format(self.connector))
+                else:
+                    if self.connector == 'AND':
+                        break
 
         if self.negated:
-            end_result = not end_result
+            result = not result
 
-        return end_result
+        return result
 
 
 class Content:
