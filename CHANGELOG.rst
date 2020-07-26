@@ -15,7 +15,7 @@ Changes
 Bugfixes
 ~~~~~~~~
 
-* core: utils: html: process_media_links(): fix broken media meta data
+* core: utils: html: ``process_media_links()``: fix broken media meta data
 
   This fixes broken image tags in Markdown files
 
