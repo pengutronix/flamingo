@@ -1,4 +1,4 @@
-from datetime import date, datetime
+import datetime
 import re
 
 
@@ -15,16 +15,24 @@ class HTML5TimeTag:
             except AttributeError:
                 raise ValueError('string doesnt match the time format')
 
-            keys = time.keys()
+            # datetime
+            if len(time.keys()) == 3:
+                self.time_object = datetime.date(
+                    time['year'],
+                    time['month'],
+                    time['day'],
+                )
 
-            if len(keys) == 6:  # datetime
-                self.time_object = date(time['year'], time['month'],
-                                        time['day'])
-
-            else:  # date
-                self.time_object = datetime(time['year'], time['month'],
-                                            time['day'], time['hour'],
-                                            time['minute'], time['second'])
+            # date
+            else:
+                self.time_object = datetime.datetime(
+                    time['year'],
+                    time['month'],
+                    time['day'],
+                    time['hour'],
+                    time['minute'],
+                    time['second'],
+                )
 
         self.context = context
 
@@ -32,11 +40,22 @@ class HTML5TimeTag:
         return self.time_object.strftime(*args, **kwargs)
 
     def _comp(self, other, comp):
-        if isinstance(other, self.__class__):
-            return comp(self.time_object, other.time_object)
+        self_time_object = self.time_object
 
-        else:
-            return comp(self.time_object, other)
+        if not isinstance(self_time_object, datetime.datetime):
+            self_time_object = datetime.datetime.combine(
+                self_time_object, datetime.datetime.min.time())
+
+        other_time_object = other
+
+        if isinstance(other_time_object, self.__class__):
+            other_time_object = other_time_object.time_object
+
+        if not isinstance(other_time_object, datetime.datetime):
+            other_time_object = datetime.datetime.combine(
+                other_time_object, datetime.datetime.min.time())
+
+        return comp(self_time_object, other_time_object)
 
     def __eq__(self, other):
         return self._comp(other, lambda a, b: a == b)
@@ -54,18 +73,19 @@ class HTML5TimeTag:
         return self._comp(other, lambda a, b: a >= b)
 
     def __str__(self):
-        if isinstance(self.time_object, date):
+        if isinstance(self.time_object, datetime.datetime):
             strftime_string = getattr(self.context.settings,
                                       'TIME_DATE_FORMAT',
                                       '%a %d. %B %Y')
 
-        elif isinstance(self.time_object, datetime):
+        elif isinstance(self.time_object, datetime.date):
             strftime_string = getattr(self.context.settings,
                                       'TIME_DATETIME_FORMAT',
                                       '%a %d. %B %Y, H:%M:%S')
 
         return '<time datetime="{}">{}</time>'.format(
-            str(self.time_object) if isinstance(self.time_object, date)
+            str(self.time_object)
+            if isinstance(self.time_object, datetime.date)
             else str(self.time_object).rsplit('.', 1)[0],
             self.time_object.strftime(strftime_string),
         )
