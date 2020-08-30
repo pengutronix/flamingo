@@ -3,6 +3,31 @@
 Changelog
 =========
 
+`v1.4 <https://github.com/pengutronix/flamingo/compare/v1.3...v1.4>`_ (2020-08-30)
+----------------------------------------------------------------------------------
+
+This release brings a changes and bugfixes for ``plugins.Time``
+
+
+Breaking Changes
+~~~~~~~~~~~~~~~~
+
+* plugins: Time: add comparison between ``datetime.date`` and
+  ``datetime.datetime`` objects
+
+  * If a value in ``content['date']`` comes without a time string,
+    ``datetime.datetime.min.time()`` gets used for comparisons
+
+
+Bugfixes
+~~~~~~~~
+
+* plugins: Time: wrong implicit type casting of time object
+
+  * Previously it could happen that ``datetime.datetime`` objects got
+    mistakenly type casted to ``datetime.date`` objects
+
+
 `v1.3 <https://github.com/pengutronix/flamingo/compare/v1.2.2...v1.3>`_ (2020-07-26)
 ------------------------------------------------------------------------------------
 
