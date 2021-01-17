@@ -98,7 +98,7 @@ def test_includes(flamingo_env):
     AAA
     ===
 
-    .. inc:: c.rst
+    .. include:: /c.rst
         :title: Foo Bar
 
     """)
@@ -119,7 +119,7 @@ def test_includes(flamingo_env):
     CCC
     ===
 
-    .. inc:: d.rst
+    .. include:: /d.rst
         :title: Foo Bar
 
     """)
