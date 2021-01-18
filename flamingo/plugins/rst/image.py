@@ -125,6 +125,9 @@ def gen_directives(context, plugin):
                     meta['caption'] = parse_rst(meta['caption'], context)
 
             for k, v in self.options.items():
+                if k in ('context', 'content', 'name'):
+                    k = '_{}'.format(k)
+
                 meta[k] = v
 
             path = context.content['path']
