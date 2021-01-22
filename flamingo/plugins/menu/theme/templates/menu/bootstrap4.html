@@ -2,7 +2,7 @@
   {% set level=0 %}
 {% endif %}
 {% if not menu %}
-  {% set menu=context.settings.MENU.main %}
+  {% set menu=context.plugins.Menu.menu.main %}
 {% endif %}
 {% if is_dict(menu) %}
   {% set menu=menu.main %}

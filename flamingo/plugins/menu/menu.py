@@ -56,14 +56,6 @@ class Menu:
         os.path.join(os.path.dirname(__file__), 'theme'),
     ]
 
-    def settings_setup(self, context):
-        if not hasattr(context.settings, 'MENU'):
-            context.settings.MENU = {
-                'main': [],
-            }
-
-        context.settings._MENU_ORIGINAL = deepcopy(context.settings.MENU)
-
     def templating_engine_setup(self, context, templating_engine):
         templating_engine.env.globals['is_active'] = is_active
         templating_engine.env.globals['is_dict'] = is_dict
@@ -74,6 +66,13 @@ class Menu:
 
         index_template = context.settings.get(
             'MENU_INDEX_TEMPLATE', 'menu/index.html')
+
+        if not hasattr(context.settings, 'MENU'):
+            context.settings.MENU = {
+                'main': [],
+            }
+
+        self.menu = deepcopy(context.settings.MENU)
 
         def resolve_links(menu):
             for item in menu:
@@ -126,18 +125,16 @@ class Menu:
                         )
 
         # setup menus
-        context.settings.MENU = deepcopy(context.settings._MENU_ORIGINAL)
-
-        if isinstance(context.settings.MENU, list):
-            context.settings.MENU = {
-                'main': context.settings.MENU,
+        if isinstance(self.menu, list):
+            self.menu = {
+                'main': self.menu,
             }
 
-        elif 'main' not in context.settings.MENU:
-            context.settings.MENU['main'] = []
+        elif 'main' not in self.menu:
+            self.menu['main'] = []
 
         # resolve links
-        for menu_name, menu in context.settings.MENU.items():
+        for menu_name, menu in self.menu.items():
             resolve_links(menu)
 
         # create section indices
@@ -182,5 +179,5 @@ class Menu:
                         create_section_indices(item, path)
 
         if create_indices:
-            for menu_name, menu in context.settings.MENU.items():
+            for menu_name, menu in self.menu.items():
                 create_section_indices(menu, path=[])
