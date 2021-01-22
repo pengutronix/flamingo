@@ -2,20 +2,35 @@
   <p class="caption"><span class="caption-text">{{ settings.SPHINX_THEMES_TOC_CAPTION }}</span></p>
 {% endif %}
 <ul>
-  {% for section_l1, menus_l1 in context.settings.MENU.main %}
-  <li class="toctree-l1{% if is_active(section_l1, menus_l1, content) %} current{% endif %}">
+  {% for section_l1, menus_l1 in context.plugins.Menu.menu.main %}
+    <li class="toctree-l1{% if is_active(section_l1, menus_l1, content) %} current{% endif %}">
       <a href="{{ section_l1.content.url }}" class="reference internal">{{ section_l1.name }}</a>
-      <ul{% if is_active(section_l1, menus_l1, content) %} class="current"{% endif %}>
-        {% for section_l2, menus_l2 in menus_l1 %}
-          <li class="toctree-l2{% if is_active(section_l2, menus_l2, content) %} current{% endif %}">
-            {% if section_l2.content %}
-              <a href="{{ section_l2.content.url }}" class="reference internal">{{ section_l2.name }}</a>
-            {% else %}
-              <a href="{{ menus_l2.url }}" class="reference internal">{{ section_l2 }}</a>
-            {% endif %}
-          </li>
-        {% endfor %}
-      </ul>
+      {% if is_list(menus_l1) %}
+        <ul{% if is_active(section_l1, menus_l1, content) %} class="current"{% endif %}>
+          {% for section_l2, menus_l2 in menus_l1 %}
+            <li class="toctree-l2{% if is_active(section_l2, menus_l2, content) %} current{% endif %}">
+              {% if section_l2.content %}
+                <a href="{{ section_l2.content.url }}" class="reference internal">{{ section_l2.name }}</a>
+              {% else %}
+                <a href="{{ menus_l2.url }}" class="reference internal">{{ section_l2 }}</a>
+              {% endif %}
+              {% if is_list(menus_l2) %}
+                <ul{% if is_active(section_l2, menus_l2, content) %} class="current"{% endif %}>
+                  {% for section_l3, menus_l3 in menus_l2 %}
+                    <li class="toctree-l3{% if is_active(section_l3, menus_l3, content) %} current{% endif %}">
+                      {% if section_l3.content %}
+                        <a href="{{ section_l3.content.url }}" class="reference internal">{{ section_l3.name }}</a>
+                      {% else %}
+                        <a href="{{ menus_l3.url }}" class="reference internal">{{ section_l3 }}</a>
+                      {% endif %}
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
     </li>
   {% endfor %}
 </ul>
