@@ -79,7 +79,7 @@ except KeyboardInterrupt:
 if namespace.shell:
     async def start_shell(server):
         def _start_shell(server):
-            server.start_shell(history=namespace.shell_history)
+            server.start_shell()
             os.kill(os.getpid(), signal.SIGTERM)
 
         await server.await_unlock()

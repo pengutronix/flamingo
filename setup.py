@@ -11,13 +11,13 @@ INSTALL_REQUIRES = [
     'docutils',
     'pyyaml',
     'beautifulsoup4',
+    'rlpython',
 ]
 
 EXTRAS_REQUIRE = {
     'live-server': [
         'aiohttp-json-rpc==0.12.2',
         'pygments',
-        'ipython<7',
     ],
     'chardet': [
         'chardet',
@@ -39,9 +39,6 @@ EXTRAS_REQUIRE = {
     ],
     'coloredlogs': [
         'coloredlogs',
-    ],
-    'ipython': [
-        'ipython<7',
     ],
     'sphinx-themes': [
         'sphinx',

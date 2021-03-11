@@ -2,11 +2,11 @@ from asyncio import Future, run_coroutine_threadsafe
 from functools import partial
 import logging
 import types
-import code
 import os
 
 from aiohttp.web import FileResponse, Response
 from jinja2 import Template
+import rlpython
 
 from flamingo.server.frontend_controller import FrontendController
 from flamingo.server.build_environment import BuildEnvironment
@@ -20,15 +20,6 @@ from flamingo.server.exporter import History
 from flamingo.core.settings import Settings
 from flamingo.server.rpc import JsonRpc
 from flamingo.core.data_model import Q
-
-try:
-    import IPython
-    from traitlets.config import Config
-
-    IPYTHON = True
-
-except ImportError:
-    IPYTHON = False
 
 TEMPLATE_ROOT = os.path.join(os.path.dirname(__file__), 'templates')
 STATIC_ROOT = os.path.join(os.path.dirname(__file__), 'static')
@@ -445,7 +436,7 @@ class Server:
         return meta_data
 
     # shell
-    def start_shell(self, request=None, history=False):
+    def start_shell(self, request=None):
         if self.options['shell_running']:
             return
 
@@ -453,22 +444,12 @@ class Server:
         self.rpc.notify('options', {'name': 'shell_running', 'value': True})
 
         try:
-            if IPYTHON:
-                config = Config()
-
-                if not history:
-                    # this is needed to avoid sqlite errors while running in
-                    # a multithreading environment
-                    config.HistoryAccessor.enabled = False
-
-                context = self.context  # NOQA
-                history = self.history  # NOQA
-                frontend = self.frontend_controller  # NOQA
-
-                IPython.embed(config=config)
-
-            else:
-                code.interact(local=globals())
+            rlpython.embed(locals={
+                'server': self,
+                'context': self.context,
+                'history': self.history,
+                'frontend': self.frontend_controller,
+            })
 
         finally:
             self.options['shell_running'] = False
