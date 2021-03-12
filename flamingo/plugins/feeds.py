@@ -76,7 +76,8 @@ class Feeds:
                     fe.link(fe_link)
 
                     if i['content_body']:
-                        fe.content(i['content_body'], type='html')
+                        exitcode, output = context.pre_render(i)
+                        fe.content(output, type='html')
 
                     if i['authors']:
                         for author in i['authors']:
