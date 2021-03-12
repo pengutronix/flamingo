@@ -215,6 +215,47 @@ class Context(OverlayObject):
 
                     yield os.path.join(root, name)
 
+    def gen_template_context(self, **extra_context):
+        return {
+            'context': self,
+            'AND': AND,
+            'NOT': NOT,
+            'OR': OR,
+            'Q': Q,
+            'F': F,
+            **self.settings.EXTRA_CONTEXT,
+            **extra_context,
+        }
+
+    def pre_render(self, content, template_context=None):
+        if(not self.settings.PRE_RENDER_CONTENT or
+           not content.get('is_template', True) or
+           content['_content_body_rendered']):
+
+            return True, content['content_body']
+
+        self.logger.debug('pre rendering %s', content['path'] or content)
+
+        if template_context is None:
+            template_context = self.gen_template_context(content=content)
+
+        try:
+            return self.templating_engine.pre_render_content(
+                content=content,
+                template_context=template_context,
+            )
+
+        except Exception as e:
+            self.logger.error(
+                '%s: exception raised while pre rendering content',
+                content['path'],
+                exc_info=True,
+            )
+
+            self.errors.append(e)
+
+        return False, ''
+
     def render(self, content, template_name=''):
         template_name = template_name or content['template']
 
@@ -226,44 +267,19 @@ class Context(OverlayObject):
 
             return content['content_body'] or ''
 
-        template_context = {
-            'content': content,
-            'context': self,
-            'AND': AND,
-            'NOT': NOT,
-            'OR': OR,
-            'Q': Q,
-            'F': F,
-            **self.settings.EXTRA_CONTEXT,
-        }
+        template_context = self.gen_template_context(content=content)
 
-        if(self.settings.PRE_RENDER_CONTENT and
-           content.get('is_template', True) and
-           not content['_content_body_rendered']):
+        exitcode, output = self.pre_render(
+            content=content,
+            template_context=template_context,
+        )
 
-            self.logger.debug('pre rendering %s', content['path'] or content)
+        if exitcode:
+            content['content_body'] = output
+            content['_content_body_rendered'] = True
 
-            try:
-                exitcode, output = self.templating_engine.pre_render_content(
-                    content, template_context)
-
-            except Exception as e:
-                self.logger.error(
-                    '%s: exception raised while pre rendering content',
-                    content['path'],
-                    exc_info=True,
-                )
-
-                self.errors.append(e)
-
-                return content['content_body']
-
-            if exitcode:
-                content['content_body'] = output
-                content['_content_body_rendered'] = True
-
-            else:
-                return output
+        else:
+            return output
 
         self.plugins.run_hook('template_context_setup',
                               content, template_name, template_context)
