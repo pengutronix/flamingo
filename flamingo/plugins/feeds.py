@@ -64,7 +64,7 @@ class Feeds:
 
                     if missing_attributes:
                         logger.error('%s is missing attributes: %s',
-                                     i['path'] or i,
+                                     i['path'] or i['i18n_path'] or i,
                                      ', '.join(missing_attributes))
 
                         return
