@@ -79,7 +79,9 @@ class WarningStream:
     def write(self, warning):
         plugin = self.context.plugins.get_plugin('reStructuredText')
         path = self.context.content['path']
-        offset = plugin.offsets.get(path, 0)
+
+        offset = (self.context.content.get('content_offset', 0) +
+                  plugin.offsets.get(path, 0))
 
         message = parse_system_message(warning)
 
@@ -125,7 +127,7 @@ def parse_rst_parts(rst_input, context, system_message_re=SYSTEM_MESSAGE_RE):
     path = context.content['path']
 
     if path not in plugin.offsets:
-        plugin.offsets[path] = context.content.get('content_offset', 0)
+        plugin.offsets[path] = 0
 
     # parse rst
     if not isinstance(rst_input, str):
