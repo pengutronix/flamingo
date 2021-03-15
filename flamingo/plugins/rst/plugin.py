@@ -45,7 +45,8 @@ class reStructuredText:
         context.parser.add_parser(RSTParser(context))
 
         class _Container(Container):
-            pass
+            def run(self):
+                return super().run(context=context)
 
         register_directive('div', _Container)
 
