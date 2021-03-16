@@ -12,7 +12,7 @@ try:
 except ImportError:
     RST = False
 
-from PIL import Image as PillowImage
+from PIL import Image as PillowImage, UnidentifiedImageError
 
 from flamingo.core.data_model import Content
 
@@ -149,6 +149,13 @@ class Thumbnails:
 
         try:
             image = PillowImage.open(path)
+
+        except UnidentifiedImageError:
+            logger.debug(
+                "setup of thumbnail for %s:%s skipped: image type can not be identified",  # NOQA
+                content['path'], media_content['path'])
+
+            return
 
         except FileNotFoundError:
             logger.error('%s not found. Used in %s',
