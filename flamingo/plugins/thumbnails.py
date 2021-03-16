@@ -182,7 +182,12 @@ class Thumbnails:
                     DEFAULT_THUMBNAIL_CACHE),
             '{}{}'.format(image_hash, image_extension))
 
-        thumbnail_output = '{}.thumb{}'.format(image_name, image_extension)
+        thumbnail_output = '{}.thumb.{}{}'.format(
+            image_name,
+            image_hash,
+            image_extension,
+        )
+
         thumbnail_url = '/' + thumbnail_output
 
         # inject thumbnail paths into original media content
