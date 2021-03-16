@@ -1,12 +1,17 @@
 import builtins
 import os
 
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 
 
 def get_size(context, media_content):
     path = os.path.join(context.settings.CONTENT_ROOT, media_content['path'])
-    image = Image.open(path)
+
+    try:
+        image = Image.open(path)
+
+    except UnidentifiedImageError:
+        return '800x600'
 
     return '{}x{}'.format(*image.size)
 
