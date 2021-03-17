@@ -3,6 +3,62 @@
 Changelog
 =========
 
+`v1.5 <https://github.com/pengutronix/flamingo/compare/v1.4...v1.5>`_ (2021-03-17)
+----------------------------------------------------------------------------------
+
+This release brings support for Shpinx themes, reStructuredText includes and 
+various bugfixes and also drops support for Python 3.5
+
+
+Breaking Changes
+~~~~~~~~~~~~~~~~
+
+* change range of supported Python versions to Python>3.5
+
+* core: utils: html: extract_section_by_title got renamed to
+  get_section_to_title
+
+* plugins: Menu: Menu uses its own plugin namespace for resolving paths
+  instead of the settings namespace now
+
+  * all templates now have to use ``context.plugins.Menu.menu.main`` instead
+    of ``context.settings.MENU.main``
+
+
+Changes
+~~~~~~~
+
+* server: better support for ``related_paths`` keyword
+
+* server: add ``--shutdown-timeout``
+
+  * default in set to ``0.0`` (this fixes previous shutdown problems)
+
+* plugins: add ``plugins.SphinxThemes``
+* plugins: add ``plugins.rstInclude``
+* plugins: Feeds: error messages are more human readable now
+
+* plugins: reStructuredText: fix wrong line numbers in warnings and
+  error messages
+
+* plugins: Photoswipe: add support for SVGs
+* plugins: Thumbnails: add support for SVGs
+
+
+Bugfixes
+~~~~~~~~
+
+* plugins: rstImage: fix name clashes in meta data
+* plugins: Feeds: fix link resolving in feed items
+* plugins: reStructuredText: Container directive: fix namespace problems
+
+* plugins: Thumbnails: fix thumbnail output paths
+
+  * The previous naming scheme ``$FILE_NAME.thumb.$EXTENSION`` was not unique
+    and lead to overriding of thumbnail. The new naming scheme is
+    ``$FILE_NAME.thumb.$HASH.$EXTENSION``.
+
+
 `v1.4 <https://github.com/pengutronix/flamingo/compare/v1.3...v1.4>`_ (2020-08-30)
 ----------------------------------------------------------------------------------
 
