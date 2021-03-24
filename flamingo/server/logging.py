@@ -155,8 +155,6 @@ class RPCHandler(logging.Handler):
         self._notify(records=[record_args])
 
     async def setup_log(self, request):
-        request.subscriptions.add('log')
-
         return {
             'stats': self.stats,
             'logger': self.logger,

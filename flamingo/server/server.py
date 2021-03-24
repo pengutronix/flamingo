@@ -1,4 +1,5 @@
 from asyncio import Future, run_coroutine_threadsafe
+from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 import logging
 import types
@@ -36,7 +37,7 @@ class Server:
     def __init__(self, app, rpc_logging_handler, settings=None,
                  settings_paths=[], overlay=True, browser_caching=False,
                  directory_listing=True, directory_index=True,
-                 watcher_interval=0.25, loop=None, rpc_max_workers=6,
+                 watcher_interval=0.25, loop=None, max_workers=None,
                  logger=default_logger):
 
         self.build_environment = None
@@ -65,25 +66,25 @@ class Server:
         self._locked = True
         self._pending_locks = []
 
+        # setup threads
+        self.executor = ThreadPoolExecutor(
+            max_workers=max_workers,
+            thread_name_prefix='FlamingoServerWorker',
+        )
+
         # setup rpc
-        self.rpc = JsonRpc(loop=self.loop, max_workers=rpc_max_workers)
+        self.rpc = JsonRpc(self)
+
         self.rpc_logging_handler = rpc_logging_handler
         self.rpc_logging_handler.rpc = self.rpc
 
+        self.app['server'] = self
         self.app['rpc'] = self.rpc
 
         # setup aiohttp
         if self.options['overlay']:
 
-            # setup rpc methods and topics
-            self.rpc.add_topics(
-                ('options', ),
-                ('status',),
-                ('log',),
-                ('messages',),
-                ('commands',),
-            )
-
+            # setup rpc methods
             self.rpc.add_methods(
                 ('', self.get_options),
                 ('', self.set_option),
@@ -110,7 +111,7 @@ class Server:
 
         # setup context
         loop.run_in_executor(
-            self.rpc.worker_pool.executor,
+            self.executor,
             partial(self.setup, initial=True),
         )
 
@@ -121,9 +122,6 @@ class Server:
             if not initial:
                 self.logger.debug('shutting down watcher')
                 self.watcher.shutdown()
-
-            else:
-                self.rpc.start_notification_worker(1)
 
             # setup settings
             if not isinstance(self.settings, Settings):
@@ -167,7 +165,7 @@ class Server:
 
             if self.loop.is_running():
                 self.loop.run_in_executor(
-                    self.rpc.worker_pool.executor,
+                    self.executor,
                     self.watcher.watch,
                     self.handle_watcher_events,
                     self.handle_watcher_notifications,
@@ -187,8 +185,7 @@ class Server:
         if hasattr(self, 'watcher'):
             self.watcher.shutdown()
 
-        self.rpc.stop_notification_worker()
-        self.rpc.worker_pool.shutdown()
+        self.executor.shutdown()
 
     # locking #################################################################
     def lock(self):
@@ -292,10 +289,13 @@ class Server:
 
     # rpc methods #############################################################
     # options
-    async def get_options(self):
+    async def get_options(self, params):
         return self.options
 
-    async def set_option(self, name, value):
+    async def set_option(self, params):
+        name = params.get('name', '')
+        value = params.get('value', '')
+
         if name not in ('directory_listing', 'directory_index'):
             return False
 
@@ -307,11 +307,13 @@ class Server:
 
         return True
 
-    async def toggle_option(self, name):
+    async def toggle_option(self, params):
+        name = params.get('name', '')
+
         return await self.set_option(name, not self.options.get(name, ''))
 
     # plugin options
-    def get_plugin_options(self, request):
+    def get_plugin_options(self, params):
         self.await_unlock_sync()
 
         plugin_options = self.build_environment.context.plugins.get_options()
@@ -324,7 +326,11 @@ class Server:
 
         return html
 
-    def set_plugin_option(self, request, plugin_name, option_name, value):
+    def set_plugin_option(self, params):
+        plugin_name = params['plugin_name']
+        option_name = params['option_name']
+        value = params['value']
+
         self.await_unlock_sync()
 
         self.build_environment.context.plugins.set_option(
@@ -333,7 +339,7 @@ class Server:
             value,
         )
 
-        html = self.get_plugin_options(request)
+        html = self.get_plugin_options(params)
 
         self.rpc.notify('status', {
             'changed_paths': '*',
@@ -341,12 +347,14 @@ class Server:
 
         return html
 
-    def reset_plugin_options(self, request, plugin_name):
+    def reset_plugin_options(self, params):
+        plugin_name = params['plugin_name']
+
         self.await_unlock_sync()
 
         self.build_environment.context.plugins.reset_options(plugin_name)
 
-        html = self.get_plugin_options(request)
+        html = self.get_plugin_options(params)
 
         self.rpc.notify('status', {
             'changed_paths': '*',
@@ -355,8 +363,10 @@ class Server:
         return html
 
     # meta data
-    def get_meta_data(self, request, url, full_content_repr=False,
-                      internal_meta_data=False):
+    def get_meta_data(self, params):
+        full_content_repr = params.get('full_content_repr', False)
+        internal_meta_data = params.get('internal_meta_data', False)
+        url = params['url']
 
         meta_data = {
             'meta_data': [],
@@ -436,7 +446,7 @@ class Server:
         return meta_data
 
     # shell
-    def start_shell(self, request=None):
+    def start_shell(self, params=None):
         if self.options['shell_running']:
             return
 

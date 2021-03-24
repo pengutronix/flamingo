@@ -126,7 +126,7 @@ class FlamingoServerBuildEnvironment(FlamingoBuildEnvironment):
             server_args = {
                 'app': self.app,
                 'loop': loop,
-                'rpc_max_workers': 4,
+                'max_workers': 4,
                 'settings_paths': [],
                 'settings': self.settings,
                 'overlay': False,
@@ -137,6 +137,7 @@ class FlamingoServerBuildEnvironment(FlamingoBuildEnvironment):
             }
 
             self.server = Server(**server_args)
+            self.server.setup(initial=True)
 
             return self.app
 

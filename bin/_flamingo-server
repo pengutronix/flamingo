@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from functools import partial
 import logging
 import signal
 import os
@@ -62,7 +63,7 @@ try:
     server = Server(
         app=app,
         loop=loop,
-        rpc_max_workers=namespace.threads,
+        max_workers=namespace.threads,
         settings_paths=namespace.settings or [],
         overlay=not namespace.disable_overlay,
         directory_index=not namespace.disable_directory_index,
@@ -73,7 +74,7 @@ try:
     )
 
 except KeyboardInterrupt:
-    exit()
+    exit(1)
 
 # setup shell
 if namespace.shell:
@@ -83,20 +84,30 @@ if namespace.shell:
             os.kill(os.getpid(), signal.SIGTERM)
 
         await server.await_unlock()
-        await server.rpc.worker_pool.run(_start_shell, server)
+
+        await server.loop.run_in_executor(
+            server.executor,
+            partial(_start_shell, server)
+        )
 
         print('shell stopped')
 
     loop.create_task(start_shell(server))
 
+
+# setup shutdown
+async def shutdown(app):
+    print('\rshutting down server')
+
+    await server.loop.run_in_executor(None, app['server'].shutdown)
+
+app.on_shutdown.append(shutdown)
+
 # run
 print('starting server on http://localhost:{}/'.format(namespace.port))
 
-try:
-    # this is a hack that is necessary because of the current design of the
-    # rpc worker_pool
-    loop.close = lambda *args, **kwargs: None
 
+try:
     run_app(
         app=app,
         host=namespace.host,
@@ -106,8 +117,4 @@ try:
     )
 
 except OSError:
-    server.shutdown()
     exit(error('ERROR: can not bind to port {}'.format(namespace.port)))
-
-print('\rshutting down server')
-server.shutdown()

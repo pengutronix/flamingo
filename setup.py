@@ -16,7 +16,7 @@ INSTALL_REQUIRES = [
 
 EXTRAS_REQUIRE = {
     'live-server': [
-        'aiohttp-json-rpc==0.12.2',
+        'aiohttp>=3,<4',
         'pygments',
     ],
     'chardet': [
