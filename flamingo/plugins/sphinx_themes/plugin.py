@@ -233,6 +233,16 @@ class SphinxThemes:
             if callable(value):
                 settings[key] = value(context)
 
+        # render content body
+        body = context.templating_engine.render(
+            template_name='sphinx_themes/body.html',
+            template_context={
+                'context': context,
+                'content': content,
+            },
+            handle_exceptions=False,
+        )
+
         sphinx_template_context = {
             **settings,
 
@@ -266,9 +276,7 @@ class SphinxThemes:
             'toc': toctree(),
             'pagename': content['title'] or content['content_title'],
             'title': content['title'] or content['content_title'],
-
-            'body': '<h1>{}</h1>\n{}'.format(content['content_title'],
-                                             content['content_body']),
+            'body': body,
 
             **self._theme_config,
             **self._theme_options,
