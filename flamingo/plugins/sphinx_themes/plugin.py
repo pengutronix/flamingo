@@ -81,12 +81,18 @@ class SphinxThemes:
         self.build()
 
     def get_options(self):
+        ignore = (
+            'SPHINX_THEMES_EXTRA_SCRIPTS',
+            'SPHINX_THEMES_EXTRA_STYLESHEETS',
+        )
+
         options = [
             'Settings',
             ('SPHINX_THEMES_HTML_THEME',
              [(i, i == self.html_theme, )
               for i in sorted(self.sphinx_theme.app.html_themes.keys())]),
-            *[(i, self.settings[i], ) for i in sorted(self.settings.keys())],
+            *[(i, self.settings[i], )
+              for i in sorted(self.settings.keys()) if i not in ignore],
             'HTML Options',
         ]
 
@@ -302,6 +308,16 @@ class SphinxThemes:
                     StaticFile(path),
                 )
 
+        extra_stylesheets = context.settings.get(
+            'SPHINX_THEMES_EXTRA_STYLESHEETS',
+            defaults.SPHINX_THEMES_EXTRA_STYLESHEETS,
+        )
+
+        for path in extra_stylesheets:
+            sphinx_template_context['css_files'].append(
+                StaticFile(path),
+            )
+
         # script files
         sphinx_template_context['script_files'] += [
             StaticFile('/static/sphinx_themes/jquery.js'),
@@ -324,6 +340,16 @@ class SphinxThemes:
         sphinx_template_context['script_files'] += [
             StaticFile('/static/sphinx_themes/main.js'),
         ]
+
+        extra_scripts = context.settings.get(
+            'SPHINX_THEMES_EXTRA_SCRIPTS',
+            defaults.SPHINX_THEMES_EXTRA_SCRIPTS,
+        )
+
+        for path in extra_scripts:
+            sphinx_template_context['script_files'].append(
+                StaticFile(path),
+            )
 
         # apply sphinx_template_context to template_context
         for key, value in sphinx_template_context.items():
