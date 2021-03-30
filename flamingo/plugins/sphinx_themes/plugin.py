@@ -43,7 +43,10 @@ class TocTree:
         }
 
         return self.context.templating_engine.render(
-            'sphinx_themes/toctree.html', template_context)
+            template_name='sphinx_themes/toctree.html',
+            template_context=template_context,
+            handle_exceptions=False,
+        )
 
 
 class SphinxThemes:
