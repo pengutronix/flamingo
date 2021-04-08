@@ -1,6 +1,5 @@
 from asyncio import Future, run_coroutine_threadsafe
 from concurrent.futures import ThreadPoolExecutor
-from functools import partial
 import logging
 import types
 import os
@@ -108,12 +107,6 @@ class Server:
                 '*', '/_flamingo/static/{path_info:.*}', self.static)
 
         app.router.add_route('*', '/{path_info:.*}', self.serve)
-
-        # setup context
-        loop.run_in_executor(
-            self.executor,
-            partial(self.setup, initial=True),
-        )
 
     def setup(self, initial=False):
         self.lock()

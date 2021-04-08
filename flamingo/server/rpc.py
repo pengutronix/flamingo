@@ -101,6 +101,9 @@ class JsonRpc:
 
     # notifications ###########################################################
     def notify(self, topic, message, wait=False):
+        if not self.loop.is_running():
+            return None
+
         message = self.encode_notification(topic, message)
 
         async def _notify():

@@ -96,17 +96,26 @@ if namespace.shell:
 
 
 # setup shutdown
+async def startup(app):
+    server = app['server']
+
+    await server.loop.run_in_executor(
+        server.executor,
+        partial(server.setup, initial=True),
+    )
+
+    print('starting server on http://localhost:{}/'.format(namespace.port))
+
+
 async def shutdown(app):
     print('\rshutting down server')
 
     await server.loop.run_in_executor(None, app['server'].shutdown)
 
+app.on_startup.append(startup)
 app.on_shutdown.append(shutdown)
 
 # run
-print('starting server on http://localhost:{}/'.format(namespace.port))
-
-
 try:
     run_app(
         app=app,
@@ -117,4 +126,6 @@ try:
     )
 
 except OSError:
+    server.shutdown()
+
     exit(error('ERROR: can not bind to port {}'.format(namespace.port)))
