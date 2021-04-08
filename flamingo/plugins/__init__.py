@@ -7,6 +7,7 @@ from .authors.authors import Authors  # NOQA
 from .rst.include import rstInclude  # NOQA
 from .rtd.plugin import ReadTheDocs  # NOQA
 from .redirects import Redirects  # NOQA
+from .rst.table import rstTable  # NOQA
 from .rst.image import rstImage  # NOQA
 from .rst.link import rstLink  # NOQA
 from .tags.tags import Tags  # NOQA

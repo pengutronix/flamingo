@@ -1,0 +1,13 @@
+<table border="1" class="docutils">
+  <tbody valign="top">
+    {% for row in rows %}
+      <tr>
+        {% for col in row %}
+          {% if not col.skip %}
+            <{{ col.tag_name }}{% for key, value in col.attributes.items() %} {{ key }}="{{ value }}"{% endfor %}>{{ col.content }}</{{ col.tag_name}}>
+          {% endif %}
+        {% endfor %}
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
