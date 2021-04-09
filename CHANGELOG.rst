@@ -3,6 +3,22 @@
 Changelog
 =========
 
+`v1.6 <https://github.com/pengutronix/flamingo/compare/v1.5...v1.6>`_ (2021-04-09)
+----------------------------------------------------------------------------------
+
+Changes
+~~~~~~~
+
+* shell: replace IPython with rlpython
+* server: add a aiohttp-json-rpc replacement
+* server: update aiohttp dependency
+* server: set default watcher refresh interval to 1 second
+* plugins: SphinxThemes: add support for multiple toctree captions
+* plugins: SphinxThemes: add support for extra stylesheets and scripts
+* plugins: setup ``flamingo.plugins.rstTable``
+* doc: use official ReadTheDocs theme instead of fork
+
+
 `v1.5 <https://github.com/pengutronix/flamingo/compare/v1.4...v1.5>`_ (2021-03-17)
 ----------------------------------------------------------------------------------
 
