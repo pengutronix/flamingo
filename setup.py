@@ -41,7 +41,7 @@ EXTRAS_REQUIRE = {
         'coloredlogs',
     ],
     'sphinx-themes': [
-        'sphinx',
+        'sphinx<=4.0.3',
     ],
 }
 
