@@ -1,10 +1,17 @@
-import operator
-
 from flamingo.core.errors import MultipleObjectsReturned, ObjectDoesNotExist
 
-AND = operator.and_
-NOT = operator.not_
-OR = operator.or_
+
+def AND(a, b):
+    return a & b
+
+
+def NOT(a):
+    return ~a
+
+
+def OR(a, b):
+    return a | b
+
 
 QUOTE_KEYS = ('content_body', 'template_context', )
 
