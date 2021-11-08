@@ -17,9 +17,14 @@ logging.root.handlers = [rpc_logging_handler]
 import asyncio  # NOQA
 
 from aiohttp.web import Application, run_app  # NOQA
+import aiohttp
 
 from flamingo.core.utils.cli import gen_default_parser, parse_args, error  # NOQA
 from flamingo.server.server import Server  # NOQA
+
+AIOHTTP_VERSION = tuple(
+    int(part) for part in aiohttp.__version__.split('.')[:2]
+)
 
 # parse command line
 parser = gen_default_parser(prog='flamingo server')
@@ -115,15 +120,22 @@ async def shutdown(app):
 app.on_startup.append(startup)
 app.on_shutdown.append(shutdown)
 
+keyword_args = {
+    'app': app,
+    'host': namespace.host,
+    'port': namespace.port,
+    'shutdown_timeout': namespace.shutdown_timeout,
+    'print': lambda *args, **kwargs: None,
+}
+
+# In aiohttp 3.8 the keyword "loop" was added, which is mandatory if  you don’t
+# want aiohttp to start a new event loop but use your previously created one
+if AIOHTTP_VERSION >= (3, 8):
+    keyword_args['loop'] = loop
+
 # run
 try:
-    run_app(
-        app=app,
-        host=namespace.host,
-        port=namespace.port,
-        shutdown_timeout=namespace.shutdown_timeout,
-        print=lambda *args, **kwargs: None,
-    )
+    run_app(**keyword_args)
 
 except OSError:
     server.shutdown()
