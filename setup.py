@@ -42,6 +42,7 @@ EXTRAS_REQUIRE = {
     ],
     'sphinx-themes': [
         'sphinx<=4.0.3',
+        'sphinx_rtd_theme==0.5.2',
     ],
 }
 
