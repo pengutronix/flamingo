@@ -1,4 +1,5 @@
 from functools import partial
+import contextlib
 import asyncio
 import logging
 import json
@@ -20,6 +21,11 @@ class JsonRpc:
             'subscribe': self.subscribe,
             'unsubscribe': self.unsubscribe,
         }
+
+    async def shutdown(self):
+        for websocket in self.websockets.copy():
+            with contextlib.suppress(Exception):
+                await websocket.close()
 
     # protocol ################################################################
     def decode_message(self, raw_message):
