@@ -3,6 +3,20 @@
 Changelog
 =========
 
+`v1.6.1 <https://github.com/pengutronix/flamingo/compare/v1.6...v1.6.1>`_ (2021-11-09)
+--------------------------------------------------------------------------------------
+
+Bugfixes
+~~~~~~~~
+
+* server: fix compatibility issues with aiohttp 3.8
+
+* core: data model: NOT, OR, AND: fix compatibility problems between different
+  python versions
+
+* plugins: SphinxThemes: pin dependencies to a compatible versions
+
+
 `v1.6 <https://github.com/pengutronix/flamingo/compare/v1.5...v1.6>`_ (2021-04-09)
 ----------------------------------------------------------------------------------
 
