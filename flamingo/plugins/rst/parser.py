@@ -4,6 +4,7 @@ import re
 from docutils.writers.html4css1 import Writer
 from docutils.utils import SystemMessage
 from docutils.core import publish_parts
+from docutils.nodes import title
 
 from flamingo.core.parser import ParsingError
 
@@ -109,19 +110,45 @@ class FlamingoWriter(Writer):
     docutils document, before writing it.
     """
 
-    def __init__(self, flamingo_context, *args, **kwargs):
+    def __init__(self, flamingo_context, doctitle_xform, *args, **kwargs):
         self.flamingo_context = flamingo_context
+        self.flamingo_doctitle_xform = doctitle_xform
+
+        self.flamingo_content_title = ''
 
         super().__init__(*args, **kwargs)
 
+    def get_content_title(self, document):
+        def _get_content_title(tree):
+            for node in list(tree.children):
+                if isinstance(node, title):
+                    tree.children.remove(node)
+
+                    return node
+
+                html_title = _get_content_title(node)
+
+                if html_title:
+                    return html_title
+
+        content_title = _get_content_title(document)
+
+        if content_title:
+            return content_title[0].astext()
+
     def write(self, document, destination):
+        if not self.flamingo_doctitle_xform:
+            self.flamingo_content_title = self.get_content_title(document)
+
         self.flamingo_context.plugins.run_plugin_hook('rst_document_parsed',
                                                       document)
 
         return super().write(document, destination)
 
 
-def parse_rst_parts(rst_input, context, system_message_re=SYSTEM_MESSAGE_RE):
+def parse_rst_parts(rst_input, context, system_message_re=SYSTEM_MESSAGE_RE,
+                    doctitle_xform=False):
+
     # setup offset
     plugin = context.plugins.get_plugin('reStructuredText')
     path = context.content['path']
@@ -144,20 +171,27 @@ def parse_rst_parts(rst_input, context, system_message_re=SYSTEM_MESSAGE_RE):
         'dump_settings': False,
         'halt_level': 3,
         'report_level': 1,
+        'doctitle_xform': doctitle_xform,
 
         **context.settings.get('RST_SETTINGS_OVERRIDES', {}),
     }
 
-    writer = FlamingoWriter(flamingo_context=context)
+    writer = FlamingoWriter(
+        flamingo_context=context,
+        doctitle_xform=doctitle_xform,
+    )
 
     try:
-        output = publish_parts(
+        parts = publish_parts(
             settings_overrides=settings_overrides,
             writer=writer,
             source=rst_input,
         )
 
-        return output
+        if not doctitle_xform:
+            parts['title'] = writer.flamingo_content_title
+
+        return parts
 
     except SystemMessage as e:
         rst_error = e
@@ -178,7 +212,7 @@ def parse_rst_parts(rst_input, context, system_message_re=SYSTEM_MESSAGE_RE):
 
 
 def parse_rst(*args, **kwargs):
-    parts = parse_rst_parts(*args, **kwargs)
+    parts = parse_rst_parts(*args, doctitle_xform=True, **kwargs)
     html = ''
 
     if parts['html_title']:

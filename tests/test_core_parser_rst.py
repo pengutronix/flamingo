@@ -1,4 +1,6 @@
 def test_rst_parsing(flamingo_dummy_context):
+    import re
+
     from flamingo.plugins.rst.plugin import RSTParser
     from flamingo import Content
 
@@ -16,9 +18,11 @@ foobar"""
 
     parser.parse(raw_content, content)
 
+    content_body = re.sub(r'\s+', '', content['content_body'])
+
     assert content['title'] == 'foo'
     assert content['content_title'] == 'bar'
-    assert content['content_body'] == '<p>foobar</p>\n'
+    assert content_body == '<divclass="section"id="bar">foobar</div>'
 
 
 def test_error_line_number(flamingo_dummy_context):
