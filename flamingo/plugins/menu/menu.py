@@ -24,6 +24,12 @@ def is_active(section, menu, content):
     if isinstance(section, Section) and section.content is content:
         return True
 
+    if(isinstance(section, Section) and
+       isinstance(content['menu_path'], list) and
+       section in content['menu_path']):
+
+        return True
+
     if isinstance(menu, Content):
         return menu is content
 

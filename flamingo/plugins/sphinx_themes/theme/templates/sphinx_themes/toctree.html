@@ -3,7 +3,11 @@
   {% for section_l1, menus_l1 in menus %}
     <ul>
       <li class="toctree-l1{% if is_active(section_l1, menus_l1, content) %} current{% endif %}">
-        <a href="{{ menus_l1.url }}" class="reference internal">{{ section_l1 }}</a>
+        {% if section_l1.content %}
+          <a href="{{ section_l1.content.url }}" class="reference internal">{{ section_l1.name }}</a>
+        {% else %}
+          <a href="{{ menus_l1.url }}" class="reference internal">{{ section_l1 }}</a>
+        {% endif %}
         {% if is_list(menus_l1) %}
           <ul{% if is_active(section_l1, menus_l1, content) %} class="current"{% endif %}>
             {% for section_l2, menus_l2 in menus_l1 %}
