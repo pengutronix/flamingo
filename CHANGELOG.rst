@@ -3,6 +3,27 @@
 Changelog
 =========
 
+
+`v1.7 <https://github.com/pengutronix/flamingo/compare/v1.6.1...v1.7>`_ (2021-12-02)
+------------------------------------------------------------------------------------
+
+Breaking Changes
+~~~~~~~~~~~~~~~~
+
+* plugins: reStructuredText: document_xform is now disabled by default
+
+  * With this option enabled all articles with more than one heading are
+    structured in sections, and all articles with less than two headings are
+    not. This caused all sorts of CSS an structuring problems.
+
+Bugfixes
+~~~~~~~~
+
+* plugins: SphinxThemes: handling of active menu items was fixed
+
+  * Previously the menu was not expanded correctly in all cases
+
+
 `v1.6.1 <https://github.com/pengutronix/flamingo/compare/v1.6...v1.6.1>`_ (2021-11-09)
 --------------------------------------------------------------------------------------
 
