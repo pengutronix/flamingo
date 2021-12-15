@@ -31,6 +31,7 @@ class Tags:
 
             context.contents.add(**{
                 CONTENT_KEY: '_tag/{}'.format(tag),
+                'title': '#{}'.format(tag),
                 'output': output,
                 'url': '/' + output,
                 'tag': tag,
@@ -41,6 +42,7 @@ class Tags:
         for tags, page, total_pages in paginate(tags, context):
             context.contents.add(**{
                 CONTENT_KEY: '_tags/{}'.format(page),
+                'title': 'Tags',
                 'output': 'tags/{}.html'.format(page),
                 'url': '/tags/{}.html'.format(page),
                 'tags': tags,
