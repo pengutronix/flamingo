@@ -258,15 +258,18 @@ class SphinxThemes:
             # variables
             'embedded': False,
             'use_opensearch': False,
-            'has_source': False,
-            'show_source': '',
-            'sourcelink_suffix': '',
             'file_suffix': '',
             'link_suffix': '',
             'style': '',
             'rellinks': [],
             'builder': '',
             'html5_doctype': '',
+
+            # source
+            'has_source': self.settings['SPHINX_THEMES_SHOW_SOURCE'],
+            'show_source': self.settings['SPHINX_THEMES_SHOW_SOURCE'],
+            'display_vcs_links': self.settings['SPHINX_THEMES_SHOW_SOURCE'],
+            'sourcename': content['path'],
 
             # static files
             'css_files': [],
@@ -356,11 +359,14 @@ class SphinxThemes:
             template_context[key] = value
 
     # template tags
-    def hasdoc(self, *args, **kwargs):
-        if len(args) >= 1 and args[0] == 'search':
+    def hasdoc(self, pagename):
+        if pagename == 'search':
             return True
 
-        return False
+        if pagename in ('about', 'genindex', 'copyright'):
+            return False
+
+        return True
 
     def gettext(self, string, **kwargs):
         return string
@@ -372,15 +378,19 @@ class SphinxThemes:
     def js_tag(self, static_file):
         return '<script src="{}"></script>'.format(static_file.filename)
 
-    def pathto(self, *args, **kwargs):
-        if len(args) >= 1 and args[0] == 'search':
+    def pathto(self, otheruri, *args, **kwargs):
+        if otheruri == 'search':
             return self.settings['SPHINX_THEMES_SEARCH_URL']
 
-        if isinstance(args[0], StaticFile):
-            return args[0].filename
+        if isinstance(otheruri, StaticFile):
+            return otheruri.filename
 
-        if isinstance(args[0], str) and args[0].startswith('_static'):
-            return '/' + args[0][1:]
+        if isinstance(otheruri, str):
+            if otheruri.startswith('_static'):
+                return '/' + otheruri[1:]
+
+            if otheruri.startswith('_sources'):
+                return '/' + otheruri
 
         return '/'
 
@@ -416,3 +426,22 @@ class SphinxThemes:
             template='sphinx_themes/search.js',
             output='search.js',
         )
+
+        # show source
+        if self.settings['SPHINX_THEMES_SHOW_SOURCE']:
+            for content in context.contents:
+                if not content.get('path', '').endswith('.rst'):
+                    continue
+
+                content['has_source'] = True
+
+                source_path = os.path.join(
+                    context.settings.CONTENT_ROOT,
+                    content['path'],
+                )
+
+                context.contents.add(
+                    type='_source-file',
+                    output='_sources/{}'.format(content['path']),
+                    content_body=open(source_path, 'r').read(),
+                )
