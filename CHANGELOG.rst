@@ -3,6 +3,17 @@
 Changelog
 =========
 
+`v1.7.1 <https://github.com/pengutronix/flamingo/compare/v1.7...v1.7.1>`_ (2021-12-16)
+--------------------------------------------------------------------------------------
+
+Bugfixes
+~~~~~~~~
+
+* plugins: Tags: titles in tag listing pages were fixed
+
+  * Previously tag listing pages contained "None" if the template didn't set
+    a proper title
+
 
 `v1.7 <https://github.com/pengutronix/flamingo/compare/v1.6.1...v1.7>`_ (2021-12-02)
 ------------------------------------------------------------------------------------
