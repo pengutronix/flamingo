@@ -191,7 +191,7 @@ If you need to access the state of another plugin you can get it by using
 Media
 -----
 
-Flamingo uses the same data model for medimedia objects like for
+Flamingo uses the same data model for media objects like for
 {{ link('developer/data_model.rst', 'content objects') }}. When a media content
 gets added to a content object, it get stored in ``content['media']``.
 
