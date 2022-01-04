@@ -7,7 +7,7 @@ All flamingo plugins have to be a python class, defining hooks which are simple
 python methods.
 
 All hooks get the ``context`` object passed in. Some hooks get
-``flamingo.Content`` objects passed in. More informations on Content objects:
+``flamingo.Content`` objects passed in. More information on Content objects:
 {{ link('developer/data_model.rst', 'Flamingo data model') }}
 
 
@@ -191,7 +191,7 @@ If you need to access the state of another plugin you can get it by using
 Media
 -----
 
-Flamingo uses the same data model for content objects like for
+Flamingo uses the same data model for media objects like for
 {{ link('developer/data_model.rst', 'content objects') }}. When a media content
 gets added to a content object, it get stored in ``content['media']``.
 

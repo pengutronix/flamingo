@@ -21,7 +21,7 @@ Shell
 **For this feature IPython needs to be installed. Read the
 "Optional external dependencies" section in
 {{ link('user/getting_started.rst', 'Getting started') }} for more
-informations**
+information**
 
 Flamingo supports interactive shells using ``flamingo shell`` for debugging.
 If you bootstrapped your project according to

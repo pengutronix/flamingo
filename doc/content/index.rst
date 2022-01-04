@@ -84,7 +84,7 @@ Per definition, content managed with a static site generator gets written
 rarely but read often.
 
 This means long build times of multiple seconds or even up to minutes are
-totally acceptable. Flamingo is designed be to easy and reusable, not to be
+totally acceptable. Flamingo is designed to be easy and reusable, not to be
 fast! It is written in pure python and all operations run in RAM.
 
 

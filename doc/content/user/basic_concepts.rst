@@ -22,7 +22,7 @@ Context
 -------
 
 The ``flamingo.core.context.Context`` object holds all runtime state, with all
-settings, loaded plugins and media informations. It gets passed into every
+settings, loaded plugins and media information. It gets passed into every
 plugin hook and is available in every rendered template and content object.
 
 In the diagram above the context is shown as violet box.

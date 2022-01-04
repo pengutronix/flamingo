@@ -4,7 +4,7 @@ Settings
 ========
 
 Flamingo manages its settings in plain python files. Settings are project
-specific and hold informations like where the content files are stored, where
+specific and hold information like where the content files are stored, where
 the output should be written to and which plugins are installed.
 
 
@@ -30,7 +30,7 @@ Overlaying Settings
 Most of flamingo command line tools come with an option ``-s`` for settings,
 which can be one or more python files.
 
-Let's say you have two settings files named ``settings.py`` und ``debug.py``.
+Let's say you have two settings files named ``settings.py`` and ``debug.py``.
 
 .. code-block:: python
 
