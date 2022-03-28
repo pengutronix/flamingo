@@ -2,6 +2,7 @@ from subprocess import check_output, CalledProcessError, STDOUT
 from tempfile import TemporaryDirectory
 import logging
 import os
+import asyncio
 
 from aiohttp.web import Application
 import pytest
@@ -109,6 +110,7 @@ class FlamingoServerBuildEnvironment(FlamingoBuildEnvironment):
         self.app = None
         self.server = None
         self.client = None
+        self.loop = asyncio.get_event_loop()
 
     def build(self, *args, **kwargs):
         pass
@@ -142,7 +144,7 @@ class FlamingoServerBuildEnvironment(FlamingoBuildEnvironment):
             return self.app
 
         self.setup()
-        self.client = await self._aiohttp_client(_create_app)
+        self.client = await self._aiohttp_client(_create_app(self.loop))
 
     async def shutdown_live_server(self, app=None):
         if self.server:
