@@ -7,7 +7,7 @@ import os
 import flamingo
 
 INSTALL_REQUIRES = [
-    'jinja2',
+    'jinja2>=3.0.0',
     'docutils',
     'pyyaml',
     'beautifulsoup4',

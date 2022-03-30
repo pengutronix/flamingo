@@ -7,7 +7,7 @@ import code
 import html
 import os
 
-from jinja2 import Environment, FileSystemLoader, contextfunction
+from jinja2 import Environment, FileSystemLoader, pass_context
 from jinja2 import TemplateNotFound, TemplateSyntaxError
 
 from flamingo.core.templating.base import TemplatingEngine
@@ -67,7 +67,7 @@ def html_escape(obj):
     return html.escape(obj)
 
 
-@contextfunction
+@pass_context
 def _shell(context):
     if IPYTHON:
         IPython.embed()
@@ -80,7 +80,7 @@ def _import(*args, **kwargs):
     return acquire(*args, **kwargs)[0]
 
 
-@contextfunction
+@pass_context
 def link(context, path, *args, name='', lang='', i18n=True, find_name=False,
          _content_path=None, _content_lineno=None, **kwargs):
 
