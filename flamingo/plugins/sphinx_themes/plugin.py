@@ -90,7 +90,8 @@ class SphinxThemes:
             'Settings',
             ('SPHINX_THEMES_HTML_THEME',
              [(i, i == self.html_theme, )
-              for i in sorted(self.sphinx_theme.app.html_themes.keys())]),
+              for i in
+              sorted(self.sphinx_theme.app.registry.html_themes.keys())]),  # NOQA
             *[(i, self.settings[i], )
               for i in sorted(self.settings.keys()) if i not in ignore],
             'HTML Options',

@@ -9,6 +9,7 @@ from jinja2 import Environment, FileSystemLoader
 
 from sphinx.jinja2glue import _tobool, _todim, _toint
 from sphinx.theming import HTMLThemeFactory, Theme
+from sphinx.registry import SphinxComponentRegistry
 from sphinx.config import Config
 import sphinx
 
@@ -27,7 +28,10 @@ class SphinxConfigRecursionError(Exception):
 
 class SphinxApp:
     def __init__(self):
-        self.html_themes = self.discover_themes()
+        self.registry = SphinxComponentRegistry()
+        themes = self.discover_themes()
+        for theme_name in themes.keys():
+            self.registry.add_html_theme(theme_name, themes[theme_name])
         self.config = Config()
 
     def discover_themes(self):
@@ -76,7 +80,7 @@ class SphinxThemeConfig:
             self.config.read(config_path)
 
     def _gen_theme_config_path(self, name):
-        return os.path.join(self.app.html_themes[name], 'theme.conf')
+        return os.path.join(self.app.registry.html_themes[name], 'theme.conf')
 
     def _gen_hierarchy(self):
         hierarchy = [self.theme_name]
@@ -137,12 +141,12 @@ class SphinxTheme:
 
         self.app = SphinxApp()
 
-        if name not in self.app.html_themes:
+        if name not in self.app.registry.html_themes:
             raise SphinxThemeNotFoundError(
                 "sphinx theme '{}' not found. available themes: {}".format(
                     name,
                     ', '.join(["'{}'".format(i)
-                               for i in self.app.html_themes.keys()])
+                               for i in self.app.registry.html_themes.keys()])
                 )
             )
 
@@ -156,7 +160,7 @@ class SphinxTheme:
 
         self.theme = Theme(
             name=name,
-            theme_path=self.app.html_themes[name],
+            theme_path=self.app.registry.html_themes[name],
             factory=self.factory,
         )
 
