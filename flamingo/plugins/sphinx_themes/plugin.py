@@ -8,6 +8,7 @@ from jinja2 import contextfunction
 from bs4 import BeautifulSoup
 
 from sphinx.jinja2glue import _tobool, _todim, _toint, accesskey
+from sphinx import version_info as sphinx_version_info
 
 from flamingo.plugins.menu.menu import Section
 from flamingo import Content
@@ -90,7 +91,8 @@ class SphinxThemes:
             'Settings',
             ('SPHINX_THEMES_HTML_THEME',
              [(i, i == self.html_theme, )
-              for i in sorted(self.sphinx_theme.app.html_themes.keys())]),
+              for i in
+              sorted(self.sphinx_theme.app.registry.html_themes.keys())]),  # NOQA
             *[(i, self.settings[i], )
               for i in sorted(self.settings.keys()) if i not in ignore],
             'HTML Options',
@@ -264,6 +266,7 @@ class SphinxThemes:
             'rellinks': [],
             'builder': '',
             'html5_doctype': '',
+            'sphinx_version': f'{sphinx_version_info[0]}.{sphinx_version_info[1]}.{sphinx_version_info[2]}',  # NOQA
 
             # source
             'has_source': self.settings['SPHINX_THEMES_SHOW_SOURCE'],
