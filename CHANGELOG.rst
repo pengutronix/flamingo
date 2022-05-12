@@ -3,6 +3,25 @@
 Changelog
 =========
 
+`v1.8 <https://github.com/pengutronix/flamingo/compare/v1.7.1...v1.8>`_ (2021-05-12)
+------------------------------------------------------------------------------------
+
+Changes
+~~~~~~~
+
+* jinja2: Make integration compatible to jinja2 > 3.0.0
+* tox: It's now possible to run a single test using ``tox -- <testname>``
+* Release Workflow: Moved from a ``tox``-based to a ``make``-based workflow.
+  We can now run ``make sdist`` and ``make _release`` to upload a new dist to pypi.
+
+Breaking Changes
+~~~~~~~~~~~~~~~~
+
+* plugins/sphinx_themes: Update Sphinx to 4.5.0 and sphinx_rtd_theme to 1.0.0.
+  After this change your ``settings.py`` needs to be altered according to
+  https://github.com/pengutronix/flamingo/commit/4725f2ef94021b4eb49e497109c084a798d989af
+
+
 `v1.7.1 <https://github.com/pengutronix/flamingo/compare/v1.7...v1.7.1>`_ (2021-12-16)
 --------------------------------------------------------------------------------------
 
