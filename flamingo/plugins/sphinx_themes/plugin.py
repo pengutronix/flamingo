@@ -4,7 +4,7 @@ import logging
 import json
 import os
 
-from jinja2 import contextfunction
+from jinja2 import pass_context
 from bs4 import BeautifulSoup
 
 from sphinx.jinja2glue import _tobool, _todim, _toint, accesskey
@@ -209,7 +209,7 @@ class SphinxThemes:
         templating_engine.env.filters['toint'] = _toint
         templating_engine.env.filters['todim'] = _todim
 
-        templating_engine.env.globals['accesskey'] = contextfunction(accesskey)
+        templating_engine.env.globals['accesskey'] = pass_context(accesskey)
 
     def template_context_setup(self, context, content, template_name,
                                template_context):
