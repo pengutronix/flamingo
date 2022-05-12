@@ -48,4 +48,13 @@ server: test-site
 	cd test-site && \
 	make server
 
+sdist: env
+	. $(PYTHON_VENV)/bin/activate && \
+	rm -rf dist *.egg-info && \
+	./setup.py sdist
+
+_release: sdist
+	. $(PYTHON_VENV)/bin/activate && \
+	twine upload dist/*
+
 .PHONY: test-site
