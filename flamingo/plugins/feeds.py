@@ -99,6 +99,8 @@ class Feeds:
 
                 elif feed_config['type'] == 'rss':
                     content['content_body'] = fg.rss_str().decode()
+                else:
+                    raise ValueError(f'Unkown Feed type {feed_config["type"]}')
 
                 context.contents.add(**content)
 
