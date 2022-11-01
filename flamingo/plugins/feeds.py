@@ -28,9 +28,20 @@ class Feeds:
                 fg.title(feed_config['title'])
 
                 # set parameters needed for rss-feeds
-                if feed_config['type'] == 'rss':
+                if feed_config['type'] in ['rss', 'podcast']:
                     fg.description(feed_config['description'])
                     fg.link(href=feed_config['link'], rel='self')
+
+                # setup podcast environment
+                if feed_config['type'] == 'podcast':
+                    fg.load_extension('podcast')
+                    fg.podcast.itunes_image(feed_config['podcast_image'])
+                    if 'itunes_owner' in feed_config:
+                        fg.podcast.itunes_owner(**feed_config['itunes_owner'])
+                    if 'itunes_category' in feed_config:
+                        fg.podcast.itunes_category(feed_config['itunes_category'])
+                    if 'itunes_explicit' in feed_config:
+                        fg.podcast.itunes_explicit(feed_config['itunes_explicit'])
 
                 for i in feed_config['contents'](context):
                     fe = fg.add_entry()
@@ -55,6 +66,15 @@ class Feeds:
                     else:
                         fe_updated = ''
 
+                    if 'podcast' in i:
+                        fe_podcast_url = i['podcast'].get('url', '')
+                        fe_podcast_size = i['podcast'].get('size', 0)
+                        fe_podcast_type = i['podcast'].get('type', 'audio/mpeg')
+                    else:
+                        fe_podcast_url = ''
+                        fe_podcast_size = ''
+                        fe_podcast_type = 'audio/mpeg'  # default value; will never be reported as missing
+
                     # check entry attributes
                     missing_attributes = []
 
@@ -66,6 +86,12 @@ class Feeds:
 
                     if not fe_updated:
                         missing_attributes.append('updated')
+
+                    if feed_config['type'] == 'podcast':
+                        if not fe_podcast_url:
+                            missing_attributes.append('podcast->url')
+                        if not fe_podcast_size:
+                            missing_attributes.append('podcast->size')
 
                     if missing_attributes:
                         logger.error('%s is missing attributes: %s',
@@ -93,11 +119,14 @@ class Feeds:
                     if i['summary']:
                         fe.summary(str(i['summary']))
 
+                    if feed_config['type'] == 'podcast':
+                        fe.enclosure(fe_podcast_url, str(fe_podcast_size), fe_podcast_type)
+
                 # generate output
                 if feed_config['type'] == 'atom':
                     content['content_body'] = fg.atom_str().decode()
 
-                elif feed_config['type'] == 'rss':
+                elif feed_config['type'] in ['rss', 'podcast']:
                     content['content_body'] = fg.rss_str().decode()
                 else:
                     raise ValueError(f'Unkown Feed type {feed_config["type"]}')
