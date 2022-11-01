@@ -27,6 +27,11 @@ class Feeds:
                 fg.id(feed_config['id'])
                 fg.title(feed_config['title'])
 
+                # set parameters needed for rss-feeds
+                if feed_config['type'] == 'rss':
+                    fg.description(feed_config['description'])
+                    fg.link(href=feed_config['link'], rel='self')
+
                 for i in feed_config['contents'](context):
                     fe = fg.add_entry()
 

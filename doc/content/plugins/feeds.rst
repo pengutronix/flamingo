@@ -54,6 +54,8 @@ Usage
             'type': 'atom',  # [rss, atom]
             'output': 'feeds/atom.xml',
             'lang': 'en',
+            'description': 'Example Descriptions', # Only needed for RSS
+            'link': 'Link to the Feeds Website',   # Only needed for RSS
 
             # this callback is used to specify which contents should
             # be used to generate this feed
