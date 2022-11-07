@@ -75,7 +75,7 @@ class LinkRole:
         abs_lineno = self.rst_base_plugin.offsets.get(
             self.context.content['path'], 0) + lineno
 
-        if(not self.context.settings.PRE_RENDER_CONTENT or
+        if (not self.context.settings.PRE_RENDER_CONTENT or
            not self.context.content.get('is_template', True)):
 
             self.context.logger.error(

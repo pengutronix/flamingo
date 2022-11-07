@@ -217,7 +217,7 @@ class Jinja2(TemplatingEngine):
         self.env.globals['_shell'] = _shell
 
         # setup error env
-        if(self.context.settings. LIVE_SERVER_RUNNING and
+        if (self.context.settings. LIVE_SERVER_RUNNING and
            self.context.settings.JINJA2_TRACEBACKS):
 
             autoescape = not self.context.settings.JINJA2_TRACEBACKS_PYGMENTS
@@ -296,7 +296,7 @@ class Jinja2(TemplatingEngine):
             if filename in self.contents:
                 content_path = self.contents[filename]['path']
 
-                if(not content_path and
+                if (not content_path and
                    self.contents[filename]['original_path']):
 
                     content_path = self.contents[filename]['original_path']
@@ -353,13 +353,13 @@ class Jinja2(TemplatingEngine):
         )
 
     def _render(self, template_name, template_context, handle_exceptions=True):
-        if(not self.context.settings.LIVE_SERVER_RUNNING or
+        if (not self.context.settings.LIVE_SERVER_RUNNING or
            not self.context.settings.JINJA2_TRACEBACKS):
 
             return True, self.env.get_template(template_name).render(
                 **template_context)
 
-        if('content' in template_context and
+        if ('content' in template_context and
            '_parsing_error' in template_context['content']):
 
             exception = template_context['content']['_parsing_error']
@@ -395,7 +395,7 @@ class Jinja2(TemplatingEngine):
         if not content['content_body'] or '{' not in content['content_body']:
             return True, content['content_body']
 
-        if(not self.context.settings.LIVE_SERVER_RUNNING or
+        if (not self.context.settings.LIVE_SERVER_RUNNING or
            not self.context.settings.JINJA2_TRACEBACKS):
 
             template = self.env.from_string(content['content_body'])

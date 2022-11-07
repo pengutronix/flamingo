@@ -123,7 +123,7 @@ class Thumbnails:
 
             return
 
-        if('thumbnail' in media_content and
+        if ('thumbnail' in media_content and
            not parse_bool(media_content['thumbnail'])):
 
             logger.debug(

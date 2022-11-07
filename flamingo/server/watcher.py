@@ -59,7 +59,7 @@ class BaseWatcher:
 
             return False
 
-        if('rebase-apply' in git_dir_content or
+        if ('rebase-apply' in git_dir_content or
            'rebase-merge' in git_dir_content):
 
             if not self._git_is_locked:

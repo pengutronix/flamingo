@@ -55,7 +55,7 @@ class reStructuredText:
         This hook removes all docutils system messages from docutils documents
         """
 
-        if(not context.settings.get(
+        if (not context.settings.get(
                'RST_REMOVE_SYSTEM_MESSAGES_FROM_OUPUT', True)):
 
             return
@@ -70,9 +70,9 @@ class reStructuredText:
                     children.remove(child)
                     removed[0] += 1
 
-                elif(hasattr(child, 'attributes') and
-                     'classes' in child.attributes and
-                     'system-messages' in child.attributes['classes']):
+                elif (hasattr(child, 'attributes') and
+                      'classes' in child.attributes and
+                      'system-messages' in child.attributes['classes']):
 
                     children.remove(child)
                     removed[0] += 1
