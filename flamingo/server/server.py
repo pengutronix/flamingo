@@ -505,8 +505,8 @@ class Server:
             if Flags.TEMPLATE in flags or Flags.STATIC in flags:
                 non_content_event = True
 
-            elif(os.path.splitext(path)[1].lower() in
-                 ('.jpg', '.jpeg', '.png', '.svg', )):
+            elif (os.path.splitext(path)[1].lower() in
+                  ('.jpg', '.jpeg', '.png', '.svg', )):
 
                 non_content_event = True
 

@@ -286,7 +286,7 @@ class ContentExporter:
             content = self.resolve(path)
 
             # fallback
-            if(not content or
+            if (not content or
                isinstance(content, str) and os.path.isdir(content)):
 
                 # 404

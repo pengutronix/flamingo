@@ -74,8 +74,6 @@ def test_invalid_command(flamingo_env, run, caplog):
 
 
 def test_invalid_return_code(flamingo_env, run, caplog):
-    import logging
-
     version = run('git describe')[1].strip()
 
     flamingo_env.settings.PLUGINS = [
@@ -98,8 +96,6 @@ def test_invalid_return_code(flamingo_env, run, caplog):
     assert version not in flamingo_env.read('/output/article.html')
     assert 'GIT_VERSION' not in flamingo_env.settings.EXTRA_CONTEXT
 
-    assert (
-        'flamingo.plugins.Git',
-        logging.ERROR,
-        "git foo returned 1: git: 'foo' is not a git command. See 'git --help'.\n\nThe most similar command is\n\tlog\n",  # NOQA
-    ) in caplog.record_tuples
+    assert any(
+        [x[2].startswith('git foo returned 1:') for x in caplog.record_tuples]
+    )

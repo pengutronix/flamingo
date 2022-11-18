@@ -228,8 +228,8 @@ class Context(OverlayObject):
         }
 
     def pre_render(self, content, template_context=None):
-        if(not self.settings.PRE_RENDER_CONTENT or
-           not content.get('is_template', True) or
+        if (not self.settings.PRE_RENDER_CONTENT or
+            not content.get('is_template', True) or
            content['_content_body_rendered']):
 
             return True, content['content_body']

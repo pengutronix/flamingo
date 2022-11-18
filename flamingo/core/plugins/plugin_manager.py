@@ -143,9 +143,9 @@ class PluginManager:
         for attr_name in dir(self._context.settings):
             attr = getattr(self._context.settings, attr_name)
 
-            if(not hasattr(attr, 'flamingo_hook_name') or
-               attr.flamingo_hook_name not in hook_names_to_discover or
-               attr in self._hooks[attr.flamingo_hook_name]):
+            if (not hasattr(attr, 'flamingo_hook_name') or
+                attr.flamingo_hook_name not in hook_names_to_discover or
+                    attr in self._hooks[attr.flamingo_hook_name]):
 
                 continue
 
@@ -238,8 +238,8 @@ class PluginManager:
 
                 # a plugin needs to implement at least 'get_options()'
                 # to get listed
-                if(not hasattr(plugin_object, 'get_options') or
-                   not callable(plugin_object.get_options)):
+                if (not hasattr(plugin_object, 'get_options') or
+                        not callable(plugin_object.get_options)):
 
                     continue
 

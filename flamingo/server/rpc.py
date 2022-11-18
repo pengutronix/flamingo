@@ -203,7 +203,7 @@ class JsonRpc:
         await self.send_str(websocket, message)
 
     async def __call__(self, http_request):
-        if(http_request.method != 'GET' or
+        if (http_request.method != 'GET' or
            http_request.headers.get('upgrade', '').lower() != 'websocket'):
 
             return Response(status=405)

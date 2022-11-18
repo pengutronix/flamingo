@@ -53,14 +53,14 @@ class RPCHandler(logging.Handler):
         if record.exc_info:
 
             # OSErrors
-            if(isinstance(record.exc_info[1], OSError) and
+            if (isinstance(record.exc_info[1], OSError) and
                record.exc_info[1].errno in (13, 98)):
 
                 return
 
             # event loop exceptions
-            elif(isinstance(record.exc_info[1], RuntimeError) and
-                 record.exc_info[1].args[0] == 'Event loop is closed'):
+            elif (isinstance(record.exc_info[1], RuntimeError) and
+                  record.exc_info[1].args[0] == 'Event loop is closed'):
 
                 return
 
@@ -82,7 +82,7 @@ class RPCHandler(logging.Handler):
             return
 
         # find current hook name and content path
-        if(self.server and
+        if (self.server and
            self.server.build_environment and
            self.server.build_environment.context):
 
@@ -192,7 +192,7 @@ class RPCHandler(logging.Handler):
         ]
 
         for record in self.buffer[::]:
-            if(record['hook'] in hooks or
+            if (record['hook'] in hooks or
                record['content_path'] in paths):
 
                 self.buffer.remove(record)

@@ -95,7 +95,7 @@ def generate_directives(context):
                 context.parse(content)
 
             # check arguments
-            if('section' in self.options and
+            if ('section' in self.options and
                'title' in self.options):
 
                 logger.error(
