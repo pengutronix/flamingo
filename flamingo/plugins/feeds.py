@@ -65,9 +65,13 @@ class Feeds:
 
                     if 'updated' in feed_config:
                         fe_updated = feed_config['updated'](i)
-
                     else:
                         fe_updated = ''
+
+                    if 'published' in feed_config:
+                        fe_published = feed_config['published'](i)
+                    else:
+                        fe_published = ''
 
                     if 'podcast' in i:
                         fe_podcast_url = i['podcast'].get('url', '')
@@ -90,6 +94,9 @@ class Feeds:
                     if not fe_updated:
                         missing_attributes.append('updated')
 
+                    if not fe_published:
+                        missing_attributes.append('published')
+
                     if feed_config['type'] == 'podcast':
                         if not fe_podcast_url:
                             missing_attributes.append('podcast->url')
@@ -107,6 +114,7 @@ class Feeds:
                     fe.id(fe_id)
                     fe.title(fe_title)
                     fe.updated(fe_updated)
+                    fe.published(fe_published)
                     fe.link(fe_link)
 
                     if i['content_body']:

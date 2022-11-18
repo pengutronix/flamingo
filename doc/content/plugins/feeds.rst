@@ -83,7 +83,12 @@ Usage
             # this callback is used to generate the 'updated' flag
             # of every feed entry
             'updated':
-                lambda content: content['date'].strftime('%Y-%m-%d %H:%M:%S+01:00')
+                lambda content: content['date'].strftime('%Y-%m-%d %H:%M:%S+01:00'),
+
+            # this callback is used to generate the 'published' flag
+            # of every feed entry
+            'published':
+                lambda content: content['date'].strftime('%Y-%m-%d %H:%M:%S+01:00'),
         },
     ]
 
