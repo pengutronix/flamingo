@@ -24,6 +24,9 @@ class Feeds:
 
                 fg = FeedGenerator()
 
+                if 'lang' in feed_config:
+                    fg.language(feed_config['lang'])
+
                 fg.id(feed_config['id'])
                 fg.title(feed_config['title'])
 
