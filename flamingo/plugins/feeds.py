@@ -34,6 +34,7 @@ class Feeds:
                 if feed_config['type'] in ['rss', 'podcast']:
                     fg.description(feed_config['description'])
                     fg.link(href=feed_config['link'], rel='self')
+                    fg.link(href=feed_config['link_alternate'], rel='alternate')
 
                 # setup podcast environment
                 if feed_config['type'] == 'podcast':

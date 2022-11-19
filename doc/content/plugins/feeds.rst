@@ -54,8 +54,9 @@ Usage
             'type': 'atom',  # [rss, atom, podcast]
             'output': 'feeds/atom.xml',
             'lang': 'en',
-            'description': 'Example Descriptions', # Only needed for rss
-            'link': 'Link to the Feeds Website',   # Only needed for rss
+            'description': 'Example Descriptions', # Only needed for rss and podcast
+            'link': 'Link to the Feed itself',   # Only needed for rss and podcast
+            'link_alternate': 'Link to the Feeds Website',   # Only needed for rss and podcast
             'podcast_image': 'URL of an Image for the Podcast Feed', # Only for podcast
             'itunes_owner': {'name': 'Contact Name', 'email': 'email@example.com'}, # Only for podcast
             'itunes_category': [ # Only for Podcast
