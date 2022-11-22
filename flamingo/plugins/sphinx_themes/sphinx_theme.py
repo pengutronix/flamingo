@@ -1,18 +1,18 @@
-from pkg_resources import iter_entry_points
+import logging
+import os
+import shutil
 from configparser import RawConfigParser
 from copy import deepcopy
-import logging
-import shutil
-import os
+
 import docutils
-
-from jinja2 import Environment, FileSystemLoader
-
-from sphinx.jinja2glue import _tobool, _todim, _toint
-from sphinx.theming import HTMLThemeFactory, Theme
-from sphinx.registry import SphinxComponentRegistry
-from sphinx.config import Config
 import sphinx
+from jinja2 import Environment, FileSystemLoader
+from pkg_resources import iter_entry_points
+from sphinx.config import Config
+from sphinx.jinja2glue import _tobool, _todim, _toint
+from sphinx.registry import SphinxComponentRegistry
+from sphinx.theming import HTMLThemeFactory, Theme
+
 
 SPHINX_THEME_ROOT = os.path.join(os.path.dirname(sphinx.__file__), 'themes')
 
