@@ -3,6 +3,21 @@
 Changelog
 =========
 
+`v1.9 <https://github.com/pengutronix/flamingo/compare/v1.8...v1.9>`_ (2022-11-22)
+------------------------------------------------------------------------------------
+
+Changes
+~~~~~~~
+
+* plugins/sphinx_themes: Make compatible to Sphinx>=5.02.
+* plugins/feeds: Add support for Podcast-Style RSS feeds
+
+Bugfixes
+~~~~~~~~
+
+* tests/plugin_git now works with output on systems with other languages than English.
+* plugins/feeds: Set attributes that are mandatory for RSS feeds
+
 `v1.8 <https://github.com/pengutronix/flamingo/compare/v1.7.1...v1.8>`_ (2021-05-12)
 ------------------------------------------------------------------------------------
 
