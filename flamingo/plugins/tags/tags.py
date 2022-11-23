@@ -20,7 +20,11 @@ class Tags:
 
                 continue
 
-            content['tag_names'] = split(content['tags'])
+            if isinstance(content['tags'], list):
+                content['tag_names'] = content['tags']
+            else:
+                content['tag_names'] = split(content['tags'])
+
             content['tags'] = [slugify(i) for i in content['tag_names']]
 
         tags = sorted(list(set(sum(context.contents.values('tags'), []))))
