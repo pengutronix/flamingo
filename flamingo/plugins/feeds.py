@@ -46,6 +46,8 @@ class Feeds:
                         fg.podcast.itunes_category(feed_config['itunes_category'])
                     if 'itunes_explicit' in feed_config:
                         fg.podcast.itunes_explicit(feed_config['itunes_explicit'])
+                    if 'itunes_author' in feed_config:
+                        fg.podcast.itunes_author(feed_config['itunes_author'])
 
                 for i in feed_config['contents'](context):
                     fe = fg.add_entry()

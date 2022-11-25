@@ -59,6 +59,7 @@ Usage
             'link_alternate': 'Link to the Feeds Website',   # Only needed for rss and podcast
             'podcast_image': 'URL of an Image for the Podcast Feed', # Only for podcast
             'itunes_owner': {'name': 'Contact Name', 'email': 'email@example.com'}, # Only for podcast
+            'itunes_author': 'Name of the Author', # only for podcast
             'itunes_category': [ # Only for Podcast
                 {'cat': 'Technology'},
             ], # A List of categories is here: https://podcasters.apple.com/support/1691-apple-podcasts-categories
