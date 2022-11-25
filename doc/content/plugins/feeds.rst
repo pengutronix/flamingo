@@ -91,6 +91,15 @@ Usage
             # of every feed entry
             'published':
                 lambda content: content['date'].strftime('%Y-%m-%d %H:%M:%S+01:00'),
+
+            # This optional callable is called for every body and summary that is added to a feed entry.
+            # This can be used to remove unwanted elements from the feed (e.g. by using beautifulsoup4).
+            # The callable must follow this signature and return the filtered html as string:
+            # |def _filter_function(html_input):
+            # |     # do the filtering
+            # |     return html_output
+            'html_filter': _callable,
+            '
         },
     ]
 

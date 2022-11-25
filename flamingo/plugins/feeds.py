@@ -122,6 +122,8 @@ class Feeds:
 
                     if i['content_body']:
                         exitcode, output = context.pre_render(i)
+                        if 'html_filter' in feed_config:
+                            output = feed_config['html_filter'](output)
                         fe.content(output, type='html')
 
                     if i['authors']:
@@ -131,7 +133,10 @@ class Feeds:
                             })
 
                     if i['summary']:
-                        fe.summary(str(i['summary']))
+                        summary = str(i['summary'])
+                        if 'html_filter' in feed_config:
+                            summary = feed_config['html_filter'](summary)
+                        fe.summary(summary)
 
                     if feed_config['type'] == 'podcast':
                         fe.enclosure(fe_podcast_url, str(fe_podcast_size), fe_podcast_type)
