@@ -22,7 +22,6 @@ POST_BUILD_LAYERS = [
 
 # sphinx theme
 SPHINX_THEMES_HTML_THEME = 'sphinx_rtd_theme'
-SPHINX_THEMES_LOGO = True
 SPHINX_THEMES_LOGO_URL = '/static/flamingo.svg'
 SPHINX_THEMES_DOCSTITLE = 'Flamingo'
 SPHINX_THEMES_SHORTTITLE = 'Flamingo'
