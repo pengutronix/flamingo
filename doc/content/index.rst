@@ -95,8 +95,6 @@ If you have problems or suggestions, don't hesitate to ask for help!
 
 Issue tracker: [`link <http://www.github.com/pengutronix/flamingo/issues>`__]
 
-Pengutronix email: [`entwicklung@pengutronix.de <entwicklung@pengutronix.de>`__]
-
-Maintainer email: [`f.scherf@pengutronix.de <f.scherf@pengutronix.de>`__]
+Email: [`entwicklung@pengutronix.de <entwicklung@pengutronix.de>`__]
 
 Send patches: [`link <http://www.github.com/pengutronix/flamingo/>`__]
