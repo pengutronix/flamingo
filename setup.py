@@ -29,7 +29,7 @@ EXTRAS_REQUIRE = {
         'markdown',
     ],
     'feeds': [
-        'feedgen==0.7.0',
+        'feedgen==0.9.0',
     ],
     'thumbnails': [
         'pillow',
