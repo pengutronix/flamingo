@@ -4,7 +4,7 @@ def test_documentation(run):
     import os
 
     if not os.environ.get('EXTENDED_BUILD_TESTS', ''):
-        pytest.skip('EXTENDED_BUILD_TESTS is disabeld')
+        pytest.skip('EXTENDED_BUILD_TESTS is disabled')
 
     if (sys.version_info.major, sys.version_info.minor, ) != (3, 6, ):
         pytest.skip('documentation python3.6')

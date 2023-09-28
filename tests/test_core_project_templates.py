@@ -24,7 +24,7 @@ def test_project_template(template_name, run):
     import os
 
     if not os.environ.get('EXTENDED_BUILD_TESTS', ''):
-        pytest.skip('EXTENDED_BUILD_TESTS is disabeld')
+        pytest.skip('EXTENDED_BUILD_TESTS is disabled')
 
     flamingo_path = os.path.dirname(os.path.dirname(__file__))
 
