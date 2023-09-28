@@ -136,7 +136,7 @@ class Feeds:
                         summary = str(i['summary'])
                         if 'html_filter' in feed_config:
                             summary = feed_config['html_filter'](summary)
-                        fe.summary(summary)
+                        fe.summary(summary, type='html')
 
                     if feed_config['type'] == 'podcast':
                         fe.enclosure(fe_podcast_url, str(fe_podcast_size), fe_podcast_type)
