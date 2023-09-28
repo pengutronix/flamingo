@@ -1,8 +1,30 @@
 import logging
+from urllib.parse import urljoin
 
+from bs4 import BeautifulSoup
 from feedgen.feed import FeedGenerator
 
 logger = logging.getLogger('flamingo.plugins.Feeds')
+
+
+def make_urls_absolute(html, base_url):
+    soup = BeautifulSoup(html, 'html.parser')
+
+    for element in soup.find_all(['img', 'script', 'asciinema-player']):
+        try:
+            element['src'] = urljoin(base_url, element['src'])
+        except KeyError:
+            # not all elements might have a src attribute
+            continue
+
+    for link in soup.find_all('a'):
+        try:
+            link['href'] = urljoin(base_url, link['href'])
+        except KeyError:
+            # not all elements might have an href attribute
+            continue
+
+    return str(soup)
 
 
 class Feeds:
@@ -122,6 +144,8 @@ class Feeds:
 
                     if i['content_body']:
                         exitcode, output = context.pre_render(i)
+                        output = make_urls_absolute(output, fe_link['href'])
+
                         if 'html_filter' in feed_config:
                             output = feed_config['html_filter'](output)
                         fe.content(output, type='html')
