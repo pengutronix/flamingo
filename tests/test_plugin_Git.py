@@ -20,11 +20,13 @@ pytestmark = pytest.mark.skipif(
 
 
 def test_git(flamingo_env, run):
-    version = run('git describe')[1].strip()
+    version = run('git describe --always')[1].strip()
 
     flamingo_env.settings.PLUGINS = [
         'flamingo.plugins.Git',
     ]
+
+    flamingo_env.settings.GIT_VERSION_CMD = 'git describe --always'
 
     flamingo_env.write('/content/article.rst', """
 
@@ -44,7 +46,7 @@ def test_git(flamingo_env, run):
 def test_invalid_command(flamingo_env, run, caplog):
     import logging
 
-    version = run('git describe')[1].strip()
+    version = run('git describe --always')[1].strip()
 
     flamingo_env.settings.PLUGINS = [
         'flamingo.plugins.Git',
@@ -74,7 +76,7 @@ def test_invalid_command(flamingo_env, run, caplog):
 
 
 def test_invalid_return_code(flamingo_env, run, caplog):
-    version = run('git describe')[1].strip()
+    version = run('git describe --always')[1].strip()
 
     flamingo_env.settings.PLUGINS = [
         'flamingo.plugins.Git',
