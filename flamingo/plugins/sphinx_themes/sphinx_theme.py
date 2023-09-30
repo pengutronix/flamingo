@@ -189,7 +189,9 @@ class SphinxTheme:
             self._static_file_template_context_cache = {
                 **self.config.get_theme_options(),
             }
-            self._static_file_template_context_cache['docutils_version_info'] = docutils.__version_info__[:5]
+            self._static_file_template_context_cache[
+                'docutils_version_info'
+            ] = docutils.__version_info__[:5]
 
         return deepcopy(self._static_file_template_context_cache)
 
