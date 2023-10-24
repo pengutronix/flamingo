@@ -10,9 +10,12 @@ flamingo
 .. image:: https://img.shields.io/pypi/l/flamingo.svg
     :alt: pypi.org
     :target: https://pypi.org/project/flamingo
-.. image:: https://img.shields.io/travis/com/pengutronix/flamingo/master.svg
-    :alt: Travis branch
-    :target: https://travis-ci.com/pengutronix/flamingo
+.. image:: https://github.com/pengutronix/flamingo/actions/workflows/ci.yaml/badge.svg
+    :alt: CI Test Status
+    :target: https://github.com/Bastian-Krause/flamingo/actions/workflows/ci.yaml
+.. image:: https://github.com/pengutronix/flamingo/actions/workflows/docs.yaml/badge.svg
+    :alt: Documentation Build Status
+    :target: https://github.com/Bastian-Krause/flamingo/actions/workflows/docs.yaml
 .. image:: https://img.shields.io/pypi/pyversions/flamingo.svg
     :alt: pypi.org
     :target: https://pypi.org/project/flamingo
@@ -22,12 +25,6 @@ flamingo
 .. image:: https://img.shields.io/codecov/c/github/pengutronix/flamingo.svg
     :alt: codecov.io
     :target: https://codecov.io/gh/pengutronix/flamingo/
-.. image:: https://img.shields.io/lgtm/alerts/g/pengutronix/flamingo.svg
-    :alt: lgtm.com
-    :target: https://lgtm.com/projects/g/pengutronix/flamingo/
-.. image:: https://img.shields.io/lgtm/grade/python/g/pengutronix/flamingo.svg
-    :alt: lgtm.com
-    :target: https://lgtm.com/projects/g/pengutronix/flamingo/
 
 
 Flamingo is a python3-based, pelican-inspired static site generator, made by

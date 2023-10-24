@@ -56,7 +56,9 @@ class Feeds:
                 if feed_config['type'] in ['rss', 'podcast']:
                     fg.description(feed_config['description'])
                     fg.link(href=feed_config['link'], rel='self')
-                    fg.link(href=feed_config['link_alternate'], rel='alternate')
+                    fg.link(
+                        href=feed_config['link_alternate'], rel='alternate'
+                    )
 
                 # setup podcast environment
                 if feed_config['type'] == 'podcast':
@@ -65,9 +67,13 @@ class Feeds:
                     if 'itunes_owner' in feed_config:
                         fg.podcast.itunes_owner(**feed_config['itunes_owner'])
                     if 'itunes_category' in feed_config:
-                        fg.podcast.itunes_category(feed_config['itunes_category'])
+                        fg.podcast.itunes_category(
+                            feed_config['itunes_category']
+                        )
                     if 'itunes_explicit' in feed_config:
-                        fg.podcast.itunes_explicit(feed_config['itunes_explicit'])
+                        fg.podcast.itunes_explicit(
+                            feed_config['itunes_explicit']
+                        )
                     if 'itunes_author' in feed_config:
                         fg.podcast.itunes_author(feed_config['itunes_author'])
 
@@ -101,11 +107,14 @@ class Feeds:
                     if 'podcast' in i:
                         fe_podcast_url = i['podcast'].get('url', '')
                         fe_podcast_size = i['podcast'].get('size', 0)
-                        fe_podcast_type = i['podcast'].get('type', 'audio/mpeg')
+                        fe_podcast_type = i['podcast'].get(
+                            'type', 'audio/mpeg'
+                        )
                     else:
                         fe_podcast_url = ''
                         fe_podcast_size = ''
-                        fe_podcast_type = 'audio/mpeg'  # default value; will never be reported as missing
+                        # default value; will never be reported as missing
+                        fe_podcast_type = 'audio/mpeg'
 
                     # check entry attributes
                     missing_attributes = []
@@ -163,7 +172,11 @@ class Feeds:
                         fe.summary(summary, type='html')
 
                     if feed_config['type'] == 'podcast':
-                        fe.enclosure(fe_podcast_url, str(fe_podcast_size), fe_podcast_type)
+                        fe.enclosure(
+                            fe_podcast_url,
+                            str(fe_podcast_size),
+                            fe_podcast_type,
+                        )
 
                 # generate output
                 if feed_config['type'] == 'atom':
