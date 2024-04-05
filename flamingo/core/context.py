@@ -1,6 +1,9 @@
 import logging
 import shutil
 import os
+import warnings
+
+import bs4
 
 from flamingo.core.data_model import ContentSet, AND, NOT, OR, Q, F
 from flamingo.core.plugins.plugin_manager import PluginManager
@@ -33,6 +36,16 @@ class Context(OverlayObject):
         # setup logging
         self.logger = logging.getLogger('flamingo')
         self.logger.debug('setting up context')
+
+        # BS4: Filter MarkupResemblesLocatorWarning
+        # BS4 emits warnings when we try to parse strings that look like a
+        # path or url. So if we parse some content that may only contain
+        # something that looks like a path or url, but is a valid content,
+        # we would be greeted with a MarkupResemblesLocatorWarning.
+        warnings.filterwarnings(
+            "ignore",
+            category=bs4.MarkupResemblesLocatorWarning,
+        )
 
         # setup plugins
         self.plugins = PluginManager(self)
