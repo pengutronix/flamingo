@@ -3,6 +3,37 @@
 Changelog
 =========
 
+`v1.10 <https://github.com/pengutronix/flamingo/compare/v1.9...v1.10>`_ (2024-04-22)
+------------------------------------------------------------------------------------
+
+Changes
+~~~~~~~
+
+* plugins/tags: The :code:`tag` metadata can now be a real `yaml`-list instead of a list string.
+* plugins/feeds: A podcast-author can be added to a feeds metadata by setting the
+  :code:`itunes_author` property in the feed definition.
+* plugins/feeds: The HTML content of a feed-entry can be filtered by a function.
+  This is intended to remove items that should not be included in the feed
+  (e.g. the actual podcast player for podcasts)
+  or to only publish a preview of the post.
+* Feeds: The :code:`content type` of entries is now set to :code:`HTML`.
+  This should reduce confusion in some feed readers.
+* Feeds: Convert all URLs from relative to absolute.
+  Feeds should not contain relative URLs. Some feed readers and
+  podcast clients seem to convert relative URLs into absolute ones. Let's
+  not rely on that and convert relative URLs into absolute URLs for a.href
+  and img.src.
+* BeautifulSoup: Silence :code:`MarkupResemblesLocatorWarning`.
+  BS4 now raises a :code:`MarkupResemblesLocatorWarning` every time a content
+  looks like a path or URL.
+  In Flamingo this is usually intended and not an user error.
+  So we silence this warning completely.
+
+Bugfixes
+~~~~~~~~
+
+(none)
+
 `v1.9 <https://github.com/pengutronix/flamingo/compare/v1.8...v1.9>`_ (2022-11-22)
 ------------------------------------------------------------------------------------
 
