@@ -3,6 +3,22 @@
 Changelog
 =========
 
+`v1.10.1 <https://github.com/pengutronix/flamingo/compare/v1.10...v1.10.1>`_ (2024-04-23)
+-----------------------------------------------------------------------------------------
+
+Changes
+~~~~~~~
+
+(none)
+
+Bugfixes
+~~~~~~~~
+
+* plugins/Sphinx: Sphinx 7.3.0 has introduced a
+  `new configuration format <https://github.com/sphinx-doc/sphinx/pull/12265>`__ for themes.
+  This breaks the way we parse the theme configuration.
+  For this bugfix release we pin the Sphinx dependency to :code:`<7.3.0` to work around this problem.
+
 `v1.10 <https://github.com/pengutronix/flamingo/compare/v1.9...v1.10>`_ (2024-04-22)
 ------------------------------------------------------------------------------------
 
