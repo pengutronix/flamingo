@@ -165,6 +165,9 @@ class Feeds:
                                 'name': author,
                             })
 
+                    # relies on a plugin generating a summary - see
+                    # https://github.com/pengutronix/flamingo-ptx-blog-engine/blob/master/flamingo_ptx_blog_engine/summary.py
+                    # for an example
                     if i['summary']:
                         summary = str(i['summary'])
                         if 'html_filter' in feed_config:
