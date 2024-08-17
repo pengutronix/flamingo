@@ -12,10 +12,10 @@ flamingo
     :target: https://pypi.org/project/flamingo
 .. image:: https://github.com/pengutronix/flamingo/actions/workflows/ci.yaml/badge.svg
     :alt: CI Test Status
-    :target: https://github.com/Bastian-Krause/flamingo/actions/workflows/ci.yaml
-.. image:: https://github.com/pengutronix/flamingo/actions/workflows/docs.yaml/badge.svg
+    :target: https://github.com/pengutronix/flamingo/actions/workflows/ci.yaml
+.. image:: https://github.com/pengutronix/flamingo/actions/workflows/docs.yml/badge.svg
     :alt: Documentation Build Status
-    :target: https://github.com/Bastian-Krause/flamingo/actions/workflows/docs.yaml
+    :target: https://github.com/pengutronix/flamingo/actions/workflows/docs.yml
 .. image:: https://img.shields.io/pypi/pyversions/flamingo.svg
     :alt: pypi.org
     :target: https://pypi.org/project/flamingo
