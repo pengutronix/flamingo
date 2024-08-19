@@ -29,6 +29,8 @@ def make_urls_absolute(html, base_url):
 
 class Feeds:
     def pre_build(self, context):
+        env = context.templating_engine.env
+        render_summary = env.globals.get('render_summary')
         FEEDS_DOMAIN = getattr(context.settings, 'FEEDS_DOMAIN', '/')
         FEEDS = getattr(context.settings, 'FEEDS', [])
 
@@ -165,8 +167,17 @@ class Feeds:
                                 'name': author,
                             })
 
+                    # relies on a plugin generating a summary - see
+                    # https://github.com/pengutronix/flamingo-ptx-blog-engine/blob/master/flamingo_ptx_blog_engine/summary.py
+                    # for an example
                     if i['summary']:
-                        summary = str(i['summary'])
+                        if render_summary:
+                            summary = render_summary(i)
+                        else:
+                            summary = str(i['summary'])
+
+                        summary = make_urls_absolute(summary, fe_link['href'])
+
                         if 'html_filter' in feed_config:
                             summary = feed_config['html_filter'](summary)
                         fe.summary(summary, type='html')
