@@ -15,7 +15,7 @@ HTML_TEMPLATE = """
 
 class RedirectRulesParser(ContentParser):
     FILE_EXTENSIONS = ['rr']
-    RULE_RE = re.compile(r'^(?P<code>[0-9]+)(\s{1,})(?P<src>[^ ]+)(\s{1,})(?P<dst>[^ \n]+)$')  # NOQA
+    RULE_RE = re.compile(r'^(?P<code>[0-9]+)(\s{1,})(?P<src>[^\s]+)(\s{1,})(?P<dst>[^\s]+)$')  # NOQA
 
     def parse(self, file_content, content):
         content['output'] = '/dev/null'
