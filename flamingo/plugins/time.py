@@ -4,8 +4,8 @@ import re
 
 class HTML5TimeTag:
     TIME_FORMAT = re.compile(
-        r"^(?P<year>[0-9]{4})-(?P<month>[0-9]{2})-(?P<day>[0-9]{2})( (?P<hour>[0-9]{2}):(?P<minute>[0-9]{2})(:(?P<second>[0-9]{2}))?)?"
-    )  # NOQA
+        r"^(?P<year>[0-9]{4})-(?P<month>[0-9]{2})-(?P<day>[0-9]{2})( (?P<hour>[0-9]{2}):(?P<minute>[0-9]{2})(:(?P<second>[0-9]{2}))?)?"  # NOQA
+    )
 
     def __init__(self, time_object, context):
         self.time_object = time_object
@@ -14,8 +14,8 @@ class HTML5TimeTag:
             try:
                 time = self.TIME_FORMAT.search(self.time_object).groupdict()
 
-            except AttributeError:
-                raise ValueError("string doesnt match the time format")
+            except AttributeError as e:
+                raise ValueError("string doesnt match the time format") from e
 
             # datetime
             if len(time.keys()) == 3:

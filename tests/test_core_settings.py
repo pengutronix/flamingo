@@ -13,9 +13,7 @@ def test_overlaying_settings(run):
         with open(production_path, "w+") as f:
             f.write("b='production'")
 
-        returncode, output = run(
-            f"flamingo args -s {settings_path} {production_path} flamingo_test_package.settings"
-        )
+        returncode, output = run(f"flamingo args -s {settings_path} {production_path} flamingo_test_package.settings")
 
         assert returncode == 0
 

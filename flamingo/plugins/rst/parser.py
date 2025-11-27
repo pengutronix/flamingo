@@ -9,9 +9,9 @@ from docutils.writers.html4css1 import Writer
 from flamingo.core.parser import ParsingError
 
 SYSTEM_MESSAGE_RE = re.compile(
-    r"^(?P<name>[^:]+):(?P<line>\d+)?: \((?P<level_name>[^/)]+)/(?P<level>\d+)\) (?P<short_description>[^\t\n]+)(?P<long_description>.*)?$",
+    r"^(?P<name>[^:]+):(?P<line>\d+)?: \((?P<level_name>[^/)]+)/(?P<level>\d+)\) (?P<short_description>[^\t\n]+)(?P<long_description>.*)?$",  # NOQA
     re.DOTALL,
-)  # NOQA
+)
 logger = logging.getLogger("flamingo.plugins.reStructuredText")
 
 

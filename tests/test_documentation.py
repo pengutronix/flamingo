@@ -20,4 +20,5 @@ def test_documentation(run):
 
     assert returncode == 0
     assert os.path.exists("doc/output/index.html")
-    assert len(open("doc/output/index.html").read()) > 0
+    with open("doc/output/index.html") as fh:
+        assert len(fh.read()) > 0

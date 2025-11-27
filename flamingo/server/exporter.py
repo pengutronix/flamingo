@@ -293,7 +293,8 @@ class ContentExporter:
                 if not directory_exists:
                     return _404()
 
-                template = Template(open(DIRECTORY_LIST_HTML).read())
+                with open(DIRECTORY_LIST_HTML) as fh:
+                    template = Template(fh.read())
 
                 text = template.render(
                     path=request.path,

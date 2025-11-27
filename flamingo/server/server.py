@@ -313,7 +313,8 @@ class Server:
         self.await_unlock_sync()
 
         plugin_options = self.build_environment.context.plugins.get_options()
-        template = Template(open(PLUGIN_OPTIONS_HTML).read())
+        with open(PLUGIN_OPTIONS_HTML) as fh:
+            template = Template(fh.read())
 
         html = template.render(
             plugin_options=plugin_options,

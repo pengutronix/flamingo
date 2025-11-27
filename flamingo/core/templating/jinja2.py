@@ -230,7 +230,8 @@ class Jinja2(TemplatingEngine):
         context_lines = self.context.settings.JINJA2_TRACEBACKS_CONTEXT_LINES
         index = lineno - 1
 
-        lines = open(path).read().splitlines()
+        with open(path) as fh:
+            lines = fh.read().splitlines()
 
         context_lines_top = lines[index - context_lines : index]
         context_lines_bottom = lines[index + 1 : index + context_lines + 1]
@@ -330,12 +331,10 @@ class Jinja2(TemplatingEngine):
 
             stack = [i for i in stack if os.path.splitext(i[0])[1] != ".py"]
 
-        if isinstance(exception, TemplateSyntaxError):
+        if isinstance(exception, TemplateSyntaxError) and len(stack) > 1 and stack[0] == stack[-1]:
             # in case of a TemplateSyntaxError jinja2 adds the current
             # template to the traceback
-
-            if len(stack) > 1 and stack[0] == stack[-1]:
-                stack = stack[:-1]
+            stack = stack[:-1]
 
         template = self.error_env.get_template("error.html")
 
@@ -394,13 +393,10 @@ class Jinja2(TemplatingEngine):
             content_path = content["path"]
 
             if not content_path:
-                if content["original_path"]:  # I18N
-                    content_path = content["original_path"]
-
-                else:
-                    content_path = ""
-
-            name = f"{hashlib.md5(str(datetime.datetime.now()).encode()).hexdigest()}{os.path.splitext(content_path)[1]}"
+                content_path = content["original_path"] if content["original_path"] else ""  # I18N
+            name = (
+                f"{hashlib.md5(str(datetime.datetime.now()).encode()).hexdigest()}{os.path.splitext(content_path)[1]}"
+            )
 
             path = os.path.join(self.tempdir.name, name)
             self.contents[path] = content

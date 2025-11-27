@@ -439,8 +439,9 @@ class SphinxThemes:
                     content["path"],
                 )
 
-                context.contents.add(
-                    type="_source-file",
-                    output="_sources/{}".format(content["path"]),
-                    content_body=open(source_path).read(),
-                )
+                with open(source_path) as fh:
+                    context.contents.add(
+                        type="_source-file",
+                        output="_sources/{}".format(content["path"]),
+                        content_body=fh.read(),
+                    )

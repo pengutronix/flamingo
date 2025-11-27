@@ -52,11 +52,15 @@ class RPCHandler(logging.Handler):
         if self.internal_level and record.levelno < self.internal_level:
             return
 
-        # filter exceptions that flamingo server handles it self
-        if record.exc_info:
-            # OSErrors
-            if isinstance(record.exc_info[1], OSError) and record.exc_info[1].errno in (13, 98) or isinstance(record.exc_info[1], RuntimeError) and record.exc_info[1].args[0] == "Event loop is closed":
-                return
+        # filter exceptions that flamingo server handles itself
+        if (
+            record.exc_info
+            and isinstance(record.exc_info[1], OSError)
+            and record.exc_info[1].errno in (13, 98)
+            or isinstance(record.exc_info[1], RuntimeError)
+            and record.exc_info[1].args[0] == "Event loop is closed"
+        ):
+            return
 
         # add record to ring buffer
         time_stamp = datetime.fromtimestamp(record.created)

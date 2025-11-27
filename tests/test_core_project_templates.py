@@ -58,4 +58,5 @@ def test_project_template(template_name, run):
 
         assert returncode == 0
         assert os.path.exists(index_html)
-        assert len(open(index_html).read()) > 0
+        with open(index_html) as fh:
+            assert len(fh.read()) > 0

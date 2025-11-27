@@ -223,7 +223,6 @@ class DiscoveryWatcher(BaseWatcher):
                             os.path.getmtime(abs_path),
                         )
 
-
             # first run
             if first_run:
                 first_run = False
@@ -233,7 +232,7 @@ class DiscoveryWatcher(BaseWatcher):
                 continue
 
             # check for deleted files
-            for path, (flag, mtime) in self.state.items():
+            for path, (flag, _mtime) in self.state.items():
                 if path not in new_state:
                     events.append(
                         (

@@ -39,7 +39,8 @@ def code_block(context):
                     self.options["include"],
                 )
 
-                content += open(path).read()
+                with open(path) as fh:
+                    content += fh.read()
 
             try:
                 lexer = get_lexer_by_name(self.arguments[0]) if self.arguments else guess_lexer(content)

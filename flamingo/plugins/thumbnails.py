@@ -57,7 +57,8 @@ def hash_image(path, options):
     for k, v in options.items():
         stream += f"{k}={v},".encode()
 
-    stream += open(path, "rb").read()
+    with open(path, "rb") as fh:
+        stream += fh.read()
 
     return hashlib.md5(stream).hexdigest()
 

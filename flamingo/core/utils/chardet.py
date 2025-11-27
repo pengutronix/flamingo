@@ -6,11 +6,12 @@ _detector = UniversalDetector()
 def chardet_read(path):
     _detector.reset()
 
-    for line in open(path, "rb"):
-        _detector.feed(line)
+    with open(path, "rb") as fh:
+        for line in fh:
+            _detector.feed(line)
 
-        if _detector.done:
-            break
+            if _detector.done:
+                break
 
     if not _detector.done:
         return open(path).read()

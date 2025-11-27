@@ -29,7 +29,8 @@ class ContentParser:
             markup_string_end = len(meta_data_string.splitlines()) + 1
 
             raise ParsingError(
-                f"Invalid meta data at line 1 to {markup_string_end}. Meta data has to be valid YAML, defining a key value store"
+                f"Invalid meta data at line 1 to {markup_string_end}. "
+                "Meta data has to be valid YAML, defining a key value store"
             )
 
         # check for meta data
