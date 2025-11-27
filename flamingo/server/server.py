@@ -1,25 +1,23 @@
+import logging
+import os
+import types
 from asyncio import Future, run_coroutine_threadsafe
 from concurrent.futures import ThreadPoolExecutor
-import logging
-import types
-import os
 
+import rlpython
 from aiohttp.web import FileResponse, Response
 from jinja2 import Template
-import rlpython
 
-from flamingo.server.frontend_controller import FrontendController
-from flamingo.server.build_environment import BuildEnvironment
-from flamingo.server.watcher import DiscoveryWatcher, Flags
-from flamingo.core.types import OverlayDict, OverlayList
-from flamingo.server.exporter import ContentExporter
-from flamingo.core.utils.aiohttp import no_cache
-from flamingo.core.data_model import QUOTE_KEYS
-from flamingo.core.utils.pprint import pformat
-from flamingo.server.exporter import History
+from flamingo.core.data_model import QUOTE_KEYS, Q
 from flamingo.core.settings import Settings
+from flamingo.core.types import OverlayDict, OverlayList
+from flamingo.core.utils.aiohttp import no_cache
+from flamingo.core.utils.pprint import pformat
+from flamingo.server.build_environment import BuildEnvironment
+from flamingo.server.exporter import ContentExporter, History
+from flamingo.server.frontend_controller import FrontendController
 from flamingo.server.rpc import JsonRpc
-from flamingo.core.data_model import Q
+from flamingo.server.watcher import DiscoveryWatcher, Flags
 
 TEMPLATE_ROOT = os.path.join(os.path.dirname(__file__), "templates")
 STATIC_ROOT = os.path.join(os.path.dirname(__file__), "static")
@@ -313,7 +311,7 @@ class Server:
         self.await_unlock_sync()
 
         plugin_options = self.build_environment.context.plugins.get_options()
-        template = Template(open(PLUGIN_OPTIONS_HTML, "r").read())
+        template = Template(open(PLUGIN_OPTIONS_HTML).read())
 
         html = template.render(
             plugin_options=plugin_options,
@@ -495,7 +493,7 @@ class Server:
 
                 self.rpc.notify(
                     "messages",
-                    '<span class="important">{}</span> modified'.format(path),
+                    f'<span class="important">{path}</span> modified',
                 )
 
         if code_event:
@@ -549,7 +547,7 @@ class Server:
 
             self.rpc.notify(
                 "messages",
-                '<span class="important">{}</span> {}'.format(path, action),
+                f'<span class="important">{path}</span> {action}',
             )
 
         # rebuild

@@ -1,5 +1,5 @@
-from docutils.parsers.rst import Directive, directives
 from docutils.nodes import raw
+from docutils.parsers.rst import Directive, directives
 
 from flamingo.plugins.rst.parser import parse_rst
 

@@ -1,25 +1,24 @@
-import traceback
-import datetime
-import tempfile
-import hashlib
-import logging
 import code
+import datetime
+import hashlib
 import html
+import logging
 import os
+import tempfile
+import traceback
 
-from jinja2 import Environment, FileSystemLoader, pass_context
-from jinja2 import TemplateNotFound, TemplateSyntaxError
+from jinja2 import Environment, FileSystemLoader, TemplateNotFound, TemplateSyntaxError, pass_context
 
+from flamingo import THEME_ROOT
 from flamingo.core.templating.base import TemplatingEngine
 from flamingo.core.utils.imports import acquire
 from flamingo.core.utils.pprint import pformat
-from flamingo import THEME_ROOT
 
 try:
+    from pygments import highlight as pygments_highlight
     from pygments.formatters import HtmlFormatter
     from pygments.lexers import get_lexer_by_name, get_lexer_for_filename
     from pygments.util import ClassNotFound
-    from pygments import highlight as pygments_highlight
 
     PYGMENTS = True
 
@@ -141,7 +140,7 @@ def link(
     content = context["context"].resolve_content_path(path, content=current_content)
 
     if not content:
-        return _link_error("can not resolve link target '{}'".format(path))
+        return _link_error(f"can not resolve link target '{path}'")
 
     # translate link
     if i18n and ("flamingo.plugins.I18N" in context["context"].settings.PLUGINS):
@@ -159,7 +158,7 @@ def link(
         name = name or content["title"] or content["content_title"]
 
     if name:
-        return '<a href="{}">{}</a>'.format(target, name)
+        return f'<a href="{target}">{name}</a>'
 
     return target
 
@@ -231,7 +230,7 @@ class Jinja2(TemplatingEngine):
         context_lines = self.context.settings.JINJA2_TRACEBACKS_CONTEXT_LINES
         index = lineno - 1
 
-        lines = open(path, "r").read().splitlines()
+        lines = open(path).read().splitlines()
 
         context_lines_top = lines[index - context_lines : index]
         context_lines_bottom = lines[index + 1 : index + context_lines + 1]
@@ -401,10 +400,7 @@ class Jinja2(TemplatingEngine):
                 else:
                     content_path = ""
 
-            name = "{}{}".format(
-                hashlib.md5(str(datetime.datetime.now()).encode()).hexdigest(),
-                os.path.splitext(content_path)[1],
-            )
+            name = f"{hashlib.md5(str(datetime.datetime.now()).encode()).hexdigest()}{os.path.splitext(content_path)[1]}"
 
             path = os.path.join(self.tempdir.name, name)
             self.contents[path] = content

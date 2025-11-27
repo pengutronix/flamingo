@@ -1,7 +1,7 @@
 import re
 
-from docutils.parsers.rst import directives
 from docutils.nodes import raw
+from docutils.parsers.rst import directives
 
 from flamingo.plugins.rst import NestedDirective, register_directive
 
@@ -43,13 +43,13 @@ def _gen_directives(context):
             except Exception:
                 pass
 
-            raise ValueError("'{}' is no valid Bootstrap3 col".format(argument))
+            raise ValueError(f"'{argument}' is no valid Bootstrap3 col")
 
         def run(self):
             nodes = super().run(context)
             aspect, size = self.parse_argument(self.arguments[0])
 
-            nodes.insert(0, raw("", '<div class="col-{}-{}">'.format(aspect, size), format="html"))
+            nodes.insert(0, raw("", f'<div class="col-{aspect}-{size}">', format="html"))
 
             nodes.append(raw("", '<div class="clearfix"></div></div>', format="html"))
 
@@ -110,7 +110,7 @@ def _gen_directives(context):
                 raise ValueError("'{}' is no valid alert type ({})".format(alert_type, ", ".join(valid_alert_types)))
 
             return [
-                raw("", '<div class="alert alert-{}" role="alert">'.format(alert_type), format="html"),
+                raw("", f'<div class="alert alert-{alert_type}" role="alert">', format="html"),
                 *super().run(context),
                 raw("", "</div>", format="html"),
             ]

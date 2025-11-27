@@ -1,6 +1,6 @@
 import re
 
-from docutils.parsers.rst import roles, directives
+from docutils.parsers.rst import directives, roles
 
 ROLE_RE = re.compile(r"^(?P<arg0>[^<]+)((\s+)?<(?P<arg1>[^>]+)>)?((\s+)?(?P<options>.*))?$")  # NOQA
 ROLE_OPTIONS_RE = re.compile(r"((?P<name>[^=]+)=(?P<value>[^\s,]+)([\s,]+)?)")

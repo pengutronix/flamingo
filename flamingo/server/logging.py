@@ -1,8 +1,8 @@
-from traceback import format_exception
-from datetime import datetime
-from textwrap import indent
 import hashlib
 import logging
+from datetime import datetime
+from textwrap import indent
+from traceback import format_exception
 
 from flamingo.core.utils.cli import color
 
@@ -55,11 +55,7 @@ class RPCHandler(logging.Handler):
         # filter exceptions that flamingo server handles it self
         if record.exc_info:
             # OSErrors
-            if isinstance(record.exc_info[1], OSError) and record.exc_info[1].errno in (13, 98):
-                return
-
-            # event loop exceptions
-            elif isinstance(record.exc_info[1], RuntimeError) and record.exc_info[1].args[0] == "Event loop is closed":
+            if isinstance(record.exc_info[1], OSError) and record.exc_info[1].errno in (13, 98) or isinstance(record.exc_info[1], RuntimeError) and record.exc_info[1].args[0] == "Event loop is closed":
                 return
 
         # add record to ring buffer

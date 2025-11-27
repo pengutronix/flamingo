@@ -1,10 +1,10 @@
 import logging
 import re
 
-from docutils.writers.html4css1 import Writer
-from docutils.utils import SystemMessage
 from docutils.core import publish_parts
 from docutils.nodes import title
+from docutils.utils import SystemMessage
+from docutils.writers.html4css1 import Writer
 
 from flamingo.core.parser import ParsingError
 

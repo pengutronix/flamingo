@@ -1,8 +1,8 @@
 import logging
 import re
 
-from docutils.parsers.rst import Directive, directives
 from docutils.nodes import raw
+from docutils.parsers.rst import Directive, directives
 
 from flamingo.plugins.rst import register_directive
 

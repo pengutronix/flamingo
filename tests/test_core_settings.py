@@ -1,7 +1,7 @@
 def test_overlaying_settings(run):
-    from tempfile import TemporaryDirectory
     import json
     import os
+    from tempfile import TemporaryDirectory
 
     with TemporaryDirectory() as tmp_dir:
         settings_path = os.path.join(tmp_dir, "settings.py")
@@ -14,10 +14,7 @@ def test_overlaying_settings(run):
             f.write("b='production'")
 
         returncode, output = run(
-            "flamingo args -s {} {} flamingo_test_package.settings".format(
-                settings_path,
-                production_path,
-            )
+            f"flamingo args -s {settings_path} {production_path} flamingo_test_package.settings"
         )
 
         assert returncode == 0

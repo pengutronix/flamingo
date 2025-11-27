@@ -1,15 +1,14 @@
-from tempfile import TemporaryDirectory
 import os
+from tempfile import TemporaryDirectory
 
-from docutils.parsers.rst import Directive, directives
 from docutils.nodes import raw
-
+from docutils.parsers.rst import Directive, directives
+from pygments import highlight
+from pygments.formatters import HtmlFormatter
 from pygments.lexers import get_lexer_by_name, guess_lexer
 from pygments.styles import get_all_styles, get_style_by_name
-from pygments.formatters import HtmlFormatter
-from pygments.util import ClassNotFound
 from pygments.token import Token
-from pygments import highlight
+from pygments.util import ClassNotFound
 
 from flamingo.plugins.rst import register_directive
 
@@ -40,7 +39,7 @@ def code_block(context):
                     self.options["include"],
                 )
 
-                content += open(path, "r").read()
+                content += open(path).read()
 
             try:
                 if self.arguments:

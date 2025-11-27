@@ -1,20 +1,19 @@
-from tempfile import TemporaryDirectory
-from copy import deepcopy
-import logging
 import json
+import logging
 import os
+from copy import deepcopy
+from tempfile import TemporaryDirectory
 
-from jinja2 import pass_context
 from bs4 import BeautifulSoup
-
-from sphinx.jinja2glue import _tobool, _todim, _toint, accesskey
+from jinja2 import pass_context
 from sphinx import version_info as sphinx_version_info
+from sphinx.jinja2glue import _tobool, _todim, _toint, accesskey
 
-from flamingo.plugins.menu.menu import Section
 from flamingo import Content
+from flamingo.plugins.menu.menu import Section
 
-from .sphinx_theme import SphinxTheme
 from . import defaults
+from .sphinx_theme import SphinxTheme
 
 logger = logging.getLogger("flamingo.plugins.SphinxThemes")
 
@@ -376,10 +375,10 @@ class SphinxThemes:
         return string
 
     def css_tag(self, static_file):
-        return '<link rel="stylesheet" href="{}" type="text/css" />'.format(static_file.filename)
+        return f'<link rel="stylesheet" href="{static_file.filename}" type="text/css" />'
 
     def js_tag(self, static_file):
-        return '<script src="{}"></script>'.format(static_file.filename)
+        return f'<script src="{static_file.filename}"></script>'
 
     def pathto(self, otheruri, *args, **kwargs):
         if otheruri == "search":
@@ -446,5 +445,5 @@ class SphinxThemes:
                 context.contents.add(
                     type="_source-file",
                     output="_sources/{}".format(content["path"]),
-                    content_body=open(source_path, "r").read(),
+                    content_body=open(source_path).read(),
                 )

@@ -1,8 +1,8 @@
-from bs4 import BeautifulSoup
 import markdown
+from bs4 import BeautifulSoup
 
-from flamingo.core.utils.html import extract_title, process_media_links
 from flamingo.core.parser import ContentParser
+from flamingo.core.utils.html import extract_title, process_media_links
 
 
 class MarkdownParser(ContentParser):

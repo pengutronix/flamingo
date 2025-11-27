@@ -1,6 +1,6 @@
-from argparse import ArgumentParser, RawTextHelpFormatter
-import subprocess
 import logging
+import subprocess
+from argparse import ArgumentParser, RawTextHelpFormatter
 
 try:
     import coloredlogs
@@ -10,12 +10,12 @@ try:
 except ImportError:  # pragma: no cover
     COLOREDLOGS = False
 
-from flamingo.core.settings import Settings
 import flamingo
+from flamingo.core.settings import Settings
 
 logger = logging.getLogger("flamingo")
 
-VERSION = "v{}".format(flamingo.VERSION_STRING)
+VERSION = f"v{flamingo.VERSION_STRING}"
 DESCRIPTION_HEADER = r"""
   _        __ _                 _
  ^-)      / _| |               (_)
@@ -65,7 +65,7 @@ def color(string, color="", background="", style="", reset=True):
         }[color]
 
         if style:
-            color = ";{}".format(color)
+            color = f";{color}"
 
     if background:
         background = {
@@ -80,15 +80,9 @@ def color(string, color="", background="", style="", reset=True):
         }[background]
 
         if color:
-            background = ";{}".format(background)
+            background = f";{background}"
 
-    return "\033[{}{}{}m{}{}".format(
-        style,
-        color,
-        background,
-        string,
-        reset_string,
-    )
+    return f"\033[{style}{color}{background}m{string}{reset_string}"
 
 
 def success(string):
@@ -108,7 +102,7 @@ def critical(string):
 
 
 def get_raw_parser(*parser_args, description="", **parser_kwargs):
-    description = "{}\n{}".format(DESCRIPTION_HEADER, description)
+    description = f"{DESCRIPTION_HEADER}\n{description}"
 
     parser = ArgumentParser(
         *parser_args, description=description, formatter_class=RawTextHelpFormatter, **parser_kwargs
@@ -172,7 +166,7 @@ def parse_args(parser=None, setup_logging=True):
                 settings.add(module)
 
             except ImportError:
-                exit("import error: {}".format(module))
+                exit(f"import error: {module}")
 
     # content
     if namespace.content_root:
@@ -186,9 +180,9 @@ def parse_args(parser=None, setup_logging=True):
 
 def start_editor(path):
     command = [
-        """
-        $((test -n "$EDITOR" && echo $EDITOR) || which vim || which nano) {}
-    """.format(path)
+        f"""
+        $((test -n "$EDITOR" && echo $EDITOR) || which vim || which nano) {path}
+    """
     ]
 
     subprocess.run(command, shell=True, executable="/bin/bash")

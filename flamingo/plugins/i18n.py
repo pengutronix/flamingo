@@ -72,6 +72,6 @@ class I18N:
                     "output": "index.html",
                     "url": "/",
                     "content_body": INDEX_PAGE.format(default_language),
-                    "redirect": "/{}/".format(default_language),
+                    "redirect": f"/{default_language}/",
                 }
             )

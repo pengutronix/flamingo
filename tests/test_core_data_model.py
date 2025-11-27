@@ -55,7 +55,7 @@ def test_not():
 
 
 def test_f():
-    from flamingo.core.data_model import Content, Q, F
+    from flamingo.core.data_model import Content, F, Q
 
     q = Q(a=F("b"))
 
@@ -182,7 +182,6 @@ def test_in():
 
 def test_ContentSet_get():
     from flamingo.core.data_model import ContentSet
-
     from flamingo.core.errors import (
         MultipleObjectsReturned,
         ObjectDoesNotExist,
@@ -276,7 +275,7 @@ def test_order_by():
 
 
 def test_add():
-    from flamingo.core.data_model import ContentSet, Content
+    from flamingo.core.data_model import Content, ContentSet
 
     cs = ContentSet()
     c1 = Content(a=1)
@@ -294,7 +293,7 @@ def test_add():
 
 
 def test_iadd():
-    from flamingo.core.data_model import ContentSet, Content
+    from flamingo.core.data_model import Content, ContentSet
 
     cs = ContentSet()
     c1 = Content(a=1)
@@ -312,7 +311,7 @@ def test_iadd():
 
 
 def test_sub():
-    from flamingo.core.data_model import ContentSet, Content
+    from flamingo.core.data_model import Content, ContentSet
 
     cs = ContentSet()
     c1 = Content(a=1)
@@ -331,7 +330,7 @@ def test_sub():
 
 
 def test_isub():
-    from flamingo.core.data_model import ContentSet, Content
+    from flamingo.core.data_model import Content, ContentSet
 
     cs = ContentSet()
     c1 = Content(a=1)
@@ -350,8 +349,9 @@ def test_isub():
 
 
 def test_copy():
-    from flamingo.core.data_model import ContentSet
     from copy import deepcopy
+
+    from flamingo.core.data_model import ContentSet
 
     cs1 = ContentSet()
     cs1.add(a=1)

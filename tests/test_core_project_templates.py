@@ -19,9 +19,9 @@ def get_project_templates():
 
 @pytest.mark.parametrize("template_name", get_project_templates())
 def test_project_template(template_name, run):
-    from tempfile import TemporaryDirectory
-    import sys
     import os
+    import sys
+    from tempfile import TemporaryDirectory
 
     if not os.environ.get("EXTENDED_BUILD_TESTS", ""):
         pytest.skip("EXTENDED_BUILD_TESTS is disabled")
@@ -30,11 +30,11 @@ def test_project_template(template_name, run):
 
     with TemporaryDirectory() as tmp_dir:
         # setup environment
-        executable = "python{}.{}".format(sys.version_info.major, sys.version_info.minor)
+        executable = f"python{sys.version_info.major}.{sys.version_info.minor}"
 
         package = os.environ["TOX_PACKAGE"]
 
-        command = """
+        command = f"""
              {executable} -m venv bootstrap_env && \
              source bootstrap_env/bin/activate && \
              bootstrap_env/bin/pip install {package} && \
@@ -43,12 +43,7 @@ def test_project_template(template_name, run):
                 "wobsite" \
                 python_version="{executable}" \
                 flamingo_path="{flamingo_path}" \
-        """.format(
-            executable=executable,
-            package=package,
-            template_name=template_name,
-            flamingo_path=flamingo_path,
-        ).strip()
+        """.strip()
 
         returncode, output = run(command, cwd=tmp_dir, clean_env=True)
         project_root = os.path.join(tmp_dir, "wobsite")
@@ -63,4 +58,4 @@ def test_project_template(template_name, run):
 
         assert returncode == 0
         assert os.path.exists(index_html)
-        assert len(open(index_html, "r").read()) > 0
+        assert len(open(index_html).read()) > 0

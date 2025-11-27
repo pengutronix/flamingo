@@ -1,6 +1,6 @@
-from textwrap import dedent
 import os
 import re
+from textwrap import dedent
 
 from yaml import safe_load
 
@@ -11,7 +11,7 @@ DELIMITER_RE = re.compile(r"((\s+)?\n){3,}")
 
 
 def plain_read(path):
-    return open(path, "r").read()
+    return open(path).read()
 
 
 class ParsingError(FlamingoError):
@@ -29,9 +29,7 @@ class ContentParser:
             markup_string_end = len(meta_data_string.splitlines()) + 1
 
             raise ParsingError(
-                "Invalid meta data at line 1 to {}. Meta data has to be valid YAML, defining a key value store".format(
-                    markup_string_end
-                )
+                f"Invalid meta data at line 1 to {markup_string_end}. Meta data has to be valid YAML, defining a key value store"
             )
 
         # check for meta data
@@ -123,7 +121,7 @@ class FileParser:
         parser = self.find_parser(extension)
 
         if not parser:
-            raise ParsingError("file extension '{}' is not supported".format(extension))
+            raise ParsingError(f"file extension '{extension}' is not supported")
 
         file_content = self.read(path)
 

@@ -1,6 +1,6 @@
 def test_add_media(flamingo_dummy_context, flamingo_env):
-    from flamingo.core.plugins.media import add_media
     from flamingo.core.data_model import Content
+    from flamingo.core.plugins.media import add_media
 
     # relative path
     content = Content(path="foo/bar/index.rst")

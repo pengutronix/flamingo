@@ -1,11 +1,11 @@
-from functools import partial
-import contextlib
 import asyncio
-import logging
+import contextlib
 import json
+import logging
+from functools import partial
 
-from aiohttp.web import WebSocketResponse, Response
 from aiohttp import WSMsgType
+from aiohttp.web import Response, WebSocketResponse
 
 logger = logging.getLogger("flamingo.server.jsonrpc")
 

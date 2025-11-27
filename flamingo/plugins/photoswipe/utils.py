@@ -25,7 +25,7 @@ def calc_width(context, media_content):
     height_percentage = (height / original_height) * 100
     width = original_width * (height_percentage / 100)
 
-    return "{}px".format(width)
+    return f"{width}px"
 
 
 def add_unit(value):
@@ -53,7 +53,7 @@ def add_unit(value):
         if value.endswith(unit):
             return value
 
-    return "{}px".format(value)
+    return f"{value}px"
 
 
 def load_builtin(name):

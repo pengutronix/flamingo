@@ -1,9 +1,10 @@
-from copy import deepcopy
 import importlib
 import runpy
+from copy import deepcopy
+
+from flamingo.core.types import OverlayObject
 
 from . import defaults
-from flamingo.core.types import OverlayObject
 
 
 class Settings(OverlayObject):

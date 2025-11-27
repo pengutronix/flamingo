@@ -1,17 +1,17 @@
-from subprocess import check_output, CalledProcessError, STDOUT
-from tempfile import TemporaryDirectory
+import asyncio
 import logging
 import os
-import asyncio
+from subprocess import STDOUT, CalledProcessError, check_output
+from tempfile import TemporaryDirectory
 
-from aiohttp.web import Application
 import pytest
+from aiohttp.web import Application
 
-from flamingo.core.data_model import ContentSet, Content
-from flamingo.server.logging import RPCHandler
-from flamingo.core.settings import Settings
-from flamingo.server.server import Server
 from flamingo.core.context import Context
+from flamingo.core.data_model import Content, ContentSet
+from flamingo.core.settings import Settings
+from flamingo.server.logging import RPCHandler
+from flamingo.server.server import Server
 
 
 class FlamingoDummyContext(Context):

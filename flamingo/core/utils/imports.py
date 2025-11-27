@@ -1,7 +1,7 @@
 import importlib
 import inspect
-import runpy
 import re
+import runpy
 
 SCRIPT_RE = re.compile(r"^[^:]+::[a-zA-Z0-9_]+$")
 MODULE_RE = re.compile(r"^[a-zA-Z0-9_.]+$")
@@ -41,13 +41,13 @@ def acquire(item, types=None):
             values = runpy.run_path(script)
 
             if attr_name not in values:
-                raise ImportError("script '{}' has no attribute '{}'".format(script, attr_name))
+                raise ImportError(f"script '{script}' has no attribute '{attr_name}'")
 
             item = values[attr_name]
             path = script
 
         else:
-            raise ValueError("invalid import string '{}'".format(item))
+            raise ValueError(f"invalid import string '{item}'")
 
     if types and not isinstance(item, types):
         raise ValueError(

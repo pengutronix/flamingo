@@ -58,8 +58,8 @@ def test_vcs():
     This test checks if all source code files in flamingo/ are part of the vcs.
     """
 
-    from subprocess import check_output
     import os
+    from subprocess import check_output
 
     import pytest
 

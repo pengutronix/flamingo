@@ -1,11 +1,11 @@
-from functools import partial
-from copy import deepcopy
 import asyncio
 import logging
 import os
+from copy import deepcopy
+from functools import partial
 
-from flamingo.core.utils.cli import start_editor
 from flamingo.core.context import Context
+from flamingo.core.utils.cli import start_editor
 
 logger = logging.getLogger("flamingo.server.BuildEnvironment")
 

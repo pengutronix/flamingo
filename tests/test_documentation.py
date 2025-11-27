@@ -1,7 +1,8 @@
 def test_documentation(run):
-    import pytest
-    import sys
     import os
+    import sys
+
+    import pytest
 
     if not os.environ.get("EXTENDED_BUILD_TESTS", ""):
         pytest.skip("EXTENDED_BUILD_TESTS is disabled")
@@ -19,4 +20,4 @@ def test_documentation(run):
 
     assert returncode == 0
     assert os.path.exists("doc/output/index.html")
-    assert len(open("doc/output/index.html", "r").read()) > 0
+    assert len(open("doc/output/index.html").read()) > 0

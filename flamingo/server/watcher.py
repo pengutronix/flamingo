@@ -1,7 +1,7 @@
-from enum import Enum
-from copy import copy
-import time
 import os
+import time
+from copy import copy
+from enum import Enum
 
 
 class Flags(Enum):

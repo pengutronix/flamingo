@@ -38,12 +38,12 @@ LOGIC_FUNCTIONS = {
 
 def quote(value):
     types = {
-        str: lambda v: "<str({})>".format(len(v)),
-        list: lambda v: "<list({})>".format(len(v)),
-        tuple: lambda v: "<tuple({})>".format(len(v)),
+        str: lambda v: f"<str({len(v)})>",
+        list: lambda v: f"<list({len(v)})>",
+        tuple: lambda v: f"<tuple({len(v)})>",
         dict: "<dict(...)>",
         Content: "<Content(...)>",
-        ContentSet: lambda v: "<ContentSet({})>".format(len(v)),
+        ContentSet: lambda v: f"<ContentSet({len(v)})>",
     }
 
     t = type(value)
@@ -66,7 +66,7 @@ class F:
         self.name = name
 
     def __repr__(self):
-        return "F('{}')".format(self.name)
+        return f"F('{self.name}')"
 
 
 class Lookup:
@@ -78,7 +78,7 @@ class Lookup:
             field_name, logic_function = field_name.split("__")
 
         if logic_function not in LOGIC_FUNCTIONS:
-            raise ValueError("unknown logic function '{}'".format(logic_function))
+            raise ValueError(f"unknown logic function '{logic_function}'")
 
         self.name = name
         self.field_name = field_name
@@ -129,7 +129,7 @@ class Q:
             repr_str = ", ".join([repr(q) for q in self.qs])
 
         elif self.lookups:
-            repr_str = ", ".join(["{}={}".format(i.name, repr(i.value)) for i in self.lookups])
+            repr_str = ", ".join([f"{i.name}={repr(i.value)}" for i in self.lookups])
 
         return "<{}{}({})>".format(
             "NOT " if self.negated else "",
@@ -203,17 +203,17 @@ class Content:
 
         for k, v in self.data.items():
             if k in QUOTE_KEYS:
-                repr_string.append("{}={}".format(k, quote(v)))
+                repr_string.append(f"{k}={quote(v)}")
 
             elif isinstance(v, (Content, ContentSet)):
                 if v in recursion_stack:
-                    repr_string.append("{}={}".format(k, quote(v)))
+                    repr_string.append(f"{k}={quote(v)}")
 
                 else:
-                    repr_string.append("{}={}".format(k, v.__repr__(pretty=pretty, recursion_stack=recursion_stack)))
+                    repr_string.append(f"{k}={v.__repr__(pretty=pretty, recursion_stack=recursion_stack)}")
 
             else:
-                repr_string.append("{}={}".format(k, repr(v)))
+                repr_string.append(f"{k}={repr(v)}")
 
         return "<Content({})>".format(", ".join(repr_string))
 

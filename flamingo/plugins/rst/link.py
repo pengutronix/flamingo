@@ -1,9 +1,9 @@
-from urllib.parse import urlparse
 import os
+from urllib.parse import urlparse
 
 from docutils.nodes import raw
 
-from .utils import parse_role_text, parse_bool, register_canonical_role
+from .utils import parse_bool, parse_role_text, register_canonical_role
 
 
 class LinkRole:
@@ -52,7 +52,7 @@ class LinkRole:
             if not name:
                 name = target
 
-            return [raw("", '<a href="{}">{}</a>'.format(target, name), format="html")], []
+            return [raw("", f'<a href="{target}">{name}</a>', format="html")], []
 
         # handle media files (downloads)
         if self.is_media_target(target):
@@ -89,7 +89,7 @@ class LinkRole:
             raw(
                 "",
                 "{{{{ link(path='{}', name='{}', {}) }}}}".format(
-                    target, name, ", ".join(["{}={}".format(k, repr(v)) for k, v in options.items()])
+                    target, name, ", ".join([f"{k}={repr(v)}" for k, v in options.items()])
                 ),
                 format="html",
             )

@@ -13,6 +13,6 @@ def chardet_read(path):
             break
 
     if not _detector.done:
-        return open(path, "r").read()
+        return open(path).read()
 
-    return open(path, "r", encoding=_detector.result()["encoding"]).read()
+    return open(path, encoding=_detector.result()["encoding"]).read()

@@ -1,6 +1,6 @@
 import os
 
-from flamingo.core.utils.string import split, slugify
+from flamingo.core.utils.string import slugify, split
 
 
 class Authors:
@@ -20,11 +20,11 @@ class Authors:
 
         # gen author pages
         for author in authors:
-            output = os.path.join("authors/{}.html".format(slugify(author)))
+            output = os.path.join(f"authors/{slugify(author)}.html")
 
             context.contents.add(
                 **{
-                    content_key: "_author/{}".format(author),
+                    content_key: f"_author/{author}",
                     "output": output,
                     "url": "/" + output,
                     "author": author,

@@ -1,14 +1,12 @@
 import logging
 
-from docutils.parsers.rst import Directive, directives
-from docutils.nodes import raw
-
 from bs4 import BeautifulSoup
+from docutils.nodes import raw
+from docutils.parsers.rst import Directive, directives
 
-from flamingo.core.utils.html import get_section_by_title, TitleNotFoundError
-from flamingo.plugins.rst import register_directive, parse_rst
 from flamingo.core.errors import ObjectDoesNotExist
-
+from flamingo.core.utils.html import TitleNotFoundError, get_section_by_title
+from flamingo.plugins.rst import parse_rst, register_directive
 
 logger = logging.getLogger("flamingo.plugins.rst.parser.include")
 
@@ -38,9 +36,7 @@ def generate_directives(context):
         has_content = True
 
         def run(self):
-            content = '<div class="section" id="{}">{}</div>'.format(
-                self.arguments[0], parse_rst(self.content, context)
-            )
+            content = f'<div class="section" id="{self.arguments[0]}">{parse_rst(self.content, context)}</div>'
 
             return [
                 raw("", content, format="html"),

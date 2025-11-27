@@ -2,11 +2,10 @@ import logging
 
 from docutils.nodes import system_message
 
-from flamingo.plugins.rst.parser import parse_rst_parts
-from flamingo.plugins.rst.directives import Container
-from flamingo.plugins.rst import register_directive
 from flamingo.core.parser import ContentParser
-
+from flamingo.plugins.rst import register_directive
+from flamingo.plugins.rst.directives import Container
+from flamingo.plugins.rst.parser import parse_rst_parts
 
 logger = logging.getLogger("flamingo.plugins.reStructuredText")
 
@@ -64,11 +63,7 @@ class reStructuredText:
 
         def remove_system_messages(children, removed):
             for child in children[::]:
-                if isinstance(child, system_message):
-                    children.remove(child)
-                    removed[0] += 1
-
-                elif (
+                if isinstance(child, system_message) or (
                     hasattr(child, "attributes")
                     and "classes" in child.attributes
                     and "system-messages" in child.attributes["classes"]

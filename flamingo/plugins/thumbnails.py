@@ -1,8 +1,8 @@
-from collections import OrderedDict
 import hashlib
 import logging
-import re
 import os
+import re
+from collections import OrderedDict
 
 try:
     from docutils.parsers.rst import directives
@@ -12,7 +12,8 @@ try:
 except ImportError:
     RST = False
 
-from PIL import Image as PillowImage, UnidentifiedImageError
+from PIL import Image as PillowImage
+from PIL import UnidentifiedImageError
 
 from flamingo.core.data_model import Content
 
@@ -54,7 +55,7 @@ def hash_image(path, options):
     stream = b""
 
     for k, v in options.items():
-        stream += "{}={},".format(k, v).encode()
+        stream += f"{k}={v},".encode()
 
     stream += open(path, "rb").read()
 
@@ -181,14 +182,10 @@ class Thumbnails:
 
         thumbnail_path = os.path.join(
             getattr(context.settings, "THUMBNAIL_CACHE", DEFAULT_THUMBNAIL_CACHE),
-            "{}{}".format(image_hash, image_extension),
+            f"{image_hash}{image_extension}",
         )
 
-        thumbnail_output = "{}.thumb.{}{}".format(
-            image_name,
-            image_hash,
-            image_extension,
-        )
+        thumbnail_output = f"{image_name}.thumb.{image_hash}{image_extension}"
 
         thumbnail_url = "/" + thumbnail_output
 

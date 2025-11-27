@@ -1,9 +1,9 @@
 # The code in this module is mostly copied from pythons pprint module and
 # modified slightly to add support for flamingos internal types
 
-from pprint import PrettyPrinter, _safe_tuple, _recursion, _builtin_scalars
+from pprint import PrettyPrinter, _builtin_scalars, _recursion, _safe_tuple
 
-from flamingo.core.data_model import Content, ContentSet, QUOTE_KEYS, quote
+from flamingo.core.data_model import QUOTE_KEYS, Content, ContentSet, quote
 
 
 def _safe_repr(object, context, maxlevels, level):

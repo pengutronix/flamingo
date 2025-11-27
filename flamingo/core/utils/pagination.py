@@ -4,7 +4,7 @@ def paginate(objects, context):
 
     """
 
-    DEFAULT_PAGINATION = getattr(context.settings, "DEFAULT_PAGINATION")
+    DEFAULT_PAGINATION = context.settings.DEFAULT_PAGINATION
     object_count = len(objects)
 
     if object_count > DEFAULT_PAGINATION:

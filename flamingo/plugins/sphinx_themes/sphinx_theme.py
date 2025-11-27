@@ -13,7 +13,6 @@ from sphinx.jinja2glue import _tobool, _todim, _toint
 from sphinx.registry import SphinxComponentRegistry
 from sphinx.theming import HTMLThemeFactory, Theme
 
-
 SPHINX_THEME_ROOT = os.path.join(os.path.dirname(sphinx.__file__), "themes")
 
 logger = logging.getLogger("flamingo.plugins.SphinxThemes")
@@ -124,7 +123,7 @@ class SphinxThemeConfig:
         options = {}
 
         for raw_option_name, value in raw_options.items():
-            option_name = "theme_{}".format(raw_option_name)
+            option_name = f"theme_{raw_option_name}"
             options[option_name] = value
 
         return options
@@ -140,7 +139,7 @@ class SphinxTheme:
         if name not in self.app.registry.html_themes:
             raise SphinxThemeNotFoundError(
                 "sphinx theme '{}' not found. available themes: {}".format(
-                    name, ", ".join(["'{}'".format(i) for i in self.app.registry.html_themes.keys()])
+                    name, ", ".join([f"'{i}'" for i in self.app.registry.html_themes.keys()])
                 )
             )
 
@@ -275,4 +274,4 @@ class SphinxTheme:
                     continue
 
     def __repr__(self):
-        return "<SphinxTheme('{}', {})>".format(self.name, self.build_dir)
+        return f"<SphinxTheme('{self.name}', {self.build_dir})>"

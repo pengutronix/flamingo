@@ -1,16 +1,16 @@
 import logging
-import shutil
 import os
+import shutil
 import warnings
 
 import bs4
 
-from flamingo.core.data_model import ContentSet, AND, NOT, OR, Q, F
-from flamingo.core.plugins.plugin_manager import PluginManager
+from flamingo.core.data_model import AND, NOT, OR, ContentSet, F, Q
 from flamingo.core.parser import FileParser, ParsingError
 from flamingo.core.plugins.media import add_media
-from flamingo.core.utils.imports import acquire
+from flamingo.core.plugins.plugin_manager import PluginManager
 from flamingo.core.types import OverlayObject
+from flamingo.core.utils.imports import acquire
 
 
 class Context(OverlayObject):

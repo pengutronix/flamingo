@@ -1,8 +1,8 @@
 def test_rst_parsing(flamingo_dummy_context):
     import re
 
-    from flamingo.plugins.rst.plugin import RSTParser
     from flamingo import Content
+    from flamingo.plugins.rst.plugin import RSTParser
 
     raw_content = """
 title: foo
@@ -29,8 +29,8 @@ def test_error_line_number(flamingo_dummy_context):
     import pytest
 
     from flamingo.plugins.rst import (
-        reStructuredTextError,
         parse_rst_parts,
+        reStructuredTextError,
     )
 
     # one liner
@@ -92,8 +92,8 @@ def test_error_while_parsing_error(flamingo_dummy_context):
     import pytest
 
     from flamingo.plugins.rst import (
-        reStructuredTextError,
         parse_rst_parts,
+        reStructuredTextError,
     )
 
     with pytest.raises(reStructuredTextError) as exc_info:

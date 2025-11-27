@@ -1,6 +1,6 @@
+import logging
 import subprocess
 from shlex import split
-import logging
 
 logger = logging.getLogger("flamingo.plugins.Git")
 

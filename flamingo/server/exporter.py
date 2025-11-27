@@ -1,13 +1,12 @@
-from concurrent.futures import CancelledError
 import logging
 import os
+from concurrent.futures import CancelledError
 
 from aiohttp.web import FileResponse, HTTPFound, Response
 from jinja2 import Template
 
-from flamingo.core.data_model import ContentSet, Content
+from flamingo.core.data_model import Content, ContentSet
 from flamingo.core.utils.pprint import pformat
-
 
 TEMPLATE_ROOT = os.path.join(os.path.dirname(__file__), "templates")
 DIRECTORY_LIST_HTML = os.path.join(TEMPLATE_ROOT, "directory_list.html")
@@ -175,10 +174,7 @@ class ContentExporter:
             directory_exists[0] = True
 
             if name in directory_content:
-                directory_content[name] = "{}, {}".format(
-                    directory_content[name],
-                    type_name,
-                )
+                directory_content[name] = f"{directory_content[name]}, {type_name}"
 
             else:
                 directory_content[name] = type_name
@@ -199,7 +195,7 @@ class ContentExporter:
                         continue
 
                     name = "{}{}".format(i, "/" if is_dir else "")
-                    type_name = "{}:{}".format(type_base_name, directory)
+                    type_name = f"{type_base_name}:{directory}"
 
                     _add(name, type_name)
 
@@ -297,7 +293,7 @@ class ContentExporter:
                 if not directory_exists:
                     return _404()
 
-                template = Template(open(DIRECTORY_LIST_HTML, "r").read())
+                template = Template(open(DIRECTORY_LIST_HTML).read())
 
                 text = template.render(
                     path=request.path,

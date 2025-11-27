@@ -79,7 +79,7 @@ class PluginManager:
 
                     settings_hook = SettingsHook()
 
-                    hook_name = getattr(hook, "flamingo_hook_name")
+                    hook_name = hook.flamingo_hook_name
                     setattr(settings_hook, hook_name, hook)
 
                     self._plugins.append(
@@ -221,7 +221,7 @@ class PluginManager:
             if plugin_name == name:
                 return plugin_object
 
-        raise ValueError("unknown plugin '{}'".format(name))
+        raise ValueError(f"unknown plugin '{name}'")
 
     def run_hook(self, *args, **kwargs):
         return self.run_plugin_hook(*args, **kwargs)

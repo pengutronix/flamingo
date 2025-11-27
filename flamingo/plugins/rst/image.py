@@ -1,13 +1,12 @@
-from copy import copy
 import logging
 import os
+from copy import copy
 
-from docutils.parsers.rst import Directive, directives
 from docutils.nodes import raw
+from docutils.parsers.rst import Directive, directives
 
 from flamingo.core.data_model import ContentSet
-
-from flamingo.plugins.rst import register_directive, parse_rst
+from flamingo.plugins.rst import parse_rst, register_directive
 
 logger = logging.getLogger("flamingo.plugins.RSTImage")
 
@@ -123,7 +122,7 @@ def gen_directives(context, plugin):
 
             for k, v in self.options.items():
                 if k in ("context", "content", "name"):
-                    k = "_{}".format(k)
+                    k = f"_{k}"
 
                 meta[k] = v
 

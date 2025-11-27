@@ -1,7 +1,7 @@
 import logging
 import os
 
-from flamingo.core.data_model import ContentSet, Content
+from flamingo.core.data_model import Content, ContentSet
 
 logger = logging.getLogger("flamingo.core.media")
 

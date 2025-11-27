@@ -1,9 +1,9 @@
-from copy import deepcopy
 import logging
 import os
+from copy import deepcopy
 
-from flamingo.core.errors import MultipleObjectsReturned, ObjectDoesNotExist
 from flamingo.core.data_model import Content, Q
+from flamingo.core.errors import MultipleObjectsReturned, ObjectDoesNotExist
 from flamingo.core.utils.string import slugify
 
 logger = logging.getLogger("flamingo.plugins.Menu")
@@ -57,7 +57,7 @@ class Section:
         return self.name
 
     def __repr__(self):
-        return "<Section('{}', url='{}')>".format(self.name, self.url)
+        return f"<Section('{self.name}', url='{self.url}')>"
 
 
 class Menu:

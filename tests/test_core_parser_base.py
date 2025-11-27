@@ -3,8 +3,8 @@ def test_base_parser_import():
 
 
 def test_basic_meta_data_parsing(flamingo_dummy_context):
-    from flamingo.core.parser import ContentParser
     from flamingo.core.data_model import Content
+    from flamingo.core.parser import ContentParser
 
     raw_content = """
     a: content of a
