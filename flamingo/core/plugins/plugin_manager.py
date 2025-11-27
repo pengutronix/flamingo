@@ -134,7 +134,7 @@ class PluginManager:
         for hook_name in hook_names_to_discover:
             logger.debug("searching for '%s' hooks", hook_name)
 
-            for plugin_path, plugin_object in self._plugins:
+            for _plugin_path, plugin_object in self._plugins:
                 if hasattr(plugin_object, hook_name):
                     logger.debug("%s.%s discoverd", plugin_object, hook_name)
 
@@ -175,7 +175,7 @@ class PluginManager:
     def THEME_PATHS(self):
         paths = []
 
-        for plugin_path, plugin_object in self._plugins:
+        for _plugin_path, plugin_object in self._plugins:
             if hasattr(plugin_object, "THEME_PATHS"):
                 paths.extend(plugin_object.THEME_PATHS)
 

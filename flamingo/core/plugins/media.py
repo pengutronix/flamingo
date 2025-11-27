@@ -8,11 +8,7 @@ logger = logging.getLogger("flamingo.core.media")
 
 def add_media(context, content, name, **extra_meta_data):
     # path
-    if name.startswith("/"):
-        path = name[1:]
-
-    else:
-        path = os.path.join(os.path.dirname(content["path"]), name)
+    path = name[1:] if name.startswith("/") else os.path.join(os.path.dirname(content["path"]), name)
 
     path = os.path.normpath(path)
 

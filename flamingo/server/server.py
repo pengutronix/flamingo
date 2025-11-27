@@ -36,7 +36,7 @@ class Server:
         app,
         rpc_logging_handler,
         settings=None,
-        settings_paths=[],
+        settings_paths=None,
         overlay=True,
         browser_caching=False,
         directory_listing=True,
@@ -46,6 +46,8 @@ class Server:
         max_workers=None,
         logger=default_logger,
     ):
+        if settings_paths is None:
+            settings_paths = []
         self.build_environment = None
         rpc_logging_handler.server = self
 

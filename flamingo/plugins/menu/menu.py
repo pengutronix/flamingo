@@ -21,9 +21,8 @@ def is_active(section, menu, content):
                     list,
                     tuple,
                 ),
-            ):
-                if _contains(i, content):
-                    return True
+            ) and _contains(i, content):
+                return True
 
         return False
 
@@ -148,7 +147,7 @@ class Menu:
             self.menu["main"] = []
 
         # resolve links
-        for menu_name, menu in self.menu.items():
+        for _menu_name, menu in self.menu.items():
             resolve_links(menu)
 
         # create section indices
@@ -193,5 +192,5 @@ class Menu:
                         create_section_indices(item, path)
 
         if create_indices:
-            for menu_name, menu in self.menu.items():
+            for _menu_name, menu in self.menu.items():
                 create_section_indices(menu, path=[])

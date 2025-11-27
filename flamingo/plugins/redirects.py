@@ -49,7 +49,7 @@ class Redirects:
     def contents_parsed(self, context):
         rules = sum(context.contents.filter(type="redirect-rules").values("rules"), [])
 
-        for status_code, source, destination in rules:
+        for _status_code, source, destination in rules:
             if source.startswith("/"):
                 source = source[1:]
 

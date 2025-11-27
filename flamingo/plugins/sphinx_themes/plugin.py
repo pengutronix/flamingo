@@ -366,10 +366,7 @@ class SphinxThemes:
         if pagename == "search":
             return True
 
-        if pagename in ("about", "genindex", "copyright"):
-            return False
-
-        return True
+        return pagename not in ("about", "genindex", "copyright")
 
     def gettext(self, string, **kwargs):
         return string

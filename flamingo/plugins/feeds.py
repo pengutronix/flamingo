@@ -81,21 +81,11 @@ class Feeds:
 
                     fe_link = {"href": "{}{}".format(FEEDS_DOMAIN, i["url"]), "rel": "alternate"}
 
-                    if "entry-id" in feed_config:
-                        fe_id = feed_config["entry-id"](i)
+                    fe_id = feed_config["entry-id"](i) if "entry-id" in feed_config else i["output"]
 
-                    else:
-                        fe_id = i["output"]
+                    fe_updated = feed_config["updated"](i) if "updated" in feed_config else ""
 
-                    if "updated" in feed_config:
-                        fe_updated = feed_config["updated"](i)
-                    else:
-                        fe_updated = ""
-
-                    if "published" in feed_config:
-                        fe_published = feed_config["published"](i)
-                    else:
-                        fe_published = ""
+                    fe_published = feed_config["published"](i) if "published" in feed_config else ""
 
                     if "podcast" in i:
                         fe_podcast_url = i["podcast"].get("url", "")
@@ -164,10 +154,7 @@ class Feeds:
                     # https://github.com/pengutronix/flamingo-ptx-blog-engine/blob/master/flamingo_ptx_blog_engine/summary.py
                     # for an example
                     if i["summary"]:
-                        if render_summary:
-                            summary = render_summary(i)
-                        else:
-                            summary = str(i["summary"])
+                        summary = render_summary(i) if render_summary else str(i["summary"])
 
                         summary = make_urls_absolute(summary, fe_link["href"])
 

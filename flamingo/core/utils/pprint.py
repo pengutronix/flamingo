@@ -31,12 +31,12 @@ def _safe_repr(object, context, maxlevels, level):
         for k, v in items:
             krepr, kreadable, krecur = saferepr(k, context, maxlevels, level)
             vrepr, vreadable, vrecur = saferepr(v, context, maxlevels, level)
-            append("%s: %s" % (krepr, vrepr))
+            append(f"{krepr}: {vrepr}")
             readable = readable and kreadable and vreadable
             if krecur or vrecur:
                 recursive = True
         del context[objid]
-        return "{%s}" % ", ".join(components), readable, recursive
+        return "{{{}}}".format(", ".join(components)), readable, recursive
 
     if (issubclass(typ, list) and r is list.__repr__) or (issubclass(typ, tuple) and r is tuple.__repr__):
         if issubclass(typ, list):
@@ -70,17 +70,7 @@ def _safe_repr(object, context, maxlevels, level):
         del context[objid]
         return format % ", ".join(components), readable, recursive
 
-    if isinstance(
-        object,
-        (
-            Content,
-            ContentSet,
-        ),
-    ):
-        rep = object.__repr__(pretty=False)
-
-    else:
-        rep = repr(object)
+    rep = object.__repr__(pretty=False) if isinstance(object, (Content, ContentSet)) else repr(object)
 
     return rep, (rep and not rep.startswith("<")), False
 

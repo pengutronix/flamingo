@@ -5,7 +5,7 @@ logger = logging.getLogger("flamingo.core.layers")
 
 
 def _cp(context, source, destination):
-    for root, dirs, files in os.walk(source):
+    for root, _dirs, files in os.walk(source):
         for f in files:
             src = os.path.join(root, f)
 

@@ -30,8 +30,7 @@ SETTING_TEMPLATE = """
 
 class RawHtmlFormatter(HtmlFormatter):
     def wrap(self, source):
-        for i, t in source:
-            yield i, t
+        yield from source
 
 
 def raw_setting(context):

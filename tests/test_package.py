@@ -3,7 +3,7 @@ def find_source_files(path):
 
     source_files = []
 
-    for root, dirs, files in os.walk(path):
+    for root, _dirs, files in os.walk(path):
         if "__pycache__" in root:
             continue
 

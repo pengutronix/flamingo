@@ -1,3 +1,4 @@
+import contextlib
 import os
 import time
 from copy import copy
@@ -85,17 +86,10 @@ class BaseWatcher:
         if name.startswith("~"):
             return False
 
-        if name.endswith(".swp"):
-            return False
-
-        return True
+        return not name.endswith(".swp")
 
     def ignored(self, path):
-        for prefix in self.context.settings.LIVE_SERVER_IGNORE_PREFIX:
-            if path.startswith(prefix):
-                return True
-
-        return False
+        return any(path.startswith(prefix) for prefix in self.context.settings.LIVE_SERVER_IGNORE_PREFIX)
 
     def get_paths(self):
         # content
@@ -197,7 +191,7 @@ class DiscoveryWatcher(BaseWatcher):
 
             for flag, path, is_dir in paths:
                 if is_dir:
-                    for dirpath, dirnames, filenames in os.walk(path):
+                    for dirpath, _dirnames, filenames in os.walk(path):
                         for name in filenames:
                             if not self.is_regular_file(name):
                                 continue
@@ -223,14 +217,12 @@ class DiscoveryWatcher(BaseWatcher):
                     if self.ignored(path):
                         continue
 
-                    try:
+                    with contextlib.suppress(FileNotFoundError):
                         new_state[abs_path] = (
                             flag,
                             os.path.getmtime(abs_path),
                         )
 
-                    except FileNotFoundError:
-                        pass
 
             # first run
             if first_run:

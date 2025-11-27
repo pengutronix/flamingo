@@ -256,11 +256,7 @@ class ContentSet:
             self.contents.append(Content(**kwargs))
 
     def _filter(self, negated, *args, **kwargs):
-        if not kwargs and len(args) == 1 and isinstance(args[0], dict):
-            query = Q(**args[0])
-
-        else:
-            query = Q(*args, **kwargs)
+        query = Q(**args[0]) if not kwargs and len(args) == 1 and isinstance(args[0], dict) else Q(*args, **kwargs)
 
         if negated:
             query = ~query
@@ -280,11 +276,7 @@ class ContentSet:
         return self._filter(True, *args, **kwargs)
 
     def get(self, *args, **kwargs):
-        if args or kwargs:
-            contents = self.filter(*args, **kwargs)
-
-        else:
-            contents = self
+        contents = self.filter(*args, **kwargs) if args or kwargs else self
 
         if len(contents) > 1:
             raise MultipleObjectsReturned(query=contents.query)
@@ -295,10 +287,7 @@ class ContentSet:
         return contents[0]
 
     def exists(self):
-        if len(self.contents) > 0:
-            return True
-
-        return False
+        return len(self.contents) > 0
 
     def first(self):
         if len(self.contents) < 1:

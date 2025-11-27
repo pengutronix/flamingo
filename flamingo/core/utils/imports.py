@@ -30,11 +30,7 @@ def acquire(item, types=None):
                 module = importlib.import_module(module_name)
                 path = inspect.getfile(module)
 
-                if attr_name:
-                    item = getattr(module, attr_name)
-
-                else:
-                    item = module
+                item = getattr(module, attr_name) if attr_name else module
 
         elif SCRIPT_RE.match(item):
             script, attr_name = item.split("::")

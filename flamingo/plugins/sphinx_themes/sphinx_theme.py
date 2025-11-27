@@ -30,7 +30,7 @@ class SphinxApp:
     def __init__(self):
         self.registry = SphinxComponentRegistry()
         themes = self.discover_themes()
-        for theme_name in themes.keys():
+        for theme_name in themes:
             self.registry.add_html_theme(theme_name, themes[theme_name])
         self.config = Config()
 
@@ -62,7 +62,9 @@ class SphinxApp:
 
 
 class SphinxThemeConfig:
-    def __init__(self, theme_name, app, option_overrides={}):
+    def __init__(self, theme_name, app, option_overrides=None):
+        if option_overrides is None:
+            option_overrides = {}
         logger.debug("setting up sphinx theme config for '%s'", theme_name)
 
         self.theme_name = theme_name
@@ -130,7 +132,9 @@ class SphinxThemeConfig:
 
 
 class SphinxTheme:
-    def __init__(self, name, build_dir, setup=True, options={}):
+    def __init__(self, name, build_dir, setup=True, options=None):
+        if options is None:
+            options = {}
         self.name = name
         self.build_dir = build_dir
 
@@ -139,7 +143,7 @@ class SphinxTheme:
         if name not in self.app.registry.html_themes:
             raise SphinxThemeNotFoundError(
                 "sphinx theme '{}' not found. available themes: {}".format(
-                    name, ", ".join([f"'{i}'" for i in self.app.registry.html_themes.keys()])
+                    name, ", ".join([f"'{i}'" for i in self.app.registry.html_themes])
                 )
             )
 
@@ -241,7 +245,7 @@ class SphinxTheme:
             if not os.path.exists(static_dir):
                 continue
 
-            for root, dirs, files in os.walk(static_dir):
+            for root, _dirs, files in os.walk(static_dir):
                 for f in files:
                     source = os.path.join(root, f)
 

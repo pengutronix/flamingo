@@ -42,11 +42,7 @@ def code_block(context):
                 content += open(path).read()
 
             try:
-                if self.arguments:
-                    lexer = get_lexer_by_name(self.arguments[0])
-
-                else:
-                    lexer = guess_lexer(content)
+                lexer = get_lexer_by_name(self.arguments[0]) if self.arguments else guess_lexer(content)
 
             except (ClassNotFound, IndexError):
                 lexer = get_lexer_by_name("text")

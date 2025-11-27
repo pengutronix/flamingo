@@ -128,7 +128,7 @@ class JsonRpc:
 
     # methods #################################################################
     def add_methods(self, *methods):
-        for prefix, method in methods:
+        for _prefix, method in methods:
             method_name = method.__name__
 
             self.methods[method_name] = method

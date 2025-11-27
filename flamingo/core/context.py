@@ -211,7 +211,7 @@ class Context(OverlayObject):
                 self.settings.CONTENT_ROOT,
             )
 
-            for root, dirs, files in os.walk(self.settings.CONTENT_ROOT, followlinks=self.settings.FOLLOW_LINKS):
+            for root, _dirs, files in os.walk(self.settings.CONTENT_ROOT, followlinks=self.settings.FOLLOW_LINKS):
                 for name in files:
                     extension = os.path.splitext(name)[1][1:]
 
