@@ -1,0 +1,2 @@
+[codespell]
+skip = ./.git,./*.egg-info,./.pybuild,./build,./env,./venv,./envs,./dist,./doc/env,*.js,*.js.map,./doc/output,./htmlcov,*.css.map,*.css,*.svg

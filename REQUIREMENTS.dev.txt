@@ -1,3 +1,5 @@
 -e .[full]
 setuptools>=36.5.0
 twine
+ruff
+codespell
