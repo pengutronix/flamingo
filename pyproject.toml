@@ -1,0 +1,13 @@
+[tool.ruff]
+line-length = 119
+exclude = [
+  "__pycache__",
+  "build",
+  "env",
+  "venv",
+  "envs",
+  "dist",
+]
+
+[tool.ruff.lint]
+select = ["B", "E", "F", "I", "SIM", "UP"]
