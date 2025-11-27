@@ -71,6 +71,6 @@ def test_images(flamingo_env):
     # check rendered html
     html = flamingo_env.read("/output/home.html")
     soup = BeautifulSoup(html, "html.parser")
-    img = soup.findAll("img")[0]
+    img = soup.find_all("img")[0]
 
     assert img.attrs["src"] == "/media/home.png"

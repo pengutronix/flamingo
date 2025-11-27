@@ -16,7 +16,7 @@ def test_external_links(flamingo_env):
     # run tests
     html = flamingo_env.read("/output/external-links.html")
     soup = BeautifulSoup(html, "html.parser")
-    links = soup.findAll("a")
+    links = soup.find_all("a")
 
     assert links[0].get_text() == "Flamingo"
     assert links[0].attrs["href"] == "http://www.flamingo-web.org"
@@ -79,7 +79,7 @@ def test_internal_links(flamingo_env):
     # run tests
     html = flamingo_env.read("/output/article3.html")
     soup = BeautifulSoup(html, "html.parser")
-    links = soup.findAll("a")
+    links = soup.find_all("a")
 
     # article 1
     assert links[0].get_text() == "Article 1"
@@ -165,7 +165,7 @@ def test_i18n_links(flamingo_env):
     # run tests
     html = flamingo_env.read("/output/en/article3.html")
     soup = BeautifulSoup(html, "html.parser")
-    links = soup.findAll("a")
+    links = soup.find_all("a")
 
     assert links[0].attrs["href"] == "/en/article1.html"
     assert links[1].attrs["href"] == "/de/article1.html"
@@ -195,7 +195,7 @@ def test_downloads(flamingo_env):
     # run tests
     html = flamingo_env.read("/output/article.html")
     soup = BeautifulSoup(html, "html.parser")
-    links = soup.findAll("a")
+    links = soup.find_all("a")
 
     assert links[0].get_text() == "download.txt"
     assert links[0].attrs["href"] == "/media/download.txt"

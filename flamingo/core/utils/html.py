@@ -13,7 +13,7 @@ class TitleNotFoundError(Exception):
 
 def get_section_by_title(html, title, tag=None):
     soup = BeautifulSoup(html, "html.parser")
-    html = soup.find(name=tag or HEADING_RE, text=title)
+    html = soup.find(name=tag or HEADING_RE, string=title)
 
     if not html:
         raise TitleNotFoundError
