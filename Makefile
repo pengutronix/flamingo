@@ -14,23 +14,6 @@ env: $(PYTHON_VENV)/.created
 clean:
 	rm -rf $(PYTHON_VENV)
 
-lint: env
-	. $(PYTHON_VENV)/bin/activate && \
-	tox -e lint
-
-lazy-test: env
-	. $(PYTHON_VENV)/bin/activate && \
-	tox $(args)
-
-test: env
-	. $(PYTHON_VENV)/bin/activate && \
-	rm -rf flamingo.egg-info dist build && \
-	tox -r $(args)
-
-ci-test: env
-	. $(PYTHON_VENV)/bin/activate && \
-	EXTENDED_BUILD_TESTS=1 JENKINS_URL=1 tox -r $(args)
-
 shell: env
 	. $(PYTHON_VENV)/bin/activate && \
 	rlpython
