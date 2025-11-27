@@ -8,8 +8,8 @@ class NestedDirective(Directive):
     has_content = True
 
     def parse_content(self, context):
-        plugin = context.plugins.get_plugin('reStructuredText')
-        path = context.content['path']
+        plugin = context.plugins.get_plugin("reStructuredText")
+        path = context.content["path"]
 
         try:
             plugin.offsets[path] += self.content_offset
@@ -21,21 +21,21 @@ class NestedDirective(Directive):
 
     def run(self, context=None):
         return [
-            raw('', self.parse_content(context), format='html'),
+            raw("", self.parse_content(context), format="html"),
         ]
 
 
 class Container(NestedDirective):
     option_spec = {
-        'id': directives.unchanged,
-        'style': directives.unchanged,
+        "id": directives.unchanged,
+        "style": directives.unchanged,
     }
 
     def run(self, context=None):
         html = self.parse_content(context)
 
         return [
-            raw('', '<div>', format='html'),
-            raw('', html, format='html'),
-            raw('', '</div>', format='html'),
+            raw("", "<div>", format="html"),
+            raw("", html, format="html"),
+            raw("", "</div>", format="html"),
         ]

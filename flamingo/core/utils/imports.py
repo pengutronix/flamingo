@@ -3,15 +3,15 @@ import inspect
 import runpy
 import re
 
-SCRIPT_RE = re.compile(r'^[^:]+::[a-zA-Z0-9_]+$')
-MODULE_RE = re.compile(r'^[a-zA-Z0-9_.]+$')
+SCRIPT_RE = re.compile(r"^[^:]+::[a-zA-Z0-9_]+$")
+MODULE_RE = re.compile(r"^[a-zA-Z0-9_.]+$")
 
 
 def acquire(item, types=None):
     path = item
 
     if types and not isinstance(types, tuple):
-        types = (types, )
+        types = (types,)
 
     if isinstance(item, str):
         if MODULE_RE.match(item):
@@ -20,8 +20,8 @@ def acquire(item, types=None):
                 path = inspect.getfile(item)
 
             except Exception:
-                if '.' in item:
-                    module_name, attr_name = item.rsplit('.', 1)
+                if "." in item:
+                    module_name, attr_name = item.rsplit(".", 1)
 
                 else:
                     module_name = item
@@ -37,12 +37,11 @@ def acquire(item, types=None):
                     item = module
 
         elif SCRIPT_RE.match(item):
-            script, attr_name = item.split('::')
+            script, attr_name = item.split("::")
             values = runpy.run_path(script)
 
             if attr_name not in values:
-                raise ImportError("script '{}' has no attribute '{}'".format(
-                    script, attr_name))
+                raise ImportError("script '{}' has no attribute '{}'".format(script, attr_name))
 
             item = values[attr_name]
             path = script
@@ -51,7 +50,8 @@ def acquire(item, types=None):
             raise ValueError("invalid import string '{}'".format(item))
 
     if types and not isinstance(item, types):
-        raise ValueError("'{}' has wrong type. Allowed types: {}".format(
-            attr_name, ', '.join([i.__name__ for i in types])))
+        raise ValueError(
+            "'{}' has wrong type. Allowed types: {}".format(attr_name, ", ".join([i.__name__ for i in types]))
+        )
 
     return item, path

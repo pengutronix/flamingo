@@ -2,7 +2,7 @@ from flamingo.core.parser import ContentParser
 
 
 class YamlParser(ContentParser):
-    FILE_EXTENSIONS = ['yaml']
+    FILE_EXTENSIONS = ["yaml"]
 
     """
     This parser can be used to load files that do not contain a content part
@@ -15,7 +15,6 @@ class YamlParser(ContentParser):
     """
 
     def parse(self, file_content, content):
-
         # .meta files do not have a content part.
         # But parse_meta_data() assumes it has one.
         # We will add an extra \n\n\n at the end to make it useable for our

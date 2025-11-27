@@ -14,9 +14,9 @@ from sphinx.registry import SphinxComponentRegistry
 from sphinx.theming import HTMLThemeFactory, Theme
 
 
-SPHINX_THEME_ROOT = os.path.join(os.path.dirname(sphinx.__file__), 'themes')
+SPHINX_THEME_ROOT = os.path.join(os.path.dirname(sphinx.__file__), "themes")
 
-logger = logging.getLogger('flamingo.plugins.SphinxThemes')
+logger = logging.getLogger("flamingo.plugins.SphinxThemes")
 
 
 class SphinxThemeNotFoundError(Exception):
@@ -38,7 +38,7 @@ class SphinxApp:
     def discover_themes(self):
         themes = {}
 
-        logger.debug('discovering sphinx themes')
+        logger.debug("discovering sphinx themes")
 
         # discover sphinx default themes
         for name in os.listdir(SPHINX_THEME_ROOT):
@@ -50,14 +50,14 @@ class SphinxApp:
             themes[name] = theme_path
 
         # discover 3rd party themes from pkg resources
-        for entry_point in iter_entry_points('sphinx.html_themes'):
+        for entry_point in iter_entry_points("sphinx.html_themes"):
             name = entry_point.name
             module = entry_point.load()
             theme_path = os.path.dirname(module.__file__)
 
             themes[name] = theme_path
 
-        logger.debug('discovered sphinx themes: %s', ', '.join(themes.keys()))
+        logger.debug("discovered sphinx themes: %s", ", ".join(themes.keys()))
 
         return themes
 
@@ -76,12 +76,12 @@ class SphinxThemeConfig:
         for name in self.hierarchy:
             config_path = self._gen_theme_config_path(name)
 
-            logger.debug('reading %s', config_path)
+            logger.debug("reading %s", config_path)
 
             self.config.read(config_path)
 
     def _gen_theme_config_path(self, name):
-        return os.path.join(self.app.registry.html_themes[name], 'theme.conf')
+        return os.path.join(self.app.registry.html_themes[name], "theme.conf")
 
     def _gen_hierarchy(self):
         hierarchy = [self.theme_name]
@@ -93,32 +93,27 @@ class SphinxThemeConfig:
 
             config.read(config_path)
 
-            inherit = config.get('theme', 'inherit')
+            inherit = config.get("theme", "inherit")
 
-            if inherit == 'none':
+            if inherit == "none":
                 return hierarchy
 
             if inherit in hierarchy:
-                raise SphinxConfigRecursionError(
-                    ' -> '.join(hierarchy + [inherit]))
+                raise SphinxConfigRecursionError(" -> ".join(hierarchy + [inherit]))
 
             hierarchy.insert(0, inherit)
 
     def get_theme_config(self):
         return {
-            'stylesheet': self.config.get('theme', 'stylesheet'),
-
-            'sidebars': [
-                i.strip()
-                for i in self.config.get('theme', 'sidebars').split(',')
-            ],
+            "stylesheet": self.config.get("theme", "stylesheet"),
+            "sidebars": [i.strip() for i in self.config.get("theme", "sidebars").split(",")],
         }
 
     def get_raw_theme_options(self):
         raw_options = {}
 
-        for option_name in self.config.options('options'):
-            raw_options[option_name] = self.config.get('options', option_name)
+        for option_name in self.config.options("options"):
+            raw_options[option_name] = self.config.get("options", option_name)
 
         raw_options.update(self.option_overrides)
 
@@ -129,7 +124,7 @@ class SphinxThemeConfig:
         options = {}
 
         for raw_option_name, value in raw_options.items():
-            option_name = 'theme_{}'.format(raw_option_name)
+            option_name = "theme_{}".format(raw_option_name)
             options[option_name] = value
 
         return options
@@ -145,9 +140,7 @@ class SphinxTheme:
         if name not in self.app.registry.html_themes:
             raise SphinxThemeNotFoundError(
                 "sphinx theme '{}' not found. available themes: {}".format(
-                    name,
-                    ', '.join(["'{}'".format(i)
-                               for i in self.app.registry.html_themes.keys()])
+                    name, ", ".join(["'{}'".format(i) for i in self.app.registry.html_themes.keys()])
                 )
             )
 
@@ -169,7 +162,7 @@ class SphinxTheme:
             self.setup()
 
     def rm(self, path):
-        logger.debug('rm -rf %s', path)
+        logger.debug("rm -rf %s", path)
 
         if os.path.isdir(path):
             return shutil.rmtree(path)
@@ -177,7 +170,7 @@ class SphinxTheme:
         return os.unlink(path)
 
     def cp(self, source, destination):
-        logger.debug('cp -r %s %s', source, destination)
+        logger.debug("cp -r %s %s", source, destination)
 
         if os.path.isdir(source):
             return shutil.copytree(source, destination)
@@ -189,18 +182,16 @@ class SphinxTheme:
             self._static_file_template_context_cache = {
                 **self.config.get_theme_options(),
             }
-            self._static_file_template_context_cache[
-                'docutils_version_info'
-            ] = docutils.__version_info__[:5]
+            self._static_file_template_context_cache["docutils_version_info"] = docutils.__version_info__[:5]
 
         return deepcopy(self._static_file_template_context_cache)
 
     def setup(self):
-        logger.debug('setting up flamingo theme')
+        logger.debug("setting up flamingo theme")
 
         # paths
-        self.template_root = os.path.join(self.build_dir, 'templates')
-        self.static_root = os.path.join(self.build_dir, 'static')
+        self.template_root = os.path.join(self.build_dir, "templates")
+        self.static_root = os.path.join(self.build_dir, "static")
 
         os.makedirs(self.template_root)
         os.makedirs(self.static_root)
@@ -208,16 +199,11 @@ class SphinxTheme:
         # setup sphinx like static file rendering environment
         self._static_file_template_context_cache = {}
 
-        self.jinja2_env = Environment(
-            loader=FileSystemLoader(
-                self.theme.get_theme_dirs(),
-                followlinks=True
-            )
-        )
+        self.jinja2_env = Environment(loader=FileSystemLoader(self.theme.get_theme_dirs(), followlinks=True))
 
-        self.jinja2_env.filters['tobool'] = _tobool
-        self.jinja2_env.filters['todim'] = _todim
-        self.jinja2_env.filters['toint'] = _toint
+        self.jinja2_env.filters["tobool"] = _tobool
+        self.jinja2_env.filters["todim"] = _todim
+        self.jinja2_env.filters["toint"] = _toint
 
         # setup temporary flamingo theme dir
         for theme_dir in self.theme.get_theme_dirs()[::-1]:
@@ -231,8 +217,8 @@ class SphinxTheme:
             shutil.copytree(theme_dir, theme_output)
 
             # remove static directories and configs from template root
-            theme_static_dir = os.path.join(theme_output, 'static')
-            theme_config = os.path.join(theme_output, 'theme.conf')
+            theme_static_dir = os.path.join(theme_output, "static")
+            theme_config = os.path.join(theme_output, "theme.conf")
 
             if os.path.exists(theme_static_dir):
                 self.rm(theme_static_dir)
@@ -242,7 +228,7 @@ class SphinxTheme:
 
             # stack themes to emulate a file system loader
             for i in os.listdir(theme_dir):
-                if i in ('static', 'theme.conf'):
+                if i in ("static", "theme.conf"):
                     continue
 
                 source = os.path.join(theme_dir, i)
@@ -251,7 +237,7 @@ class SphinxTheme:
                 self.cp(source, destination)
 
             # static files
-            static_dir = os.path.join(theme_dir, 'static')
+            static_dir = os.path.join(theme_dir, "static")
 
             if not os.path.exists(static_dir):
                 continue
@@ -271,19 +257,19 @@ class SphinxTheme:
                         os.makedirs(destination_dirname)
 
                     # regular files
-                    if not source.endswith('_t'):
+                    if not source.endswith("_t"):
                         self.cp(source, destination)
 
                         continue
 
                     # template static files
-                    logger.debug('rendering %s -> %s', source, destination)
+                    logger.debug("rendering %s -> %s", source, destination)
 
                     template_name = os.path.relpath(source, theme_dir)
                     template = self.jinja2_env.get_template(template_name)
                     template_context = self.gen_static_file_template_context()
 
-                    with open(destination[:-2], 'w+') as f:
+                    with open(destination[:-2], "w+") as f:
                         f.write(template.render(**template_context))
 
                     continue

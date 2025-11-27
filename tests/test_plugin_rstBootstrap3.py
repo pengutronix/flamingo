@@ -1,7 +1,9 @@
 def test_rstBootstrap3(flamingo_env):
-    flamingo_env.settings.PLUGINS = ['flamingo.plugins.rstBootstrap3']
+    flamingo_env.settings.PLUGINS = ["flamingo.plugins.rstBootstrap3"]
 
-    flamingo_env.write('/content/test.rst', """
+    flamingo_env.write(
+        "/content/test.rst",
+        """
 
 
     .. div::
@@ -21,6 +23,7 @@ def test_rstBootstrap3(flamingo_env):
         .. col:: md-6
 
             bar
-    """)
+    """,
+    )
 
     flamingo_env.build()

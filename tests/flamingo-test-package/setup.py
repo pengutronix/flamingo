@@ -4,7 +4,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='flamingo-test-package',
-    version='0.0',
+    name="flamingo-test-package",
+    version="0.0",
     packages=find_packages(),
 )

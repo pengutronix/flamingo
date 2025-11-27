@@ -2,20 +2,20 @@ import re
 
 from docutils.parsers.rst import roles, directives
 
-ROLE_RE = re.compile(r'^(?P<arg0>[^<]+)((\s+)?<(?P<arg1>[^>]+)>)?((\s+)?(?P<options>.*))?$')  # NOQA
-ROLE_OPTIONS_RE = re.compile(r'((?P<name>[^=]+)=(?P<value>[^\s,]+)([\s,]+)?)')
+ROLE_RE = re.compile(r"^(?P<arg0>[^<]+)((\s+)?<(?P<arg1>[^>]+)>)?((\s+)?(?P<options>.*))?$")  # NOQA
+ROLE_OPTIONS_RE = re.compile(r"((?P<name>[^=]+)=(?P<value>[^\s,]+)([\s,]+)?)")
 
 
 def parse_role_text(role_text):
     role_args = {
-        'args': [],
-        'options': {},
+        "args": [],
+        "options": {},
     }
 
     role_text = role_text.strip()
 
-    if role_text.startswith('<') and role_text.endswith('>'):
-        role_args['args'].append(role_text[1:-1])
+    if role_text.startswith("<") and role_text.endswith(">"):
+        role_args["args"].append(role_text[1:-1])
 
         return role_args
 
@@ -23,21 +23,21 @@ def parse_role_text(role_text):
         role_parts = ROLE_RE.search(role_text).groupdict()
 
     except Exception:
-        role_args['args'].append(role_text)
+        role_args["args"].append(role_text)
 
         return role_args
 
-    if role_parts['arg0']:
-        role_args['args'].append(role_parts['arg0'].strip())
+    if role_parts["arg0"]:
+        role_args["args"].append(role_parts["arg0"].strip())
 
-    if role_parts['arg1']:
-        role_args['args'].append(role_parts['arg1'].strip())
+    if role_parts["arg1"]:
+        role_args["args"].append(role_parts["arg1"].strip())
 
-    if role_parts['options']:
-        for parts in ROLE_OPTIONS_RE.finditer(role_parts['options']):
+    if role_parts["options"]:
+        for parts in ROLE_OPTIONS_RE.finditer(role_parts["options"]):
             groups = parts.groups()
 
-            role_args['options'][groups[1]] = groups[2]
+            role_args["options"][groups[1]] = groups[2]
 
     return role_args
 
@@ -49,10 +49,10 @@ def parse_bool(value):
     if isinstance(value, str):
         try:
             return {
-                'true': True,
-                '1': True,
-                'false': False,
-                '0': False,
+                "true": True,
+                "1": True,
+                "false": False,
+                "0": False,
             }[value.strip().lower()]
 
         except Exception:

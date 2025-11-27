@@ -20,7 +20,7 @@ class FlamingoDummyContext(Context):
 
         self.settings = settings
         self.contents = contents or ContentSet()
-        self.content = Content(path='<string>')
+        self.content = Content(path="<string>")
 
 
 class FlamingoBuildEnvironment:
@@ -34,24 +34,18 @@ class FlamingoBuildEnvironment:
 
         self.settings.DEDENT_INPUT = True
 
-        self.settings.CONTENT_ROOT = os.path.join(
-            self.path, self.settings.CONTENT_ROOT)
+        self.settings.CONTENT_ROOT = os.path.join(self.path, self.settings.CONTENT_ROOT)
 
-        self.settings.OUTPUT_ROOT = os.path.join(
-            self.path, self.settings.OUTPUT_ROOT)
+        self.settings.OUTPUT_ROOT = os.path.join(self.path, self.settings.OUTPUT_ROOT)
 
-        self.settings.STATIC_ROOT = os.path.join(
-            self.path, self.settings.STATIC_ROOT)
+        self.settings.STATIC_ROOT = os.path.join(self.path, self.settings.STATIC_ROOT)
 
         # setup machine readable theme
         self.settings.THEME_PATHS = [
-            os.path.join(self.path, 'theme'),
+            os.path.join(self.path, "theme"),
         ]
 
-        self.write(
-            '/theme/templates/page.html',
-            '{{ content.content_title }}\n{{ content.content_body }}'
-        )
+        self.write("/theme/templates/page.html", "{{ content.content_title }}\n{{ content.content_body }}")
 
     def setup(self, context_class=Context):
         if not os.path.exists(self.settings.CONTENT_ROOT):
@@ -75,14 +69,14 @@ class FlamingoBuildEnvironment:
         self.context.build()
 
     def gen_path(self, path):
-        assert path.startswith('/'), 'path should be absolute'
+        assert path.startswith("/"), "path should be absolute"
 
         return os.path.join(self.path, path[1:])
 
-    def read(self, path, *args, mode='r', **kwargs):
+    def read(self, path, *args, mode="r", **kwargs):
         return open(self.gen_path(path), *args, mode=mode, **kwargs).read()
 
-    def write(self, path, text, *args, mode='w+', **kwargs):
+    def write(self, path, text, *args, mode="w+", **kwargs):
         path = self.gen_path(path)
         dirname = os.path.dirname(path)
 
@@ -92,7 +86,7 @@ class FlamingoBuildEnvironment:
         return open(path, *args, mode=mode, **kwargs).write(text)
 
     def touch(self, path):
-        self.write(path, '')
+        self.write(path, "")
 
         return self.gen_path(path)
 
@@ -126,15 +120,15 @@ class FlamingoServerBuildEnvironment(FlamingoBuildEnvironment):
             self.app.on_shutdown.append(self.shutdown_live_server)
 
             server_args = {
-                'app': self.app,
-                'loop': loop,
-                'max_workers': 4,
-                'settings_paths': [],
-                'settings': self.settings,
-                'overlay': False,
-                'browser_caching': True,
-                'watcher_interval': 0.25,
-                'rpc_logging_handler': self.rpc_logging_handler,
+                "app": self.app,
+                "loop": loop,
+                "max_workers": 4,
+                "settings_paths": [],
+                "settings": self.settings,
+                "overlay": False,
+                "browser_caching": True,
+                "watcher_interval": 0.25,
+                "rpc_logging_handler": self.rpc_logging_handler,
                 **args,
             }
 
@@ -174,7 +168,7 @@ def run():
 
         if clean_env:
             env = {
-                'PATH': os.environ['PATH'].split(':', 1)[1],
+                "PATH": os.environ["PATH"].split(":", 1)[1],
             }
 
         logger.debug("running '%s' in '%s'", command, cwd)
@@ -188,14 +182,14 @@ def run():
                 stderr=STDOUT,
                 cwd=cwd,
                 env=env,
-                executable='/bin/bash',
+                executable="/bin/bash",
             ).decode()
 
         except CalledProcessError as e:
             returncode = e.returncode
             output = e.output.decode()
 
-            logger.error('returncode: %s output: \n%s', returncode, output)
+            logger.error("returncode: %s output: \n%s", returncode, output)
 
         return returncode, output
 

@@ -9,8 +9,7 @@ def _cp(context, source, destination):
         for f in files:
             src = os.path.join(root, f)
 
-            dst = os.path.normpath(os.path.join(
-                destination, os.path.relpath(root, source), f))
+            dst = os.path.normpath(os.path.join(destination, os.path.relpath(root, source), f))
 
             context.cp(src, dst)
 

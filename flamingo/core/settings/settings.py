@@ -13,7 +13,7 @@ class Settings(OverlayObject):
         self.modules = []
 
         for name in dir(defaults):
-            if name.startswith('_'):
+            if name.startswith("_"):
                 continue
 
             attr = getattr(defaults, name)
@@ -28,23 +28,22 @@ class Settings(OverlayObject):
                 self._attrs[name] = attr_copy
 
     def add(self, module):
-        if not (module.endswith('.py') or '/' in module):
+        if not (module.endswith(".py") or "/" in module):
             module = importlib.import_module(module).__file__
 
         attrs = runpy.run_path(module, init_globals=self._attrs)
 
         self.modules.append(module)
-        self._attrs = {k: v for k, v in attrs.items()
-                       if not k.startswith('_')}
+        self._attrs = {k: v for k, v in attrs.items() if not k.startswith("_")}
 
     def get(self, *args):
         return getattr(self, *args)
 
     def __iter__(self):
-        ignore = ('add', )
+        ignore = ("add",)
 
         for key in dir(self):
-            if key in ignore or key.startswith('_'):
+            if key in ignore or key.startswith("_"):
                 continue
 
             yield key, getattr(self, key)

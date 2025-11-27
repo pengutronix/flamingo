@@ -9,8 +9,8 @@ from flamingo.core.data_model import ContentSet, Content
 from flamingo.core.utils.pprint import pformat
 
 
-TEMPLATE_ROOT = os.path.join(os.path.dirname(__file__), 'templates')
-DIRECTORY_LIST_HTML = os.path.join(TEMPLATE_ROOT, 'directory_list.html')
+TEMPLATE_ROOT = os.path.join(os.path.dirname(__file__), "templates")
+DIRECTORY_LIST_HTML = os.path.join(TEMPLATE_ROOT, "directory_list.html")
 
 
 class History:
@@ -38,7 +38,7 @@ class ContentExporter:
     def __init__(self, server):
         self.server = server
 
-        self.logger = logging.getLogger('flamingo.server.exporter')
+        self.logger = logging.getLogger("flamingo.server.exporter")
 
     @property
     def context(self):
@@ -50,21 +50,18 @@ class ContentExporter:
 
     @property
     def static_dirs(self):
-        return [
-            os.path.dirname(i)
-            for i in self.server.context.templating_engine.find_static_dirs()
-        ]
+        return [os.path.dirname(i) for i in self.server.context.templating_engine.find_static_dirs()]
 
     @property
     def directory_index(self):
-        return self.server.options['directory_index']
+        return self.server.options["directory_index"]
 
     @property
     def directory_listing(self):
-        return self.server.options['directory_listing']
+        return self.server.options["directory_listing"]
 
     def clear(self):
-        self.logger.debug('clearing history...')
+        self.logger.debug("clearing history...")
         self.history.clear()
 
     def resolve(self, request_path):
@@ -77,7 +74,7 @@ class ContentExporter:
         request_path = request_path[1:]
 
         if not request_path and self.directory_index:
-            request_path = 'index.html'
+            request_path = "index.html"
 
         self.logger.debug("request_path: '%s'", request_path)
 
@@ -89,14 +86,14 @@ class ContentExporter:
                     continue
 
                 if os.path.isdir(path) and self.directory_index:
-                    index_path = os.path.join(path, 'index.html')
+                    index_path = os.path.join(path, "index.html")
 
                     if os.path.exists(index_path):
                         return index_path
 
                 return path
 
-            return ''
+            return ""
 
         # post build layers
         path = _resolve_paths(self.context.settings.POST_BUILD_LAYERS)
@@ -115,23 +112,19 @@ class ContentExporter:
             return path
 
         # media files
-        media_url = '/' + request_path
+        media_url = "/" + request_path
 
-        contents = self.context.contents.filter(
-            media__passes=lambda m: m and m.filter(url=media_url).exists())
+        contents = self.context.contents.filter(media__passes=lambda m: m and m.filter(url=media_url).exists())
 
         if contents.exists():
-            media_contents = contents.last()['media']
+            media_contents = contents.last()["media"]
             media_content = media_contents.filter(url=media_url).last()
 
-            self.context.plugins.run_plugin_hook('render_media_content',
-                                                 media_content)
+            self.context.plugins.run_plugin_hook("render_media_content", media_content)
 
-            self.logger.debug("handled as media file: '%s'",
-                              media_content['path'])
+            self.logger.debug("handled as media file: '%s'", media_content["path"])
 
-            return os.path.join(self.context.settings.CONTENT_ROOT,
-                                media_content['path'])
+            return os.path.join(self.context.settings.CONTENT_ROOT, media_content["path"])
 
         # content
         contents = self.context.contents.filter(output=request_path)
@@ -141,18 +134,15 @@ class ContentExporter:
             content = contents.last()
 
         elif self.directory_index:  # directory index
-            contents = self.context.contents.filter(
-                output=os.path.join(request_path, 'index.html')
-            )
+            contents = self.context.contents.filter(output=os.path.join(request_path, "index.html"))
 
             if contents.exists():
                 content = contents.last()
 
         if content:
-            self.context.plugins.run_plugin_hook('render_content', content)
+            self.context.plugins.run_plugin_hook("render_content", content)
 
-            self.logger.debug("handled as content: '%s'",
-                              content['path'] or content)
+            self.logger.debug("handled as content: '%s'", content["path"] or content)
 
             return content
 
@@ -178,14 +168,14 @@ class ContentExporter:
         directory_content = {}
         cleaned_path = path
 
-        if cleaned_path.startswith('/'):
+        if cleaned_path.startswith("/"):
             cleaned_path = cleaned_path[1:]
 
         def _add(name, type_name):
             directory_exists[0] = True
 
             if name in directory_content:
-                directory_content[name] = '{}, {}'.format(
+                directory_content[name] = "{}, {}".format(
                     directory_content[name],
                     type_name,
                 )
@@ -208,61 +198,65 @@ class ContentExporter:
                     if is_dir and os.listdir(abs_path) == []:
                         continue
 
-                    name = '{}{}'.format(i, '/' if is_dir else '')
-                    type_name = '{}:{}'.format(type_base_name, directory)
+                    name = "{}{}".format(i, "/" if is_dir else "")
+                    type_name = "{}:{}".format(type_base_name, directory)
 
                     _add(name, type_name)
 
         def _list_contents(contents, type_base_name):
             for content in contents:
-                if not content['output'] or content['output'] == '/dev/null':
+                if not content["output"] or content["output"] == "/dev/null":
                     continue
 
-                if not content['output'].startswith(cleaned_path):
+                if not content["output"].startswith(cleaned_path):
                     continue
 
-                type_name = '{}:{}'.format(
+                type_name = "{}:{}".format(
                     type_base_name,
-                    content['path'],
+                    content["path"],
                 )
 
                 name = os.path.relpath(
-                    '/{}'.format(content['output']),
+                    "/{}".format(content["output"]),
                     path,
                 )
 
-                if '/' in name:
-                    name = '{}/'.format([i for i in name.split('/') if i][0])
+                if "/" in name:
+                    name = "{}/".format([i for i in name.split("/") if i][0])
 
                 _add(name, type_name)
 
-        _list_directories(
-            self.context.settings.POST_BUILD_LAYERS, 'post build layer')
+        _list_directories(self.context.settings.POST_BUILD_LAYERS, "post build layer")
 
-        _list_directories(self.static_dirs, 'static')
-        _list_contents(self.context.media_contents, 'media')
-        _list_contents(self.context.contents, 'content')
+        _list_directories(self.static_dirs, "static")
+        _list_contents(self.context.media_contents, "media")
+        _list_contents(self.context.contents, "content")
 
-        _list_directories(
-            self.context.settings.PRE_BUILD_LAYERS, 'pre build layer')
+        _list_directories(self.context.settings.PRE_BUILD_LAYERS, "pre build layer")
 
         # directory seems not to be existing
         if not directory_exists[0]:
-            return False, ''
+            return False, ""
 
         # sort directory content alphabetical, directories first
         directory_content_directories = []
         directory_content_files = []
 
         for key, value in directory_content.items():
-            if key.endswith('/'):
+            if key.endswith("/"):
                 directory_content_directories.append(
-                    (key, value, ),
+                    (
+                        key,
+                        value,
+                    ),
                 )
 
             else:
                 directory_content_files.append(
-                    (key, value, ),
+                    (
+                        key,
+                        value,
+                    ),
                 )
 
         directory_content = [
@@ -272,51 +266,53 @@ class ContentExporter:
 
         # add backlink to parent directory
         if cleaned_path:
-            directory_content.insert(0, ('../', os.path.dirname(path), ))
+            directory_content.insert(
+                0,
+                (
+                    "../",
+                    os.path.dirname(path),
+                ),
+            )
 
         return True, directory_content
 
     async def __call__(self, request):
         def _404():
-            self.logger.debug('404: not found')
+            self.logger.debug("404: not found")
 
-            return Response(text='404: not found', status=404)
+            return Response(text="404: not found", status=404)
 
         def gen_response(path):
             content = self.resolve(path)
 
             # fallback
-            if (not content or
-               isinstance(content, str) and os.path.isdir(content)):
-
+            if not content or isinstance(content, str) and os.path.isdir(content):
                 # 404
                 if not self.directory_listing:
                     return _404()
 
                 # directory listing
-                directory_exists, directory_content = \
-                    self.list_directory(request.path)
+                directory_exists, directory_content = self.list_directory(request.path)
 
                 if not directory_exists:
                     return _404()
 
-                template = Template(open(DIRECTORY_LIST_HTML, 'r').read())
+                template = Template(open(DIRECTORY_LIST_HTML, "r").read())
 
                 text = template.render(
                     path=request.path,
                     directory_content=directory_content,
                 )
 
-                return Response(text=text, status=200,
-                                content_type='text/html')
+                return Response(text=text, status=200, content_type="text/html")
 
             # file response
             if isinstance(content, str):
                 return FileResponse(content)
 
             # content response
-            if content['redirect']:
-                raise HTTPFound(content['redirect'])
+            if content["redirect"]:
+                raise HTTPFound(content["redirect"])
 
             try:
                 output = self.context.render(content)
@@ -325,19 +321,15 @@ class ContentExporter:
             except Exception as e:
                 self.context.logger.error(e, exc_info=True)
 
-                return Response(text='500: rendering error', status=500)
+                return Response(text="500: rendering error", status=500)
 
-            return Response(text=output, content_type='text/html')
+            return Response(text=output, content_type="text/html")
 
         try:
-            response = await self.server.loop.run_in_executor(
-                self.server.executor,
-                gen_response,
-                request.path
-            )
+            response = await self.server.loop.run_in_executor(self.server.executor, gen_response, request.path)
 
         except CancelledError:
-            response = Response(text='499: Client Closed Request', status=499)
+            response = Response(text="499: Client Closed Request", status=499)
 
         except Exception as e:
             if isinstance(e, HTTPFound):  # redirects
@@ -345,6 +337,6 @@ class ContentExporter:
 
             self.context.logger.error(e, exc_info=True)
 
-            response = Response(text='500: Internal Error', status=500)
+            response = Response(text="500: Internal Error", status=500)
 
         return response

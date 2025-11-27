@@ -49,7 +49,7 @@ class OverlayObject:
 
             return attr
 
-        if name.startswith('_') or name in self.__overlay_ignore_attributes:
+        if name.startswith("_") or name in self.__overlay_ignore_attributes:
             return super().__getattribute__(name)
 
         if self._overlay_enabled:
@@ -70,7 +70,7 @@ class OverlayObject:
         return attr
 
     def __setattr__(self, name, value):
-        if name.startswith('_') or name in self.__overlay_ignore_attributes:
+        if name.startswith("_") or name in self.__overlay_ignore_attributes:
             return super().__setattr__(name, value)
 
         if self._overlay_enabled:
@@ -81,11 +81,7 @@ class OverlayObject:
         self._attrs[name] = value
 
     def __dir__(self):
-        return list(set(
-            super().__dir__() +
-            list(self._attrs.keys()) +
-            list(self._overlay_attrs.keys())
-        ))
+        return list(set(super().__dir__() + list(self._attrs.keys()) + list(self._overlay_attrs.keys())))
 
     def overlay_enable(self):
         self._overlay_enabled = True

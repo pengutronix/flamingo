@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 
 from flamingo.core.plugins.media import add_media
 
-HEADING_RE = re.compile('^h[1-6]$')
+HEADING_RE = re.compile("^h[1-6]$")
 
 
 class TitleNotFoundError(Exception):
@@ -12,7 +12,7 @@ class TitleNotFoundError(Exception):
 
 
 def get_section_by_title(html, title, tag=None):
-    soup = BeautifulSoup(html, 'html.parser')
+    soup = BeautifulSoup(html, "html.parser")
     html = soup.find(name=tag or HEADING_RE, text=title)
 
     if not html:
@@ -23,7 +23,7 @@ def get_section_by_title(html, title, tag=None):
 
 def extract_title(html):
     if isinstance(html, str):
-        html = BeautifulSoup(html, 'html.parser')
+        html = BeautifulSoup(html, "html.parser")
 
     h1 = html.h1
 
@@ -32,13 +32,13 @@ def extract_title(html):
 
         return h1.text
 
-    return ''
+    return ""
 
 
 def process_media_links(context, content, html):
     if isinstance(html, str):
-        html = BeautifulSoup(html, 'html.parser')
+        html = BeautifulSoup(html, "html.parser")
 
-    for img in html.find_all('img'):
-        media_content = add_media(context, content, img['src'])
-        img['src'] = media_content['url']
+    for img in html.find_all("img"):
+        media_content = add_media(context, content, img["src"])
+        img["src"] = media_content["url"]

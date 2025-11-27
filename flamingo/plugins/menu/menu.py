@@ -6,7 +6,7 @@ from flamingo.core.errors import MultipleObjectsReturned, ObjectDoesNotExist
 from flamingo.core.data_model import Content, Q
 from flamingo.core.utils.string import slugify
 
-logger = logging.getLogger('flamingo.plugins.Menu')
+logger = logging.getLogger("flamingo.plugins.Menu")
 
 
 def is_active(section, menu, content):
@@ -15,7 +15,13 @@ def is_active(section, menu, content):
             if i is content:
                 return True
 
-            if isinstance(i, (list, tuple, )):
+            if isinstance(
+                i,
+                (
+                    list,
+                    tuple,
+                ),
+            ):
                 if _contains(i, content):
                     return True
 
@@ -24,10 +30,7 @@ def is_active(section, menu, content):
     if isinstance(section, Section) and section.content is content:
         return True
 
-    if (isinstance(section, Section) and
-       isinstance(content['menu_path'], list) and
-       section in content['menu_path']):
-
+    if isinstance(section, Section) and isinstance(content["menu_path"], list) and section in content["menu_path"]:
         return True
 
     if isinstance(menu, Content):
@@ -45,7 +48,7 @@ def is_list(v):
 
 
 class Section:
-    def __init__(self, name, url=''):
+    def __init__(self, name, url=""):
         self.name = name
         self.url = url or slugify(self.name)
         self.content = None
@@ -59,23 +62,22 @@ class Section:
 
 class Menu:
     THEME_PATHS = [
-        os.path.join(os.path.dirname(__file__), 'theme'),
+        os.path.join(os.path.dirname(__file__), "theme"),
     ]
 
     def templating_engine_setup(self, context, templating_engine):
-        templating_engine.env.globals['is_active'] = is_active
-        templating_engine.env.globals['is_dict'] = is_dict
-        templating_engine.env.globals['is_list'] = is_list
+        templating_engine.env.globals["is_active"] = is_active
+        templating_engine.env.globals["is_dict"] = is_dict
+        templating_engine.env.globals["is_list"] = is_list
 
     def contents_parsed(self, context):
-        create_indices = context.settings.get('MENU_CREATE_INDICES', False)
+        create_indices = context.settings.get("MENU_CREATE_INDICES", False)
 
-        index_template = context.settings.get(
-            'MENU_INDEX_TEMPLATE', 'menu/index.html')
+        index_template = context.settings.get("MENU_INDEX_TEMPLATE", "menu/index.html")
 
-        if not hasattr(context.settings, 'MENU'):
+        if not hasattr(context.settings, "MENU"):
             context.settings.MENU = {
-                'main': [],
+                "main": [],
             }
 
         self.menu = deepcopy(context.settings.MENU)
@@ -95,11 +97,17 @@ class Menu:
                     resolve_links(url)
 
                 else:
-                    logger.debug('resolving %s', item[1])
+                    logger.debug("resolving %s", item[1])
 
                     try:
-                        if isinstance(item[1], (Content, Section, )):
-                            logger.debug('resolving skipped')
+                        if isinstance(
+                            item[1],
+                            (
+                                Content,
+                                Section,
+                            ),
+                        ):
+                            logger.debug("resolving skipped")
 
                             return
 
@@ -114,30 +122,30 @@ class Menu:
 
                         item[1] = context.contents.get(lookup)
 
-                        logger.debug('%s -> %s', lookup, item[1])
+                        logger.debug("%s -> %s", lookup, item[1])
 
                     except ObjectDoesNotExist:
                         logger.error(
                             "no content with %s %s found",
-                            'path' if isinstance(lookup, str) else 'lookup',
+                            "path" if isinstance(lookup, str) else "lookup",
                             lookup or repr(lookup),
                         )
 
                     except MultipleObjectsReturned:
                         logger.error(
                             "multiple contents found with %s %s found",
-                            'path' if isinstance(lookup, str) else 'lookup',
+                            "path" if isinstance(lookup, str) else "lookup",
                             lookup or repr(lookup),
                         )
 
         # setup menus
         if isinstance(self.menu, list):
             self.menu = {
-                'main': self.menu,
+                "main": self.menu,
             }
 
-        elif 'main' not in self.menu:
-            self.menu['main'] = []
+        elif "main" not in self.menu:
+            self.menu["main"] = []
 
         # resolve links
         for menu_name, menu in self.menu.items():
@@ -148,15 +156,15 @@ class Menu:
             current_section = None
 
             def gen_content(menu, path):
-                url = '/'
+                url = "/"
 
                 for section in path + [current_section]:
                     url = os.path.join(url, section.url)
 
-                url = os.path.join(url, 'index.html')
+                url = os.path.join(url, "index.html")
 
                 content = Content(
-                    type='menu/index',
+                    type="menu/index",
                     title=current_section.name,
                     url=url,
                     output=url[1:],
@@ -175,11 +183,11 @@ class Menu:
                     gen_content(menu[1:], path)
 
                 elif isinstance(item, Content):
-                    item['menu_path'] = path
+                    item["menu_path"] = path
 
                 elif isinstance(item, (list, tuple)):
                     if current_section:
-                        create_section_indices(item, path+[current_section])
+                        create_section_indices(item, path + [current_section])
 
                     else:
                         create_section_indices(item, path)

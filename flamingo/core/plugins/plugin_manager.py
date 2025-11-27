@@ -2,25 +2,23 @@ import logging
 
 from flamingo.core.utils.imports import acquire
 
-logger = logging.getLogger('flamingo.core.PluginManager')
+logger = logging.getLogger("flamingo.core.PluginManager")
 
 HOOK_NAMES = [
-    'setup',
-    'settings_setup',
-    'parser_setup',
-    'templating_engine_setup',
-    'content_parsed',
-    'contents_parsed',
-    'context_setup',
-    'pre_build',
-    'post_build',
-
+    "setup",
+    "settings_setup",
+    "parser_setup",
+    "templating_engine_setup",
+    "content_parsed",
+    "contents_parsed",
+    "context_setup",
+    "pre_build",
+    "post_build",
     # media
-    'media_added',
-
+    "media_added",
     # live-server hooks
-    'render_content',
-    'render_media_content',
+    "render_content",
+    "render_media_content",
 ]
 
 
@@ -43,47 +41,52 @@ class PluginManager:
         self._plugins = []
         self._plugin_paths = []
         self._hooks = {}
-        self._running_hook = ''
+        self._running_hook = ""
 
         self.PLUGIN_PATHS = []
 
         self.content = None
 
         # setup plugins
-        plugins = (self._context.settings.CORE_PLUGINS_PRE +
-                   self._context.settings.DEFAULT_PLUGINS +
-                   self._context.settings.PLUGINS +
-                   self._context.settings.CORE_PLUGINS_POST)
+        plugins = (
+            self._context.settings.CORE_PLUGINS_PRE
+            + self._context.settings.DEFAULT_PLUGINS
+            + self._context.settings.PLUGINS
+            + self._context.settings.CORE_PLUGINS_POST
+        )
 
         for plugin in plugins:
             logger.debug("setting up plugin '%s' ", plugin)
 
             try:
                 # settings hooks
-                if isinstance(plugin, str) and plugin.startswith('.'):
+                if isinstance(plugin, str) and plugin.startswith("."):
                     logger.debug("'%s' gets handled as settings hook", plugin)
 
                     plugin = plugin[1:]
 
                     if not hasattr(self._context.settings, plugin):
-                        logger.error('settings.%s does not exist', plugin)
+                        logger.error("settings.%s does not exist", plugin)
 
                         continue
 
                     hook = getattr(self._context.settings, plugin)
 
-                    if not hasattr(hook, 'flamingo_hook_name'):
-                        logger.error('settings.%s is no flamingo hook', plugin)
+                    if not hasattr(hook, "flamingo_hook_name"):
+                        logger.error("settings.%s is no flamingo hook", plugin)
 
                         continue
 
                     settings_hook = SettingsHook()
 
-                    hook_name = getattr(hook, 'flamingo_hook_name')
+                    hook_name = getattr(hook, "flamingo_hook_name")
                     setattr(settings_hook, hook_name, hook)
 
                     self._plugins.append(
-                        (hook.__name__, settings_hook, )
+                        (
+                            hook.__name__,
+                            settings_hook,
+                        )
                     )
 
                 # plugin classes
@@ -94,7 +97,10 @@ class PluginManager:
                     self.PLUGIN_PATHS.append(plugin_path)
 
                     self._plugins.append(
-                        (plugin_object.__class__.__name__, plugin_object, )
+                        (
+                            plugin_object.__class__.__name__,
+                            plugin_object,
+                        )
                     )
 
                     self._plugin_paths.append(plugin_path)
@@ -130,29 +136,35 @@ class PluginManager:
 
             for plugin_path, plugin_object in self._plugins:
                 if hasattr(plugin_object, hook_name):
-                    logger.debug('%s.%s discoverd', plugin_object, hook_name)
+                    logger.debug("%s.%s discoverd", plugin_object, hook_name)
 
                     self._hooks[hook_name].append(
-                        (plugin_object.__class__.__name__,
-                         getattr(plugin_object, hook_name), )
+                        (
+                            plugin_object.__class__.__name__,
+                            getattr(plugin_object, hook_name),
+                        )
                     )
 
         # settings hooks
-        logger.debug('searching for settings hooks')
+        logger.debug("searching for settings hooks")
 
         for attr_name in dir(self._context.settings):
             attr = getattr(self._context.settings, attr_name)
 
-            if (not hasattr(attr, 'flamingo_hook_name') or
-                attr.flamingo_hook_name not in hook_names_to_discover or
-                    attr in self._hooks[attr.flamingo_hook_name]):
-
+            if (
+                not hasattr(attr, "flamingo_hook_name")
+                or attr.flamingo_hook_name not in hook_names_to_discover
+                or attr in self._hooks[attr.flamingo_hook_name]
+            ):
                 continue
 
             logger.debug("settings.%s discoverd as", attr.flamingo_hook_name)
 
             self._hooks[attr.flamingo_hook_name].append(
-                ('settings', attr, ),
+                (
+                    "settings",
+                    attr,
+                ),
             )
 
     @property
@@ -164,7 +176,7 @@ class PluginManager:
         paths = []
 
         for plugin_path, plugin_object in self._plugins:
-            if hasattr(plugin_object, 'THEME_PATHS'):
+            if hasattr(plugin_object, "THEME_PATHS"):
                 paths.extend(plugin_object.THEME_PATHS)
 
         return paths
@@ -186,23 +198,22 @@ class PluginManager:
             self._running_hook = name
 
             # make current content object available for logging
-            if name == 'media_added':
+            if name == "media_added":
                 self.content = args[0]
 
             args = (self._context, *args)
 
             for plugin_name, hook in self._hooks[name]:
-                logger.debug('running %s.%s', plugin_name, name)
+                logger.debug("running %s.%s", plugin_name, name)
 
                 try:
                     hook(*args, **kwargs)
 
                 except Exception:
-                    logger.error('%s.%s failed', plugin_name, name,
-                                 exc_info=True)
+                    logger.error("%s.%s failed", plugin_name, name, exc_info=True)
 
         finally:
-            self._running_hook = ''
+            self._running_hook = ""
             self.content = None
 
     def get_plugin(self, name):
@@ -231,26 +242,20 @@ class PluginManager:
         """
 
         # setup cache
-        if not hasattr(self, '_options'):
+        if not hasattr(self, "_options"):
             self._options = []
 
             for plugin_name, plugin_object in self._plugins:
-
                 # a plugin needs to implement at least 'get_options()'
                 # to get listed
-                if (not hasattr(plugin_object, 'get_options') or
-                        not callable(plugin_object.get_options)):
-
+                if not hasattr(plugin_object, "get_options") or not callable(plugin_object.get_options):
                     continue
 
-                editable = (hasattr(plugin_object, 'set_option') and
-                            callable(plugin_object.get_options))
+                editable = hasattr(plugin_object, "set_option") and callable(plugin_object.get_options)
 
-                resetable = (hasattr(plugin_object, 'reset_options') and
-                             callable(plugin_object.reset_options))
+                resetable = hasattr(plugin_object, "reset_options") and callable(plugin_object.reset_options)
 
-                has_help_text = (hasattr(plugin_object, 'get_options_help') and
-                                 callable(plugin_object.get_options_help))
+                has_help_text = hasattr(plugin_object, "get_options_help") and callable(plugin_object.get_options_help)
 
                 self._options.append(
                     (
@@ -268,11 +273,7 @@ class PluginManager:
         options = []
 
         for i in self._options:
-            plugin_name, \
-                plugin_object, \
-                editable, \
-                resetable, \
-                has_help_text = i
+            plugin_name, plugin_object, editable, resetable, has_help_text = i
 
             # options
             try:
@@ -281,12 +282,20 @@ class PluginManager:
                 for option in plugin_object.get_options():
                     if isinstance(option, str):
                         plugin_options.append(
-                            (True, option, None, )
+                            (
+                                True,
+                                option,
+                                None,
+                            )
                         )
 
                     else:
                         plugin_options.append(
-                            (False, option[0], option[1], ),
+                            (
+                                False,
+                                option[0],
+                                option[1],
+                            ),
                         )
 
             except Exception:
@@ -310,10 +319,10 @@ class PluginManager:
                         exc_info=True,
                     )
 
-                    help_text = ''
+                    help_text = ""
 
             else:
-                help_text = ''
+                help_text = ""
 
             options.append(
                 (

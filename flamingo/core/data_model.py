@@ -13,34 +13,37 @@ def OR(a, b):
     return a | b
 
 
-QUOTE_KEYS = ('content_body', 'template_context', )
+QUOTE_KEYS = (
+    "content_body",
+    "template_context",
+)
 
 LOGIC_FUNCTIONS = {
-    'eq': lambda a, b: a == b,
-    'ne': lambda a, b: a != b,
-    'lt': lambda a, b: a < b,
-    'lte': lambda a, b: a <= b,
-    'gt': lambda a, b: a > b,
-    'gte': lambda a, b: a >= b,
-    'in': lambda a, b: a in b,
-    'contains': lambda a, b: _str(b) in _str(a),
-    'icontains': lambda a, b: _str(b).lower() in _str(a).lower(),
-    'isnull': lambda a, b: a is None if b else a is not None,
-    'isfalse': lambda a, b: not bool(a) if b else bool(a),
-    'startswith': lambda a, b: _str(a).startswith(b),
-    'endswith': lambda a, b: _str(a).endswith(b),
-    'passes': lambda a, b: b(a),
+    "eq": lambda a, b: a == b,
+    "ne": lambda a, b: a != b,
+    "lt": lambda a, b: a < b,
+    "lte": lambda a, b: a <= b,
+    "gt": lambda a, b: a > b,
+    "gte": lambda a, b: a >= b,
+    "in": lambda a, b: a in b,
+    "contains": lambda a, b: _str(b) in _str(a),
+    "icontains": lambda a, b: _str(b).lower() in _str(a).lower(),
+    "isnull": lambda a, b: a is None if b else a is not None,
+    "isfalse": lambda a, b: not bool(a) if b else bool(a),
+    "startswith": lambda a, b: _str(a).startswith(b),
+    "endswith": lambda a, b: _str(a).endswith(b),
+    "passes": lambda a, b: b(a),
 }
 
 
 def quote(value):
     types = {
-        str: lambda v: '<str({})>'.format(len(v)),
-        list: lambda v: '<list({})>'.format(len(v)),
-        tuple: lambda v: '<tuple({})>'.format(len(v)),
-        dict: '<dict(...)>',
-        Content: '<Content(...)>',
-        ContentSet: lambda v: '<ContentSet({})>'.format(len(v)),
+        str: lambda v: "<str({})>".format(len(v)),
+        list: lambda v: "<list({})>".format(len(v)),
+        tuple: lambda v: "<tuple({})>".format(len(v)),
+        dict: "<dict(...)>",
+        Content: "<Content(...)>",
+        ContentSet: lambda v: "<ContentSet({})>".format(len(v)),
     }
 
     t = type(value)
@@ -55,7 +58,7 @@ def quote(value):
 
 
 def _str(s):
-    return str(s) if s is not None else ''
+    return str(s) if s is not None else ""
 
 
 class F:
@@ -69,14 +72,13 @@ class F:
 class Lookup:
     def __init__(self, name, value):
         field_name = name
-        logic_function = 'eq'
+        logic_function = "eq"
 
-        if '__' in name:
-            field_name, logic_function = field_name.split('__')
+        if "__" in name:
+            field_name, logic_function = field_name.split("__")
 
         if logic_function not in LOGIC_FUNCTIONS:
-            raise ValueError(
-                "unknown logic function '{}'".format(logic_function))
+            raise ValueError("unknown logic function '{}'".format(logic_function))
 
         self.name = name
         self.field_name = field_name
@@ -98,16 +100,16 @@ class Lookup:
 
 class Q:
     def __init__(self, *qs, **lookups):
-        self.connector = 'AND'
+        self.connector = "AND"
         self.negated = False
         self.qs = None
         self.lookups = None
 
         if not qs and not lookups:
-            raise TypeError('to few arguments')
+            raise TypeError("to few arguments")
 
         if qs and lookups:
-            raise TypeError('to many arguments')
+            raise TypeError("to many arguments")
 
         if not lookups and len(qs) == 1 and isinstance(qs[0], dict):
             lookups = qs[0]
@@ -124,24 +126,20 @@ class Q:
 
     def __repr__(self):
         if self.qs:
-            repr_str = ', '.join([
-                repr(q) for q in self.qs
-            ])
+            repr_str = ", ".join([repr(q) for q in self.qs])
 
         elif self.lookups:
-            repr_str = ', '.join([
-                '{}={}'.format(i.name, repr(i.value)) for i in self.lookups
-            ])
+            repr_str = ", ".join(["{}={}".format(i.name, repr(i.value)) for i in self.lookups])
 
-        return '<{}{}({})>'.format(
-            'NOT ' if self.negated else '',
+        return "<{}{}({})>".format(
+            "NOT " if self.negated else "",
             self.connector,
             repr_str,
         )
 
     def __or__(self, other):
         q = Q(self, other)
-        q.connector = 'OR'
+        q.connector = "OR"
 
         return q
 
@@ -162,11 +160,11 @@ class Q:
                 result = q.check(obj)
 
                 if result:
-                    if self.connector == 'OR':
+                    if self.connector == "OR":
                         break
 
                 else:
-                    if self.connector == 'AND':
+                    if self.connector == "AND":
                         break
 
         # keyword lookups
@@ -175,11 +173,11 @@ class Q:
                 result = lookup.check(obj)
 
                 if result:
-                    if self.connector == 'OR':
+                    if self.connector == "OR":
                         break
 
                 else:
-                    if self.connector == 'AND':
+                    if self.connector == "AND":
                         break
 
         if self.negated:
@@ -205,22 +203,19 @@ class Content:
 
         for k, v in self.data.items():
             if k in QUOTE_KEYS:
-                repr_string.append('{}={}'.format(k, quote(v)))
+                repr_string.append("{}={}".format(k, quote(v)))
 
             elif isinstance(v, (Content, ContentSet)):
                 if v in recursion_stack:
-                    repr_string.append('{}={}'.format(k, quote(v)))
+                    repr_string.append("{}={}".format(k, quote(v)))
 
                 else:
-                    repr_string.append(
-                        '{}={}'.format(
-                            k, v.__repr__(pretty=pretty,
-                                          recursion_stack=recursion_stack)))
+                    repr_string.append("{}={}".format(k, v.__repr__(pretty=pretty, recursion_stack=recursion_stack)))
 
             else:
-                repr_string.append('{}={}'.format(k, repr(v)))
+                repr_string.append("{}={}".format(k, repr(v)))
 
-        return '<Content({})>'.format(', '.join(repr_string))
+        return "<Content({})>".format(", ".join(repr_string))
 
     def __getitem__(self, key):
         if key in self.data:
@@ -270,8 +265,7 @@ class ContentSet:
         if negated:
             query = ~query
 
-        content_set = self.__class__(
-            query=self.query & query if self.query else query)
+        content_set = self.__class__(query=self.query & query if self.query else query)
 
         for content in self.contents:
             if query.check(content):
@@ -325,7 +319,7 @@ class ContentSet:
             return_values.append(tuple())
 
             for field_name in field_names:
-                return_values[-1] += (content[field_name], )
+                return_values[-1] += (content[field_name],)
 
             if len(field_names) == 1:
                 if return_values[-1][0] is None:
@@ -347,7 +341,7 @@ class ContentSet:
     def order_by(self, field_name):
         reverse = False
 
-        if field_name.startswith('-'):
+        if field_name.startswith("-"):
             field_name = field_name[1:]
             reverse = True
 
@@ -388,21 +382,19 @@ class ContentSet:
         recursion_stack.append(self)
 
         for content in self.contents:
-            repr_strings.append(
-                content.__repr__(pretty=pretty,
-                                 recursion_stack=recursion_stack))
+            repr_strings.append(content.__repr__(pretty=pretty, recursion_stack=recursion_stack))
 
-        return '<ContentSet({})>'.format(', '.join(repr_strings))
+        return "<ContentSet({})>".format(", ".join(repr_strings))
 
     def __add__(self, other):
         if not isinstance(other, (ContentSet, Content)):
             raise TypeError("unsupported operand type(s) for '+'")
 
         if isinstance(other, Content):
-            return ContentSet(contents=self.contents+[other])
+            return ContentSet(contents=self.contents + [other])
 
         else:
-            return ContentSet(contents=self.contents+other.contents)
+            return ContentSet(contents=self.contents + other.contents)
 
     def __iadd__(self, other):
         if not isinstance(other, (ContentSet, Content)):

@@ -9,49 +9,49 @@ from flamingo.core.data_model import ContentSet
 
 from flamingo.plugins.rst import register_directive, parse_rst
 
-logger = logging.getLogger('flamingo.plugins.RSTImage')
+logger = logging.getLogger("flamingo.plugins.RSTImage")
 
 
 def gen_directives(context, plugin):
     # gallery settings
     default_gallery_option_spec = {
-        'template': directives.unchanged,
+        "template": directives.unchanged,
     }
 
     RST_GALLERY_OPTION_SPEC = context.settings.get(
-        'RST_GALLERY_OPTION_SPEC',
+        "RST_GALLERY_OPTION_SPEC",
         default_gallery_option_spec,
     )
 
     RST_GALLERY_EXTRA_OPTION_SPEC = context.settings.get(
-        'RST_GALLERY_EXTRA_OPTION_SPEC',
+        "RST_GALLERY_EXTRA_OPTION_SPEC",
         {},
     )
 
     # image settings
     default_image_option_spec = {
-        'template': directives.unchanged,
-        'align': directives.unchanged,
-        'clear': directives.unchanged,
-        'width': directives.unchanged,
-        'height': directives.unchanged,
-        'link': directives.unchanged,
-        'alt': directives.unchanged,
-        'title': directives.unchanged,
+        "template": directives.unchanged,
+        "align": directives.unchanged,
+        "clear": directives.unchanged,
+        "width": directives.unchanged,
+        "height": directives.unchanged,
+        "link": directives.unchanged,
+        "alt": directives.unchanged,
+        "title": directives.unchanged,
     }
 
     RST_IMAGE_CAPTION_RAW = context.settings.get(
-        'RST_IMAGE_CAPTION_RAW',
+        "RST_IMAGE_CAPTION_RAW",
         False,
     )
 
     RST_IMAGE_OPTION_SPEC = context.settings.get(
-        'RST_IMAGE_OPTION_SPEC',
+        "RST_IMAGE_OPTION_SPEC",
         default_image_option_spec,
     )
 
     RST_IMAGE_EXTRA_OPTION_SPEC = context.settings.get(
-        'RST_IMAGE_EXTRA_OPTION_SPEC',
+        "RST_IMAGE_EXTRA_OPTION_SPEC",
         {},
     )
 
@@ -65,40 +65,37 @@ def gen_directives(context, plugin):
         }
 
         def run(self):
-            path = context.content['path']
+            path = context.content["path"]
 
             try:
                 # setup gallery
                 plugin.galleries[path] = ContentSet()
 
                 # find related images
-                parse_rst('\n'.join(self.content), context)
+                parse_rst("\n".join(self.content), context)
 
                 # render gallery
                 contents = plugin.galleries.pop(path)
 
                 # find template
-                template = self.options.get(
-                    'template', context.settings.DEFAULT_GALLERY_TEMPLATE)
+                template = self.options.get("template", context.settings.DEFAULT_GALLERY_TEMPLATE)
 
-                if not context.content['related_paths']:
-                    context.content['related_paths'] = []
+                if not context.content["related_paths"]:
+                    context.content["related_paths"] = []
 
-                context.content['related_paths'].append(template)
+                context.content["related_paths"].append(template)
 
                 node_content = context.templating_engine.render(
                     template,
                     {
-                        'context': context,
-                        'content': copy(self.options),
-                        'contents': contents,
+                        "context": context,
+                        "content": copy(self.options),
+                        "contents": contents,
                     },
                     handle_exceptions=False,
                 )
 
-                return [
-                    raw('', node_content, format='html')
-                ]
+                return [raw("", node_content, format="html")]
 
             finally:
                 if path and path in plugin.galleries:
@@ -115,25 +112,25 @@ def gen_directives(context, plugin):
 
         def run(self):
             meta = {
-                'type': 'media/image',
+                "type": "media/image",
             }
 
             if self.content:
-                meta['caption'] = '\n'.join(self.content)
+                meta["caption"] = "\n".join(self.content)
 
-                if meta['caption'] and not RST_IMAGE_CAPTION_RAW:
-                    meta['caption'] = parse_rst(meta['caption'], context)
+                if meta["caption"] and not RST_IMAGE_CAPTION_RAW:
+                    meta["caption"] = parse_rst(meta["caption"], context)
 
             for k, v in self.options.items():
-                if k in ('context', 'content', 'name'):
-                    k = '_{}'.format(k)
+                if k in ("context", "content", "name"):
+                    k = "_{}".format(k)
 
                 meta[k] = v
 
-            path = context.content['path']
+            path = context.content["path"]
 
             if path in plugin.galleries:
-                meta['gallery'] = True
+                meta["gallery"] = True
 
             media_content = context.add_media(name=self.arguments[0], **meta)
 
@@ -145,39 +142,39 @@ def gen_directives(context, plugin):
 
             # image
             # find template
-            if media_content['template']:
-                template = media_content['template']
+            if media_content["template"]:
+                template = media_content["template"]
 
             else:
                 template = context.settings.DEFAULT_IMAGE_TEMPLATE
 
-            if not context.content['related_paths']:
-                context.content['related_paths'] = []
+            if not context.content["related_paths"]:
+                context.content["related_paths"] = []
 
             # add media path and template path to related paths
             # this tells the live-server to rebuild the current content file
             # when a image gets changed
-            context.content['related_paths'].append(
+            context.content["related_paths"].append(
                 os.path.join(
                     context.settings.CONTENT_ROOT,
-                    media_content['path'],
+                    media_content["path"],
                 )
             )
 
-            context.content['related_paths'].append(template)
+            context.content["related_paths"].append(template)
 
             return [
                 raw(
-                    '',
+                    "",
                     context.templating_engine.render(
                         template,
                         {
-                            'context': context,
-                            'content': media_content,
+                            "context": context,
+                            "content": media_content,
                         },
                         handle_exceptions=False,
                     ),
-                    format='html',
+                    format="html",
                 ),
             ]
 
@@ -185,20 +182,20 @@ def gen_directives(context, plugin):
 
 
 class rstImage:
-    THEME_PATHS = [os.path.join(os.path.dirname(__file__), 'theme')]
+    THEME_PATHS = [os.path.join(os.path.dirname(__file__), "theme")]
 
     def setup(self, context):
         self.galleries = {}
 
     def parser_setup(self, context):
         RST_GALLERY_DIRECTIVE_NAMES = context.settings.get(
-            'RST_GALLERY_DIRECTIVE_NAMES',
-            ['gallery'],
+            "RST_GALLERY_DIRECTIVE_NAMES",
+            ["gallery"],
         )
 
         RST_IMAGE_DIRECTIVE_NAMES = context.settings.get(
-            'RST_IMAGE_DIRECTIVE_NAMES',
-            ['img', 'image'],
+            "RST_IMAGE_DIRECTIVE_NAMES",
+            ["img", "image"],
         )
 
         _Gallery, _Image = gen_directives(context, self)

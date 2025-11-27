@@ -7,7 +7,7 @@ import os
 from flamingo.core.utils.cli import start_editor
 from flamingo.core.context import Context
 
-logger = logging.getLogger('flamingo.server.BuildEnvironment')
+logger = logging.getLogger("flamingo.server.BuildEnvironment")
 
 
 class BuildEnvironment:
@@ -16,7 +16,7 @@ class BuildEnvironment:
         self.context = None
 
         self.pending = {
-            '*': [],
+            "*": [],
         }
 
         if setup:
@@ -29,10 +29,10 @@ class BuildEnvironment:
         self.server.settings.CONTENT_PATHS = []
 
         self.server.settings.SKIP_HOOKS = [
-            'content_parsed',
-            'contents_parsed',
-            'pre_build',
-            'post_build',
+            "content_parsed",
+            "contents_parsed",
+            "pre_build",
+            "post_build",
         ]
 
         # setup context and contents
@@ -51,24 +51,24 @@ class BuildEnvironment:
         # fake initial build
         for content in self.context.contents:
             self.context.content = content
-            self.context.plugins.run_plugin_hook('content_parsed', content)
+            self.context.plugins.run_plugin_hook("content_parsed", content)
 
-        self.context.plugins.run_plugin_hook('contents_parsed')
-        self.context.plugins.run_plugin_hook('pre_build')
-        self.context.plugins.run_plugin_hook('post_build')
+        self.context.plugins.run_plugin_hook("contents_parsed")
+        self.context.plugins.run_plugin_hook("pre_build")
+        self.context.plugins.run_plugin_hook("post_build")
 
         self.patch_contents()
 
     def build(self, paths):
         self.server.rpc_logging_handler.filter(paths)
 
-        logger.debug('rebuilding %s', paths)
+        logger.debug("rebuilding %s", paths)
 
         # reset
-        logger.debug('resetting context overlay')
+        logger.debug("resetting context overlay")
         self.context.overlay_reset()
 
-        logger.debug('resetting settings overlay')
+        logger.debug("resetting settings overlay")
         self.context.settings.overlay_reset()
 
         self.raw_contents = self.raw_contents.exclude(path__in=paths)
@@ -77,21 +77,20 @@ class BuildEnvironment:
         self.context.settings.CONTENT_PATHS = paths
 
         source_paths = [
-            os.path.relpath(i, self.context.settings.CONTENT_ROOT)
-            for i in self.context.get_source_paths()
+            os.path.relpath(i, self.context.settings.CONTENT_ROOT) for i in self.context.get_source_paths()
         ]
 
         for path in source_paths:
             self.raw_contents.add(path=path)
 
         # parse
-        self.context.settings.SKIP_HOOKS = ['content_parsed']
+        self.context.settings.SKIP_HOOKS = ["content_parsed"]
 
         for content in self.raw_contents:
-            if content['path'] not in source_paths:
+            if content["path"] not in source_paths:
                 continue
 
-            if content['content_body']:
+            if content["content_body"]:
                 continue
 
             self.context.parse(content)
@@ -100,17 +99,17 @@ class BuildEnvironment:
         self.context.contents = deepcopy(self.raw_contents)
 
         for content in self.context.contents:
-            if content['path'] not in source_paths:
+            if content["path"] not in source_paths:
                 continue
 
             self.context.content = content
-            self.context.plugins.run_plugin_hook('content_parsed', content)
+            self.context.plugins.run_plugin_hook("content_parsed", content)
 
         self.context.content = None
 
-        self.context.plugins.run_plugin_hook('contents_parsed')
-        self.context.plugins.run_plugin_hook('pre_build')
-        self.context.plugins.run_plugin_hook('post_build')
+        self.context.plugins.run_plugin_hook("contents_parsed")
+        self.context.plugins.run_plugin_hook("pre_build")
+        self.context.plugins.run_plugin_hook("post_build")
 
         # finish
         self.context.settings.CONTENT_PATHS = []
@@ -118,8 +117,8 @@ class BuildEnvironment:
 
         self.patch_contents()
 
-        while self.pending['*']:
-            future = self.pending['*'].pop()
+        while self.pending["*"]:
+            future = self.pending["*"].pop()
             self.server.loop.call_soon_threadsafe(future.set_result, True)
 
         for path in paths:
@@ -128,26 +127,24 @@ class BuildEnvironment:
                 self.server.loop.call_soon_threadsafe(future.set_result, True)
 
     def patch_contents(self):
-        logger.debug('patch Contents')
+        logger.debug("patch Contents")
 
         for content in self.context.contents:
             # content.edit
-            if content['path']:
-                path = os.path.join(self.server.settings.CONTENT_ROOT,
-                                    content['path'])
+            if content["path"]:
+                path = os.path.join(self.server.settings.CONTENT_ROOT, content["path"])
 
                 content.edit = partial(start_editor, path)
 
             else:
-                content.edit = partial(print, 'Content has no source file')
+                content.edit = partial(print, "Content has no source file")
 
             # content.show
-            if content['url']:
-                content.show = partial(
-                    self.server.frontend_controller.set_url, content)
+            if content["url"]:
+                content.show = partial(self.server.frontend_controller.set_url, content)
 
             else:
-                content.show = partial(print, 'Content has no url')
+                content.show = partial(print, "Content has no url")
 
     def await_rebuild(self, paths=None):
         futures = []
@@ -157,7 +154,7 @@ class BuildEnvironment:
 
         if paths:
             for path in paths:
-                if path == '*':
+                if path == "*":
                     raise ValueError("'*' is a reserved value")
 
                 if path not in self.pending:
@@ -169,6 +166,6 @@ class BuildEnvironment:
             future = asyncio.Future(loop=self.server.loop)
             futures.append(future)
 
-            self.pending['*'].append(future)
+            self.pending["*"].append(future)
 
         return asyncio.gather(*futures, loop=self.server.loop)

@@ -6,12 +6,12 @@ from yaml import safe_load
 
 from flamingo.core.errors import FlamingoError
 
-NO_META_DATA_RE = re.compile(r'^((\s+)?\n){2,}')
-DELIMITER_RE = re.compile(r'((\s+)?\n){3,}')
+NO_META_DATA_RE = re.compile(r"^((\s+)?\n){2,}")
+DELIMITER_RE = re.compile(r"((\s+)?\n){3,}")
 
 
 def plain_read(path):
-    return open(path, 'r').read()
+    return open(path, "r").read()
 
 
 class ParsingError(FlamingoError):
@@ -29,16 +29,16 @@ class ContentParser:
             markup_string_end = len(meta_data_string.splitlines()) + 1
 
             raise ParsingError(
-                'Invalid meta data at line 1 to {}. '
-                'Meta data has to be valid YAML, defining a key value store'
-                ''.format(markup_string_end)
+                "Invalid meta data at line 1 to {}. Meta data has to be valid YAML, defining a key value store".format(
+                    markup_string_end
+                )
             )
 
         # check for meta data
         match = NO_META_DATA_RE.search(file_content)
 
         if match:
-            content['content_offset'] = 0
+            content["content_offset"] = 0
 
             return file_content
 
@@ -47,9 +47,9 @@ class ContentParser:
 
         if not match:
             raise ParsingError(
-                'Invalid format. Content files have to start with two blank '
-                'lines, or a meta data block followed by two blank lines and '
-                'a markup block'
+                "Invalid format. Content files have to start with two blank "
+                "lines, or a meta data block followed by two blank lines and "
+                "a markup block"
             )
 
         delimiter_start, delimiter_end = match.span()
@@ -59,8 +59,7 @@ class ContentParser:
         meta_data_string = file_content[:delimiter_start]
         markup_string = file_content[delimiter_end:]
 
-        content['content_offset'] = (len(meta_data_string.splitlines()) +
-                                     len(delimter.splitlines()) - 1)
+        content["content_offset"] = len(meta_data_string.splitlines()) + len(delimter.splitlines()) - 1
 
         # parse meta data
         try:
@@ -77,14 +76,14 @@ class ContentParser:
                 content[key] = value
 
         else:
-            content['content_offset'] += 1
+            content["content_offset"] += 1
 
         return markup_string
 
     def parse(self, file_content, content):
         markup_string = self.parse_meta_data(file_content, content)
 
-        content['content_body'] = markup_string.strip()
+        content["content_body"] = markup_string.strip()
 
 
 class FileParser:
@@ -100,8 +99,8 @@ class FileParser:
 
             except ImportError:
                 context.logger.error(
-                    'USE_CHARDET is set but chardet is not installed.'
-                    'Falling back to plain python read')
+                    "USE_CHARDET is set but chardet is not installed.Falling back to plain python read"
+                )
 
                 self.read = plain_read
 
@@ -124,8 +123,7 @@ class FileParser:
         parser = self.find_parser(extension)
 
         if not parser:
-            raise ParsingError(
-                "file extension '{}' is not supported".format(extension))
+            raise ParsingError("file extension '{}' is not supported".format(extension))
 
         file_content = self.read(path)
 
