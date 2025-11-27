@@ -1,43 +1,68 @@
 PYTHON=python3
-PYTHON_VENV=env
 
-$(PYTHON_VENV)/.created: REQUIREMENTS.dev.txt
-	rm -rf $(PYTHON_VENV) && \
-	$(PYTHON) -m venv $(PYTHON_VENV) && \
-	. $(PYTHON_VENV)/bin/activate && \
-	pip install --upgrade pip && \
-	pip install -r ./REQUIREMENTS.dev.txt && \
-	date > $(PYTHON_VENV)/.created
+PYTHON_ENV_ROOT=envs
+PYTHON_PACKAGING_VENV=$(PYTHON_ENV_ROOT)/$(PYTHON)-packaging-env
+PYTHON_QA_ENV=$(PYTHON_ENV_ROOT)/$(PYTHON)-qa-env
 
-env: $(PYTHON_VENV)/.created
+# packaging environment #######################################################
+.PHONY: packaging-env build _release
+
+$(PYTHON_PACKAGING_VENV)/.created:
+	rm -rf $(PYTHON_PACKAGING_VENV) && \
+	$(PYTHON) -m venv $(PYTHON_PACKAGING_VENV) && \
+	. $(PYTHON_PACKAGING_VENV)/bin/activate && \
+	$(PYTHON) -m pip install --upgrade pip && \
+	$(PYTHON) -m pip install build
+	date > $(PYTHON_PACKAGING_VENV)/.created
+
+.PHONY: packaging-env build
+
+packaging-env: $(PYTHON_PACKAGING_VENV)/.created
+
+build: packaging-env
+	. $(PYTHON_PACKAGING_VENV)/bin/activate && \
+	rm -rf dist *.egg-info && \
+	$(PYTHON) -m build
+
+# helper ######################################################################
+.PHONY: clean envs
 
 clean:
-	rm -rf $(PYTHON_VENV)
+	rm -rf $(PYTHON_ENV_ROOT)
 
-shell: env
-	. $(PYTHON_VENV)/bin/activate && \
-	rlpython
+envs: packaging-env qa-env
 
-freeze: env
-	. $(PYTHON_VENV)/bin/activate && \
-	pip freeze
+# testing #####################################################################
+.PHONY: qa qa-env qa-codespell qa-pytest qa-ruff
 
-test-site: env
-	. $(PYTHON_VENV)/bin/activate && \
-	rm -rf test-site && \
-	flamingo init test-site debug=True $(args)
+$(PYTHON_QA_ENV)/.created:
+	rm -rf $(PYTHON_QA_ENV) && \
+	$(PYTHON) -m venv $(PYTHON_QA_ENV) && \
+	. $(PYTHON_QA_ENV)/bin/activate && \
+	$(PYTHON) -m pip install pip --upgrade && \
+	$(PYTHON) -m pip install codespell ruff pytest pytest-mock pytest-aiohttp pytest-cov tests/flamingo-test-package -e ".[full]" && \
+	date > $(PYTHON_QA_ENV)/.created
 
-server: test-site
-	cd test-site && \
-	make server
+qa-env: $(PYTHON_QA_ENV)/.created
 
-sdist: env
-	. $(PYTHON_VENV)/bin/activate && \
-	rm -rf dist *.egg-info && \
-	./setup.py sdist
+qa: qa-codespell qa-pytest qa-ruff
 
-_release: sdist
-	. $(PYTHON_VENV)/bin/activate && \
-	twine upload dist/*
+qa-codespell: qa-env
+	. $(PYTHON_QA_ENV)/bin/activate && \
+	codespell
 
-.PHONY: test-site
+qa-codespell-fix: qa-env
+	. $(PYTHON_QA_ENV)/bin/activate && \
+	codespell -w
+
+qa-pytest: qa-env
+	. $(PYTHON_QA_ENV)/bin/activate && \
+	$(PYTHON) -m pytest -vv
+
+qa-ruff: qa-env
+	. $(PYTHON_QA_ENV)/bin/activate && \
+	ruff format --check --diff && ruff check
+
+qa-ruff-fix: qa-env
+	. $(PYTHON_QA_ENV)/bin/activate && \
+	ruff format && ruff check --fix
