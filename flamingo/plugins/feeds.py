@@ -176,7 +176,7 @@ class Feeds:
                 elif feed_config["type"] in ["rss", "podcast"]:
                     content["content_body"] = fg.rss_str().decode()
                 else:
-                    raise ValueError(f"Unkown Feed type {feed_config['type']}")
+                    raise ValueError(f"Unknown Feed type {feed_config['type']}")
 
                 context.contents.add(**content)
 

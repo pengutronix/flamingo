@@ -1,5 +1,5 @@
-{% for plugin_name, options, editable, resetable, help_text in plugin_options %}
-  <h3>{{ plugin_name }}{% if resetable %} <button onclick="reset_plugin_options('{{ plugin_name }}');">Reset</button>{% endif %}</h3>
+{% for plugin_name, options, editable, resettable, help_text in plugin_options %}
+  <h3>{{ plugin_name }}{% if resettable %} <button onclick="reset_plugin_options('{{ plugin_name }}');">Reset</button>{% endif %}</h3>
   {% if help_text %}
     <div class="plugin-options-help hide">
       <span class="show" onclick="toggle_plugin_help(this);">Help &blacktriangleright;</span>

@@ -15,7 +15,7 @@ class HTML5TimeTag:
                 time = self.TIME_FORMAT.search(self.time_object).groupdict()
 
             except AttributeError as e:
-                raise ValueError("string doesnt match the time format") from e
+                raise ValueError("string doesn't match the time format") from e
 
             # datetime
             if len(time.keys()) == 3:

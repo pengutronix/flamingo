@@ -6,7 +6,7 @@ WHITESPACE_RE = re.compile(r"\s+")
 ESCAPE_TABLE = [
     ("ä", "ae"),
     ("ö", "oe"),
-    ("ü", "ue"),
+    ("ü", "ue"),  # codespell:ignore ue
     ("ø", "oe"),
     ("ß", "ss"),
 ]

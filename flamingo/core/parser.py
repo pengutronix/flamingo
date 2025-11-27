@@ -41,24 +41,24 @@ class ContentParser:
 
             return file_content
 
-        # find delimter
+        # find delimiter
         match = DELIMITER_RE.search(file_content)
 
         if not match:
             raise ParsingError(
                 "Invalid format. Content files have to start with two blank "
-                "lines, or a meta data block followed by two blank lines and "
+                "lines, or a metadata block followed by two blank lines and "
                 "a markup block"
             )
 
         delimiter_start, delimiter_end = match.span()
 
         # split file_content
-        delimter = file_content[delimiter_start:delimiter_end]
+        delimiter = file_content[delimiter_start:delimiter_end]
         meta_data_string = file_content[:delimiter_start]
         markup_string = file_content[delimiter_end:]
 
-        content["content_offset"] = len(meta_data_string.splitlines()) + len(delimter.splitlines()) - 1
+        content["content_offset"] = len(meta_data_string.splitlines()) + len(delimiter.splitlines()) - 1
 
         # parse meta data
         try:

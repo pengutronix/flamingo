@@ -160,7 +160,7 @@ def test_includes(flamingo_env):
     """,
     )
 
-    # the CONTENT_PATHS get set by hand to enforce the rigth order
+    # the CONTENT_PATHS get set by hand to enforce the right order
     flamingo_env.settings.CONTENT_PATHS = ["a.rst", "b.rst", "c.rst", "d.rst"]
 
     flamingo_env.build()

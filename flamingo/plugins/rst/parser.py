@@ -77,7 +77,7 @@ def parse_system_message(raw_message, system_message_re=SYSTEM_MESSAGE_RE):
         return result
 
     except Exception:
-        logger.error("exception occoured while parsing %s", raw_message, exc_info=True)
+        logger.error("exception occurred while parsing %s", raw_message, exc_info=True)
 
         raise
 

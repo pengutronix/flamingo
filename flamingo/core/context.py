@@ -160,7 +160,7 @@ class Context(OverlayObject):
             content["_parsing_error"] = e
             self.errors.append(e)
 
-            self.logger.error("exception occoured while reading %s", content["path"], exc_info=True)
+            self.logger.error("exception occurred while reading %s", content["path"], exc_info=True)
 
         finally:
             self.content = previous_content

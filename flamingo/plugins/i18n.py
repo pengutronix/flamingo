@@ -38,7 +38,7 @@ class I18N:
             # find translations
             translation_langs = context.contents.filter(**{content_key: content[content_key]}).values("lang")
 
-            # add missings translations
+            # add missing translations
             for language in languages:
                 if language not in translation_langs:
                     content_data = copy(content.data)

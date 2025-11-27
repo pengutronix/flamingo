@@ -31,7 +31,7 @@ MENU = [
             ["Photoswipe", "plugins/photoswipe.rst"],
             ["Redirects", "plugins/redirects.rst"],
             ["Tags", "plugins/tags.rst"],
-            ["Thumbnails", "plugins/thumnails.rst"],
+            ["Thumbnails", "plugins/thumbnails.rst"],
             ["jQuery", "plugins/jquery.rst"],
         ],
     ],

@@ -86,7 +86,7 @@ Paths
     :name: CONTENT_ROOT
     :path: flamingo.core.settings.defaults.CONTENT_ROOT
 
-    flamingo will search for content here recursivly
+    flamingo will search for content here recursively
 
 .. setting::
     :name: CONTENT_PATHS

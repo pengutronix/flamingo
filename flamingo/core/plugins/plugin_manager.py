@@ -136,7 +136,7 @@ class PluginManager:
 
             for _plugin_path, plugin_object in self._plugins:
                 if hasattr(plugin_object, hook_name):
-                    logger.debug("%s.%s discoverd", plugin_object, hook_name)
+                    logger.debug("%s.%s discovered", plugin_object, hook_name)
 
                     self._hooks[hook_name].append(
                         (
@@ -158,7 +158,7 @@ class PluginManager:
             ):
                 continue
 
-            logger.debug("settings.%s discoverd as", attr.flamingo_hook_name)
+            logger.debug("settings.%s discovered as", attr.flamingo_hook_name)
 
             self._hooks[attr.flamingo_hook_name].append(
                 (
@@ -234,7 +234,7 @@ class PluginManager:
                 <str>  plugin_name,
                 <list> options,
                 <bool> editable,
-                <bool> resetable,
+                <bool> resealable,
                 <str>  help_text,
             ),
             ...
@@ -253,7 +253,7 @@ class PluginManager:
 
                 editable = hasattr(plugin_object, "set_option") and callable(plugin_object.get_options)
 
-                resetable = hasattr(plugin_object, "reset_options") and callable(plugin_object.reset_options)
+                resettable = hasattr(plugin_object, "reset_options") and callable(plugin_object.reset_options)
 
                 has_help_text = hasattr(plugin_object, "get_options_help") and callable(plugin_object.get_options_help)
 
@@ -262,7 +262,7 @@ class PluginManager:
                         plugin_name,
                         plugin_object,
                         editable,
-                        resetable,
+                        resettable,
                         has_help_text,
                     ),
                 )
@@ -273,7 +273,7 @@ class PluginManager:
         options = []
 
         for i in self._options:
-            plugin_name, plugin_object, editable, resetable, has_help_text = i
+            plugin_name, plugin_object, editable, resettable, has_help_text = i
 
             # options
             try:
@@ -329,7 +329,7 @@ class PluginManager:
                     plugin_name,
                     plugin_options,
                     editable,
-                    resetable,
+                    resettable,
                     help_text,
                 ),
             )
