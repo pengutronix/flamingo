@@ -17,10 +17,19 @@ def _gen_directives(context):
             return nodes
 
     class BootstrapRow(NestedDirective):
+        option_spec = {
+            "margin-top": directives.unchanged,
+            "margin-bottom": directives.unchanged,
+        }
+
         def run(self):
             nodes = super().run(context)
 
-            nodes.insert(0, raw("", '<div class="row">', format="html"))
+            stylespec = []
+            for k, v in self.options.items():
+                if k in self.option_spec:
+                    stylespec.append(f"{k}: {v};")
+            nodes.insert(0, raw("", f'<div class="row" style="{" ".join(stylespec)}">', format="html"))
             nodes.append(raw("", "</div>", format="html"))
 
             return nodes
