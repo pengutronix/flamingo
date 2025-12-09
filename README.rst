@@ -3,7 +3,7 @@ flamingo
 
 .. image:: doc/content/images/flamingo.svg
     :height: 128px
-    :width: 128px
+    :width: 128px
 
 |
 
