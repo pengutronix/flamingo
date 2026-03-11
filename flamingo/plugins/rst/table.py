@@ -136,10 +136,10 @@ def gen_directive(context, plugin):
             # remove obsolete attributes
             self.row = 1
 
-            for row in list(rows):
+            for row in rows:
                 self.row += 1
 
-                for col in list(row):
+                for col in row:
                     if col["attributes"]["rowspan"] == 1:
                         col["attributes"].pop("rowspan")
 
