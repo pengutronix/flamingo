@@ -1,10 +1,9 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 setup(
-    name='flamingo-test-package',
-    version='0.0',
+    name="flamingo-test-package",
+    version="0.0",
     packages=find_packages(),
 )

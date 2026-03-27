@@ -1,2 +1,0 @@
-queries:
-    - exclude: "flamingo/plugins/*/theme/*"

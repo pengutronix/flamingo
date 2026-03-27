@@ -67,7 +67,7 @@ Target audience
 ---------------
 
 Flamingo is no full featured content management system like WordPress for
-instance. It has no build-in editor, user management or backup solution.
+instance. It has no built-in editor, user management or backup solution.
 
 If you want to use flamingo you should be familiar with unix command lines and
 using a text editor like vim, emacs, nano or eclipse.

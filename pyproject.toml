@@ -1,0 +1,111 @@
+[build-system]
+requires = ["setuptools", "setuptools_scm[toml]"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "flamingo"
+description = "Flamingo is a python3-based, pelican-inspired static site generator, made by Pengutronix"
+authors = [
+    { name = "Florian Scherf", email = "python@pengutronix.de" },
+    { name = "Chris Fiege", email = "python@pengutronix.de" },
+]
+readme = "README.rst"
+license = "Apache-2.0"
+dependencies = [
+    "jinja2>=3.0.0",
+    "docutils",
+    "pyyaml",
+    "beautifulsoup4",
+    "rlpython",
+]
+classifiers = [
+    "Environment :: Console",
+    "Natural Language :: English",
+    "Operating System :: Unix",
+    "Programming Language :: Python :: 3 :: Only",
+]
+dynamic = ["version"] # via setuptools_scm
+requires-python = ">= 3.11"
+
+[project.optional-dependencies]
+"live-server" = [
+    "aiohttp>=3,<4",
+    "pygments",
+]
+chardet = [
+    "chardet",
+]
+pygments = [
+    "pygments",
+]
+markdown = [
+    "markdown",
+]
+feeds = [
+    "feedgen==0.9.0",
+]
+thumbnails = [
+    "pillow",
+]
+photoswipe = [
+    "pillow",
+]
+coloredlogs = [
+    "coloredlogs",
+]
+sphinx-themes = [
+    "sphinx>=4.5.0,<7.3.0",
+    "sphinx_rtd_theme>=1.0.0",
+    "setuptools",
+]
+dev = [
+    "ruff",
+    "codespell",
+    "pytest",
+    "pytest-mock",
+    "pytest-aiohttp",
+    "pytest-cov",
+]
+full = [
+    "aiohttp>=3,<4",
+    "pygments",
+    "chardet",
+    "markdown",
+    "feedgen==0.9.0",
+    "pillow",
+    "coloredlogs",
+    "sphinx>=4.5.0,<7.3.0",
+    "sphinx_rtd_theme>=1.0.0",
+    "setuptools",
+]
+
+[project.urls]
+homepage = "https://github.com/pengutronix/flamingo"
+documentation = "https://flamingo-web.org/"
+
+[project.scripts]
+flamingo = "flamingo.bin.flamingo:main"
+
+[tool.setuptools]
+packages = [
+    "flamingo",
+]
+include-package-data = true
+
+[tool.setuptools_scm]
+local_scheme = "no-local-version"
+
+
+[tool.ruff]
+line-length = 119
+exclude = [
+    "__pycache__",
+    "build",
+    "env",
+    "venv",
+    "envs",
+    "dist",
+]
+
+[tool.ruff.lint]
+select = ["B", "E", "F", "I", "SIM", "UP"]

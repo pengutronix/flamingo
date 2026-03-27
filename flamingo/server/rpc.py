@@ -1,13 +1,13 @@
-from functools import partial
-import contextlib
 import asyncio
-import logging
+import contextlib
 import json
+import logging
+from functools import partial
 
-from aiohttp.web import WebSocketResponse, Response
 from aiohttp import WSMsgType
+from aiohttp.web import Response, WebSocketResponse
 
-logger = logging.getLogger('flamingo.server.jsonrpc')
+logger = logging.getLogger("flamingo.server.jsonrpc")
 
 
 class JsonRpc:
@@ -18,8 +18,8 @@ class JsonRpc:
         self.loop = self.server.loop
 
         self.methods = {
-            'subscribe': self.subscribe,
-            'unsubscribe': self.unsubscribe,
+            "subscribe": self.subscribe,
+            "unsubscribe": self.unsubscribe,
         }
 
     async def shutdown(self):
@@ -36,9 +36,9 @@ class JsonRpc:
         try:
             message = json.loads(raw_message)
 
-            message_id = message['id']
-            method = str(message['method'])
-            params = message.get('params', None)
+            message_id = message["id"]
+            method = str(message["method"])
+            params = message.get("params", None)
 
             return True, message_id, method, params
 
@@ -52,11 +52,7 @@ class JsonRpc:
             return False, message_id, method, params
 
     def encode_result(self, message_id, result):
-        return json.dumps({
-            'jsonrpc': '2.0',
-            'id': message_id,
-            'result': result
-        })
+        return json.dumps({"jsonrpc": "2.0", "id": message_id, "result": result})
 
     def encode_error(self, message_id, error_code, error_message):
         """
@@ -68,21 +64,25 @@ class JsonRpc:
             -32700: RpcParseError
         """
 
-        return json.dumps({
-            'jsonrpc': '2.0',
-            'id': message_id,
-            'error': {
-                'code': error_code,
-                'message': error_message,
+        return json.dumps(
+            {
+                "jsonrpc": "2.0",
+                "id": message_id,
+                "error": {
+                    "code": error_code,
+                    "message": error_message,
+                },
             }
-        })
+        )
 
     def encode_notification(self, topic, data):
-        return json.dumps({
-            'jsonrpc': '2.0',
-            'method': topic,
-            'params': data,
-        })
+        return json.dumps(
+            {
+                "jsonrpc": "2.0",
+                "method": topic,
+                "params": data,
+            }
+        )
 
     # rpc methods #############################################################
     async def subscribe(self, params):
@@ -96,14 +96,10 @@ class JsonRpc:
 
     # websocket helper ########################################################
     async def send_str(self, websocket, string):
-        try:
+        # The `ConnectionResetError` exception gets handled by aiohttp
+        # internally and can be ignored.
+        with contextlib.suppress(ConnectionResetError):
             await websocket.send_str(string)
-
-        except ConnectionResetError:
-            # this exception gets handled by aiohttp internally and
-            # can be ignored
-
-            pass
 
     # notifications ###########################################################
     def notify(self, topic, message, wait=False):
@@ -128,7 +124,7 @@ class JsonRpc:
 
     # methods #################################################################
     def add_methods(self, *methods):
-        for prefix, method in methods:
+        for _prefix, method in methods:
             method_name = method.__name__
 
             self.methods[method_name] = method
@@ -146,7 +142,7 @@ class JsonRpc:
                     self.encode_error,
                     message_id=message_id,
                     error_code=-32600,
-                    error_message='invalid request',
+                    error_message="invalid request",
                 ),
             )
 
@@ -165,7 +161,7 @@ class JsonRpc:
 
             except Exception:
                 logger.error(
-                    'Exception raised while running %s(%s)',
+                    "Exception raised while running %s(%s)",
                     repr(method),
                     repr(params),
                     exc_info=True,
@@ -182,7 +178,7 @@ class JsonRpc:
 
             except Exception:
                 logger.error(
-                    'Exception raised while running %s(%s)',
+                    "Exception raised while running %s(%s)",
                     repr(method),
                     repr(params),
                     exc_info=True,
@@ -203,9 +199,7 @@ class JsonRpc:
         await self.send_str(websocket, message)
 
     async def __call__(self, http_request):
-        if (http_request.method != 'GET' or
-           http_request.headers.get('upgrade', '').lower() != 'websocket'):
-
+        if http_request.method != "GET" or http_request.headers.get("upgrade", "").lower() != "websocket":
             return Response(status=405)
 
         websocket = WebSocketResponse()

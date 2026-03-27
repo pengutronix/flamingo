@@ -1,7 +1,8 @@
-from enum import Enum
-from copy import copy
-import time
+import contextlib
 import os
+import time
+from copy import copy
+from enum import Enum
 
 
 class Flags(Enum):
@@ -33,8 +34,8 @@ class BaseWatcher:
 
         cwd = os.path.abspath(context.settings.CONTENT_ROOT)
 
-        while cwd != '/':
-            path = os.path.join(cwd, '.git')
+        while cwd != "/":
+            path = os.path.join(cwd, ".git")
 
             if os.path.exists(path):
                 self._git_dir = path
@@ -49,25 +50,24 @@ class BaseWatcher:
 
         git_dir_content = os.listdir(self._git_dir)
 
-        if 'MERGE_HEAD' in git_dir_content:
+        if "MERGE_HEAD" in git_dir_content:
             if not self._git_is_locked:
                 self._git_is_locked = True
 
                 notify(
-                    (Flags.INFO, ), 'git merge detected. watching suspended',
+                    (Flags.INFO,),
+                    "git merge detected. watching suspended",
                 )
 
             return False
 
-        if ('rebase-apply' in git_dir_content or
-           'rebase-merge' in git_dir_content):
-
+        if "rebase-apply" in git_dir_content or "rebase-merge" in git_dir_content:
             if not self._git_is_locked:
                 self._git_is_locked = True
 
                 notify(
-                    (Flags.INFO, ),
-                    'git rebase detected. watching suspended',
+                    (Flags.INFO,),
+                    "git rebase detected. watching suspended",
                 )
 
             return False
@@ -75,28 +75,21 @@ class BaseWatcher:
         if self._git_is_locked:
             self._git_is_locked = False
 
-            notify((Flags.INFO, ), 'resume watching')
+            notify((Flags.INFO,), "resume watching")
 
         return True
 
     def is_regular_file(self, name):
-        if name.startswith('.'):
+        if name.startswith("."):
             return False
 
-        if name.startswith('~'):
+        if name.startswith("~"):
             return False
 
-        if name.endswith('.swp'):
-            return False
-
-        return True
+        return not name.endswith(".swp")
 
     def ignored(self, path):
-        for prefix in self.context.settings.LIVE_SERVER_IGNORE_PREFIX:
-            if path.startswith(prefix):
-                return True
-
-        return False
+        return any(path.startswith(prefix) for prefix in self.context.settings.LIVE_SERVER_IGNORE_PREFIX)
 
     def get_paths(self):
         # content
@@ -107,42 +100,66 @@ class BaseWatcher:
         # themes
         for path in self.context.templating_engine.theme_paths:
             # templates
-            template_path = os.path.join(path, 'templates')
+            template_path = os.path.join(path, "templates")
 
             if os.path.exists(template_path):
                 paths.append(
-                    (Flags.TEMPLATE, os.path.join(path, 'templates'), True, )
+                    (
+                        Flags.TEMPLATE,
+                        os.path.join(path, "templates"),
+                        True,
+                    )
                 )
 
             # static
-            static_path = os.path.join(path, 'static')
+            static_path = os.path.join(path, "static")
 
             if os.path.exists(static_path):
                 paths.append(
-                    (Flags.STATIC, os.path.join(path, 'static'), True, )
+                    (
+                        Flags.STATIC,
+                        os.path.join(path, "static"),
+                        True,
+                    )
                 )
 
         # settings
         for path in self.context.settings.modules:
             paths.append(
-                (Flags.CODE, path, False, )
+                (
+                    Flags.CODE,
+                    path,
+                    False,
+                )
             )
 
         # plugins
         for path in self.context.plugins.PLUGIN_PATHS:
             paths.append(
-                (Flags.CODE, path, False, )
+                (
+                    Flags.CODE,
+                    path,
+                    False,
+                )
             )
 
         # layers
         for path in self.context.settings.PRE_BUILD_LAYERS:
             paths.append(
-                (Flags.STATIC, path, False, )
+                (
+                    Flags.STATIC,
+                    path,
+                    False,
+                )
             )
 
         for path in self.context.settings.POST_BUILD_LAYERS:
             paths.append(
-                (Flags.STATIC, path, False, )
+                (
+                    Flags.STATIC,
+                    path,
+                    False,
+                )
             )
 
         return paths
@@ -155,9 +172,7 @@ class BaseWatcher:
 
 
 class DiscoveryWatcher(BaseWatcher):
-    def watch(self, handle_events=lambda events: None,
-              notify=lambda flags, message: None):
-
+    def watch(self, handle_events=lambda events: None, notify=lambda flags, message: None):
         self.state = {}
         self._running = True
         first_run = True
@@ -176,7 +191,7 @@ class DiscoveryWatcher(BaseWatcher):
 
             for flag, path, is_dir in paths:
                 if is_dir:
-                    for dirpath, dirnames, filenames in os.walk(path):
+                    for dirpath, _dirnames, filenames in os.walk(path):
                         for name in filenames:
                             if not self.is_regular_file(name):
                                 continue
@@ -188,7 +203,10 @@ class DiscoveryWatcher(BaseWatcher):
 
                             try:
                                 mtime = os.path.getmtime(abs_path)
-                                new_state[abs_path] = (flag, mtime, )
+                                new_state[abs_path] = (
+                                    flag,
+                                    mtime,
+                                )
 
                             except FileNotFoundError:
                                 pass
@@ -199,12 +217,11 @@ class DiscoveryWatcher(BaseWatcher):
                     if self.ignored(path):
                         continue
 
-                    try:
-                        new_state[abs_path] = (flag,
-                                               os.path.getmtime(abs_path), )
-
-                    except FileNotFoundError:
-                        pass
+                    with contextlib.suppress(FileNotFoundError):
+                        new_state[abs_path] = (
+                            flag,
+                            os.path.getmtime(abs_path),
+                        )
 
             # first run
             if first_run:
@@ -215,19 +232,42 @@ class DiscoveryWatcher(BaseWatcher):
                 continue
 
             # check for deleted files
-            for path, (flag, mtime) in self.state.items():
+            for path, (flag, _mtime) in self.state.items():
                 if path not in new_state:
-                    events.append(((flag, Flags.DELETE, ), path, ))
+                    events.append(
+                        (
+                            (
+                                flag,
+                                Flags.DELETE,
+                            ),
+                            path,
+                        )
+                    )
 
             for path, (flag, mtime) in new_state.items():
                 # check for created files
                 if path not in self.state:
-                    events.append(((flag, Flags.CREATE, ), path, ))
+                    events.append(
+                        (
+                            (
+                                flag,
+                                Flags.CREATE,
+                            ),
+                            path,
+                        )
+                    )
 
                 # check for modified files
                 elif self.state[path][1] < mtime:
-
-                    events.append(((flag, Flags.MODIFY, ), path, ))
+                    events.append(
+                        (
+                            (
+                                flag,
+                                Flags.MODIFY,
+                            ),
+                            path,
+                        )
+                    )
 
             if events:
                 handle_events(events)

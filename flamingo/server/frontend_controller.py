@@ -6,42 +6,60 @@ class FrontendController:
         self.server = server
 
     def overlay_toggle(self):
-        self.server.rpc.notify('commands', {
-            'method': 'ractive_fire',
-            'event_name': 'toggle_overlay',
-        })
+        self.server.rpc.notify(
+            "commands",
+            {
+                "method": "ractive_fire",
+                "event_name": "toggle_overlay",
+            },
+        )
 
     def overlay_show(self):
-        self.server.rpc.notify('commands', {
-            'method': 'ractive_set',
-            'keypath': 'settings.overlay.open',
-            'value': True,
-        })
+        self.server.rpc.notify(
+            "commands",
+            {
+                "method": "ractive_set",
+                "keypath": "settings.overlay.open",
+                "value": True,
+            },
+        )
 
     def overlay_hide(self):
-        self.server.rpc.notify('commands', {
-            'method': 'ractive_set',
-            'keypath': 'settings.overlay.open',
-            'value': False,
-        })
+        self.server.rpc.notify(
+            "commands",
+            {
+                "method": "ractive_set",
+                "keypath": "settings.overlay.open",
+                "value": False,
+            },
+        )
 
     def overlay_show_tab(self, tab):
-        self.server.rpc.notify('commands', {
-            'method': 'ractive_set',
-            'keypath': 'settings.overlay.tab',
-            'value': tab,
-        })
+        self.server.rpc.notify(
+            "commands",
+            {
+                "method": "ractive_set",
+                "keypath": "settings.overlay.tab",
+                "value": tab,
+            },
+        )
 
     def set_url(self, url):
         if isinstance(url, Content):
-            url = url['url']
+            url = url["url"]
 
-        self.server.rpc.notify('commands', {
-            'method': 'set_url',
-            'url': url,
-        })
+        self.server.rpc.notify(
+            "commands",
+            {
+                "method": "set_url",
+                "url": url,
+            },
+        )
 
     def reload(self):
-        self.server.rpc.notify('commands', {
-            'method': 'reload',
-        })
+        self.server.rpc.notify(
+            "commands",
+            {
+                "method": "reload",
+            },
+        )

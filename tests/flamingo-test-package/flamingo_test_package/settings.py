@@ -1,3 +1,3 @@
 PLUGINS = [
-    'foo',
+    "foo",
 ]

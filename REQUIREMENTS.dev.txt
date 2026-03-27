@@ -1,4 +1,0 @@
--e .[full]
-tox
-setuptools>=36.5.0
-twine

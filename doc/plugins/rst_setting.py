@@ -1,9 +1,8 @@
-from docutils.parsers.rst import Directive, directives
 from docutils.nodes import raw
-
+from docutils.parsers.rst import Directive, directives
+from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import get_lexer_by_name
-from pygments import highlight
 
 from flamingo.core.utils.imports import acquire
 from flamingo.core.utils.pprint import pformat
@@ -31,8 +30,7 @@ SETTING_TEMPLATE = """
 
 class RawHtmlFormatter(HtmlFormatter):
     def wrap(self, source):
-        for i, t in source:
-            yield i, t
+        yield from source
 
 
 def raw_setting(context):
@@ -41,21 +39,20 @@ def raw_setting(context):
         has_content = True
 
         def run(self):
-            python, description = (
-                '\n'.join(self.content).split('\n\n', 1) + [''])[0:2]
+            python, description = ("\n".join(self.content).split("\n\n", 1) + [""])[0:2]
 
-            lexer = get_lexer_by_name('python')
+            lexer = get_lexer_by_name("python")
             formatter = HtmlFormatter()
             html = highlight(python, lexer, formatter)
 
             return [
                 raw(
-                    '',
+                    "",
                     RAW_SETTING_TEMPLATE.format(
                         highlight=html,
                         description=parse_rst(description, context),
                     ),
-                    format='html',
+                    format="html",
                 )
             ]
 
@@ -68,44 +65,38 @@ def setting(context):
         has_content = True
 
         option_spec = {
-            'name': directives.unchanged,
-            'path': directives.unchanged,
+            "name": directives.unchanged,
+            "path": directives.unchanged,
         }
 
         def run(self):
-            if 'name' not in self.options or 'path' not in self.options:
+            if "name" not in self.options or "path" not in self.options:
                 context.logger.error(
                     "%s: setting: 'name' and 'path' are required",
-                    context.content['path'],
+                    context.content["path"],
                 )
 
                 return []
 
             try:
-                value = acquire(self.options['path'])[0]
+                value = acquire(self.options["path"])[0]
 
             except AttributeError:
-                context.logger.error(
-                    '%s: unable to import %s',
-                    context.content['path'],
-                    self.options['path']
-                )
+                context.logger.error("%s: unable to import %s", context.content["path"], self.options["path"])
 
                 return []
 
-            lexer = get_lexer_by_name('python')
+            lexer = get_lexer_by_name("python")
             formatter = RawHtmlFormatter()
             html = highlight(pformat(value), lexer, formatter)
 
             return [
                 raw(
-                    '',
+                    "",
                     SETTING_TEMPLATE.format(
-                        name=self.options['name'],
-                        value=html,
-                        description=parse_rst(self.content, context)
+                        name=self.options["name"], value=html, description=parse_rst(self.content, context)
                     ),
-                    format='html',
+                    format="html",
                 )
             ]
 
@@ -114,5 +105,5 @@ def setting(context):
 
 class rstSetting:
     def parser_setup(self, context):
-        directives.register_directive('raw-setting', raw_setting(context))
-        directives.register_directive('setting', setting(context))
+        directives.register_directive("raw-setting", raw_setting(context))
+        directives.register_directive("setting", setting(context))

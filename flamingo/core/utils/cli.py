@@ -1,6 +1,6 @@
-from argparse import ArgumentParser, RawTextHelpFormatter
-import subprocess
 import logging
+import subprocess
+from argparse import ArgumentParser, RawTextHelpFormatter
 
 try:
     import coloredlogs
@@ -10,12 +10,12 @@ try:
 except ImportError:  # pragma: no cover
     COLOREDLOGS = False
 
-from flamingo.core.settings import Settings
 import flamingo
+from flamingo.core.settings import Settings
 
-logger = logging.getLogger('flamingo')
+logger = logging.getLogger("flamingo")
 
-VERSION = 'v{}'.format(flamingo.VERSION_STRING)
+VERSION = f"v{flamingo.VERSION_STRING}"
 DESCRIPTION_HEADER = r"""
   _        __ _                 _
  ^-)      / _| |               (_)
@@ -28,7 +28,7 @@ DESCRIPTION_HEADER = r"""
 
   https://github.com/pengutronix/flamingo
 
-""".format(' ' * (39 - len(VERSION)), VERSION)
+""".format(" " * (39 - len(VERSION)), VERSION)
 
 
 class LogFilter:
@@ -39,102 +39,95 @@ class LogFilter:
         return record.name in self.names
 
 
-def color(string, color='', background='', style='', reset=True):
-    reset_string = '\033[00m' if reset else ''
+def color(string, color="", background="", style="", reset=True):
+    reset_string = "\033[00m" if reset else ""
 
     if not string and reset:
         return reset_string
 
     if style:
         style = {
-            'bright': '1',
-            'underlined': '2',
-            'negative': '3',
+            "bright": "1",
+            "underlined": "2",
+            "negative": "3",
         }[style]
 
     if color:
         color = {
-            'black': '30',
-            'red': '31',
-            'green': '32',
-            'yellow': '33',
-            'blue': '34',
-            'magenta': '35',
-            'cyan': '36',
-            'white': '37',
+            "black": "30",
+            "red": "31",
+            "green": "32",
+            "yellow": "33",
+            "blue": "34",
+            "magenta": "35",
+            "cyan": "36",
+            "white": "37",
         }[color]
 
         if style:
-            color = ';{}'.format(color)
+            color = f";{color}"
 
     if background:
         background = {
-            'black': '40',
-            'red': '41',
-            'green': '42',
-            'yellow': '43',
-            'blue': '44',
-            'magenta': '45',
-            'cyan': '46',
-            'white': '47',
+            "black": "40",
+            "red": "41",
+            "green": "42",
+            "yellow": "43",
+            "blue": "44",
+            "magenta": "45",
+            "cyan": "46",
+            "white": "47",
         }[background]
 
         if color:
-            background = ';{}'.format(background)
+            background = f";{background}"
 
-    return '\033[{}{}{}m{}{}'.format(
-        style,
-        color,
-        background,
-        string,
-        reset_string,
-    )
+    return f"\033[{style}{color}{background}m{string}{reset_string}"
 
 
 def success(string):
-    return color(string, color='green')
+    return color(string, color="green")
 
 
 def warning(string):
-    return color(string, color='yellow')
+    return color(string, color="yellow")
 
 
 def error(string):
-    return color(string, color='red', style='bright')
+    return color(string, color="red", style="bright")
 
 
 def critical(string):
-    return color(string, color='white', background='red', style='bright')
+    return color(string, color="white", background="red", style="bright")
 
 
-def get_raw_parser(*parser_args, description='', **parser_kwargs):
-    description = '{}\n{}'.format(DESCRIPTION_HEADER, description)
+def get_raw_parser(*parser_args, description="", **parser_kwargs):
+    description = f"{DESCRIPTION_HEADER}\n{description}"
 
-    parser = ArgumentParser(*parser_args, description=description,
-                            formatter_class=RawTextHelpFormatter,
-                            **parser_kwargs)
-    parser.add_argument('--version', action='version', version=VERSION)
+    parser = ArgumentParser(
+        *parser_args, description=description, formatter_class=RawTextHelpFormatter, **parser_kwargs
+    )
+    parser.add_argument("--version", action="version", version=VERSION)
 
     return parser
 
 
-def gen_default_parser(*parser_args, description='', **parser_kwargs):
+def gen_default_parser(*parser_args, description="", **parser_kwargs):
+    parser = get_raw_parser(*parser_args, description=description, **parser_kwargs)
 
-    parser = get_raw_parser(*parser_args, description=description,
-                            **parser_kwargs)
-
-    parser.add_argument('-s', '--settings', nargs='+')
-    parser.add_argument('-c', '--content-root', type=str)
-    parser.add_argument('--content-paths', type=str, nargs='+')
+    parser.add_argument("-s", "--settings", nargs="+")
+    parser.add_argument("-c", "--content-root", type=str)
+    parser.add_argument("--content-paths", type=str, nargs="+")
 
     parser.add_argument(
-        '-l', '--log-level',
-        choices=['DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL'],
-        default='WARN',
+        "-l",
+        "--log-level",
+        choices=["DEBUG", "INFO", "WARN", "ERROR", "FATAL"],
+        default="WARN",
     )
 
-    parser.add_argument('--loggers', type=str, nargs='+')
-    parser.add_argument('-d', '--debug', action='store_true')
+    parser.add_argument("--loggers", type=str, nargs="+")
+    parser.add_argument("-d", "--debug", action="store_true")
 
     return parser
 
@@ -147,11 +140,11 @@ def parse_args(parser=None, setup_logging=True):
     # loglevel / debug mode
     if setup_logging:
         log_level = {
-            'DEBUG': logging.DEBUG,
-            'INFO': logging.INFO,
-            'WARN': logging.WARN,
-            'ERROR': logging.ERROR,
-            'FATAL': logging.FATAL,
+            "DEBUG": logging.DEBUG,
+            "INFO": logging.INFO,
+            "WARN": logging.WARN,
+            "ERROR": logging.ERROR,
+            "FATAL": logging.FATAL,
         }[namespace.log_level]
 
         if namespace.debug:
@@ -173,7 +166,7 @@ def parse_args(parser=None, setup_logging=True):
                 settings.add(module)
 
             except ImportError:
-                exit('import error: {}'.format(module))
+                exit(f"import error: {module}")
 
     # content
     if namespace.content_root:
@@ -186,8 +179,10 @@ def parse_args(parser=None, setup_logging=True):
 
 
 def start_editor(path):
-    command = ["""
-        $((test -n "$EDITOR" && echo $EDITOR) || which vim || which nano) {}
-    """.format(path)]
+    command = [
+        f"""
+        $((test -n "$EDITOR" && echo $EDITOR) || which vim || which nano) {path}
+    """
+    ]
 
-    subprocess.run(command, shell=True, executable='/bin/bash')
+    subprocess.run(command, shell=True, executable="/bin/bash")

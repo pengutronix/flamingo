@@ -7,7 +7,7 @@ class Static:
             return
 
         for static_dir in context.templating_engine.find_static_dirs():
-            for root, dirs, files in os.walk(static_dir):
+            for root, _dirs, files in os.walk(static_dir):
                 for f in files:
                     source = os.path.join(root, f)
 

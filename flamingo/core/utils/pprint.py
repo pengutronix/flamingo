@@ -1,9 +1,9 @@
 # The code in this module is mostly copied from pythons pprint module and
 # modified slightly to add support for flamingos internal types
 
-from pprint import PrettyPrinter, _safe_tuple, _recursion, _builtin_scalars
+from pprint import PrettyPrinter, _builtin_scalars, _recursion, _safe_tuple
 
-from flamingo.core.data_model import Content, ContentSet, QUOTE_KEYS, quote
+from flamingo.core.data_model import QUOTE_KEYS, Content, ContentSet, quote
 
 
 def _safe_repr(object, context, maxlevels, level):
@@ -31,15 +31,14 @@ def _safe_repr(object, context, maxlevels, level):
         for k, v in items:
             krepr, kreadable, krecur = saferepr(k, context, maxlevels, level)
             vrepr, vreadable, vrecur = saferepr(v, context, maxlevels, level)
-            append("%s: %s" % (krepr, vrepr))
+            append(f"{krepr}: {vrepr}")
             readable = readable and kreadable and vreadable
             if krecur or vrecur:
                 recursive = True
         del context[objid]
-        return "{%s}" % ", ".join(components), readable, recursive
+        return "{{{}}}".format(", ".join(components)), readable, recursive
 
-    if (issubclass(typ, list) and r is list.__repr__) or \
-       (issubclass(typ, tuple) and r is tuple.__repr__):
+    if (issubclass(typ, list) and r is list.__repr__) or (issubclass(typ, tuple) and r is tuple.__repr__):
         if issubclass(typ, list):
             if not object:
                 return "[]", True, False
@@ -71,35 +70,28 @@ def _safe_repr(object, context, maxlevels, level):
         del context[objid]
         return format % ", ".join(components), readable, recursive
 
-    if isinstance(object, (Content, ContentSet, )):
-        rep = object.__repr__(pretty=False)
+    rep = object.__repr__(pretty=False) if isinstance(object, (Content, ContentSet)) else repr(object)
 
-    else:
-        rep = repr(object)
-
-    return rep, (rep and not rep.startswith('<')), False
+    return rep, (rep and not rep.startswith("<")), False
 
 
-def _format_Content_items(cls, items, stream, indent, allowance, context,
-                          level):
-
+def _format_Content_items(cls, items, stream, indent, allowance, context, level):
     write = stream.write
     indent += cls._indent_per_level
-    delimnl = ',\n' + ' ' * indent
+    delimnl = ",\n" + " " * indent
     last_index = len(items) - 1
 
     for i, (key, ent) in enumerate(items):
         last = i == last_index
         rep = cls._repr(key, context, level)
         write(key)
-        write('=')
+        write("=")
 
         if key in QUOTE_KEYS:
             write(quote(ent))
 
         else:
-            cls._format(ent, stream, indent + len(rep) + 2,
-                        allowance if last else 1, context, level)
+            cls._format(ent, stream, indent + len(rep) + 2, allowance if last else 1, context, level)
         if not last:
             write(delimnl)
 
@@ -113,17 +105,16 @@ def _pprint_Content(cls, object, stream, indent, allowance, context, level):
     indent += 1
 
     write = stream.write
-    write('<Content(\n{}'.format(' ' * (indent + 1)))
+    write("<Content(\n{}".format(" " * (indent + 1)))
 
     if cls._indent_per_level > 1:
-        write((cls._indent_per_level - 1) * ' ')
+        write((cls._indent_per_level - 1) * " ")
     length = len(object.data)
 
     if length:
         items = sorted(object.data.items(), key=_safe_tuple)
-        _format_Content_items(cls, items, stream, indent, allowance + 1,
-                              context, level)
-    write(')>')
+        _format_Content_items(cls, items, stream, indent, allowance + 1, context, level)
+    write(")>")
 
 
 def _pprint_ContentSet(cls, object, stream, indent, allowance, context, level):
@@ -134,11 +125,10 @@ def _pprint_ContentSet(cls, object, stream, indent, allowance, context, level):
 
     indent += 1
 
-    stream.write('<ContentSet(\n{}'.format(' ' * (indent + 1)))
+    stream.write("<ContentSet(\n{}".format(" " * (indent + 1)))
 
-    cls._format_items(object.contents, stream, indent, allowance + 1,
-                      context, level)
-    stream.write(')>')
+    cls._format_items(object.contents, stream, indent, allowance + 1, context, level)
+    stream.write(")>")
 
 
 class FlamingoPrettyPrinter(PrettyPrinter):
@@ -154,9 +144,7 @@ class FlamingoPrettyPrinter(PrettyPrinter):
         return _safe_repr(object, context, maxlevels, level)
 
 
-def pprint(object, stream=None, indent=1, width=80, depth=None, *,
-           compact=False, full_content_repr=True):
-
+def pprint(object, stream=None, indent=1, width=80, depth=None, *, compact=False, full_content_repr=True):
     FlamingoPrettyPrinter(
         stream=stream,
         indent=indent,
@@ -167,9 +155,7 @@ def pprint(object, stream=None, indent=1, width=80, depth=None, *,
     ).pprint(object)
 
 
-def pformat(object, indent=1, width=80, depth=None, *, compact=False,
-            full_content_repr=True):
-
+def pformat(object, indent=1, width=80, depth=None, *, compact=False, full_content_repr=True):
     return FlamingoPrettyPrinter(
         indent=indent,
         width=width,
