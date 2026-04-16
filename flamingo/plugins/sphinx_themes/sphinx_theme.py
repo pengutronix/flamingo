@@ -3,11 +3,11 @@ import os
 import shutil
 from configparser import RawConfigParser
 from copy import deepcopy
+from importlib.metadata import entry_points
 
 import docutils
 import sphinx
 from jinja2 import Environment, FileSystemLoader
-from pkg_resources import iter_entry_points
 from sphinx.config import Config
 from sphinx.jinja2glue import _tobool, _todim, _toint
 from sphinx.registry import SphinxComponentRegistry
@@ -49,7 +49,7 @@ class SphinxApp:
             themes[name] = theme_path
 
         # discover 3rd party themes from pkg resources
-        for entry_point in iter_entry_points("sphinx.html_themes"):
+        for entry_point in entry_points(group="sphinx.html_themes"):
             name = entry_point.name
             module = entry_point.load()
             theme_path = os.path.dirname(module.__file__)

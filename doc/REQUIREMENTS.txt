@@ -2,3 +2,4 @@
 beautifulsoup4
 sphinx_rtd_theme
 pygments>=2.12.0
+sphinx_rtd_theme<3
