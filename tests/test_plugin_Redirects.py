@@ -46,3 +46,23 @@ def test_redirects_broken_line(flamingo_env, caplog: pytest.LogCaptureFixture):
     assert any("Invalid redirect rule line: '302a /foo.html /bar.html'" in line for line in caplog.messages)
 
     assert not flamingo_env.exists("/output/foo.html")
+
+
+def test_redirects_supported_codes(flamingo_env, caplog: pytest.LogCaptureFixture):
+    flamingo_env.settings.PLUGINS = ["flamingo.plugins.Redirects"]
+
+    flamingo_env.write(
+        "/content/redirects.rr",
+        """
+    999 /foo.html /bar.html
+    """,
+    )
+
+    caplog.set_level(logging.ERROR)
+    flamingo_env.build()
+    assert any(
+        "Invalid redirect rule code: 999 in line: '999 /foo.html /bar.html'. Only 302 is supported." in line
+        for line in caplog.messages
+    )
+
+    assert not flamingo_env.exists("/output/foo.html")

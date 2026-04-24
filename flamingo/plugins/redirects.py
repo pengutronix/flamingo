@@ -33,6 +33,11 @@ class RedirectRulesParser(ContentParser):
 
             match = match.groupdict()
 
+            if match["code"] != "302":
+                raise ParsingError(
+                    f"Invalid redirect rule code: {match['code']} in line: '{line}'. Only 302 is supported."
+                )
+
             content["rules"].append(
                 (
                     match["code"],
