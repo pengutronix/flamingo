@@ -1,6 +1,6 @@
 import re
 
-from flamingo.core.parser import ContentParser
+from flamingo.core.parser import ContentParser, ParsingError
 
 HTML_TEMPLATE = """
 <!DOCTYPE html>
@@ -29,7 +29,7 @@ class RedirectRulesParser(ContentParser):
             match = self.RULE_RE.search(line)
 
             if not match:
-                continue
+                raise ParsingError(f"Invalid redirect rule line: '{line}'")
 
             match = match.groupdict()
 
