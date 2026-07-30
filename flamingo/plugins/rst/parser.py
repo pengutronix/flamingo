@@ -2,7 +2,7 @@ import logging
 import re
 
 from docutils.core import publish_parts
-from docutils.nodes import title
+from docutils.nodes import section, title
 from docutils.utils import SystemMessage
 from docutils.writers.html4css1 import Writer
 
@@ -129,17 +129,33 @@ class FlamingoWriter(Writer):
                 if isinstance(node, title):
                     tree.children.remove(node)
 
-                    return node
+                    return tree, node
 
-                html_title = _get_content_title(node)
+                result = _get_content_title(node)
 
-                if html_title:
-                    return html_title
+                if result:
+                    return result
 
-        content_title = _get_content_title(document)
+        result = _get_content_title(document)
 
-        if content_title:
-            return content_title[0].astext()
+        if not result:
+            return
+
+        parent, content_title = result
+
+        # The content title gets rendered as <h1> by the theme, but the
+        # section it was taken from remains part of the document. When it is
+        # the only top level section, all remaining headings are nested one
+        # level deeper than they appear and would start at <h3>, skipping
+        # <h2>. Decrementing the initial header level compensates for that.
+        top_level_sections = [node for node in document.children if isinstance(node, section)]
+        if [parent] == top_level_sections:
+            initial_header_level = document.settings.initial_header_level
+
+            if str(initial_header_level).isdigit():
+                document.settings.initial_header_level = max(int(initial_header_level) - 1, 1)
+
+        return content_title[0].astext()
 
     def write(self, document, destination):
         if not self.flamingo_doctitle_xform:
