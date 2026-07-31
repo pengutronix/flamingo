@@ -25,6 +25,44 @@ foobar"""
     assert content_body == '<divclass="section"id="bar">foobar</div>'
 
 
+def test_rst_header_levels(flamingo_dummy_context):
+    from flamingo import Content
+    from flamingo.plugins.rst.plugin import RSTParser
+
+    raw_content = """
+title: foo
+
+
+Document Title
+==============
+
+intro
+
+Section
+-------
+
+text
+
+Sub Section
+~~~~~~~~~~~
+
+more text"""
+
+    parser = RSTParser(flamingo_dummy_context)
+    content = Content()
+
+    parser.parse(raw_content, content)
+
+    content_body = content["content_body"]
+
+    # the content title gets rendered as <h1>, so the headings in the
+    # content body have to start at <h2>
+    assert content["content_title"] == "Document Title"
+    assert "<h1" not in content_body
+    assert "<h2>Section</h2>" in content_body
+    assert "<h3>Sub Section</h3>" in content_body
+
+
 def test_error_line_number(flamingo_dummy_context):
     import pytest
 
