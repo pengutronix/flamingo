@@ -52,7 +52,6 @@ jobs:
       - pytest
       - ruff
       - build
-      - publish-test
     permissions:
       id-token: write
     steps:
