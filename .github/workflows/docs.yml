@@ -30,7 +30,7 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v6
       - name: Build
-        run: git fetch -a && cd doc &&  make html
+        run: git fetch -a && cd doc && make html
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
         with:

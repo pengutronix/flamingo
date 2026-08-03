@@ -29,6 +29,14 @@ jobs:
       - uses: actions/checkout@v6
       - run: make qa-ruff
 
+  documentation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Build
+        run: git fetch -a && cd doc && make html
+
   build:
     name: Python Build
     runs-on: ubuntu-latest
@@ -52,6 +60,7 @@ jobs:
       - pytest
       - ruff
       - build
+      - documentation
     permissions:
       id-token: write
     steps:
