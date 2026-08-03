@@ -1,7 +1,32 @@
-
-
 Changelog
 =========
+
+`v1.11 <https://github.com/pengutronix/flamingo/compare/v1.10.2...v1.11>`_ (2026-07-31)
+---------------------------------------------------------------------------------------
+
+Breaking Changes
+~~~~~~~~~~~~~~~~
+
+* plugins/rst: Fix heading levels of parsed documents.
+  After this change flamingo will generate HTML documents that actually contain <h2>-headings.
+  Adapt your templates to reflect this change.
+
+Changes
+~~~~~~~
+
+* plugins/redirects: Raise Error if a line can not be parsed
+* plugins/redirects: Raise Error on Not Supported Status Code
+* plugins/sphinx_themes: replace deprecated iter_entry_points
+* plugins/rst: Allow to set margins on row-directive
+* server: Explicitly create asyncio event loop for python 3.14
+* Format code using ruff
+* Add ruff and codespell as gatekeepers for pull-requests to CI
+* Move to ``pyproject.toml`` for packaging.
+
+Bugfixes
+~~~~~~~~
+
+* server/logging: fix ruff check finding fix
 
 `v1.10.2 <https://github.com/pengutronix/flamingo/compare/v1.10.1...v1.10.2>`_ (2025-11-21)
 -------------------------------------------------------------------------------------------
