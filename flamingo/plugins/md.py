@@ -1,4 +1,9 @@
-import markdown
+from flamingo.core.plugins.plugin_manager import PluginDependencyError
+
+try:
+    import markdown
+except ImportError:
+    markdown = None
 from bs4 import BeautifulSoup
 
 from flamingo.core.parser import ContentParser
@@ -30,5 +35,11 @@ class MarkdownParser(ContentParser):
 
 
 class Markdown:
+    def __init__(self):
+        if not markdown:
+            raise PluginDependencyError(
+                "Markdown plugin is missing optional installation dependency flamingo[markdown]."
+            )
+
     def parser_setup(self, context):
         context.parser.add_parser(MarkdownParser(context))

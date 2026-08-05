@@ -1,8 +1,14 @@
 import logging
+import sys
 
 from flamingo.core.utils.imports import acquire
 
 logger = logging.getLogger("flamingo.core.PluginManager")
+
+
+class PluginDependencyError(Exception):
+    pass
+
 
 HOOK_NAMES = [
     "setup",
@@ -107,6 +113,7 @@ class PluginManager:
 
             except Exception:
                 logger.error("setup of '%s' failed", plugin, exc_info=True)
+                sys.exit(1)
 
         self._discover(HOOK_NAMES)
 

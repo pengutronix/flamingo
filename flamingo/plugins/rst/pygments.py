@@ -3,12 +3,26 @@ from tempfile import TemporaryDirectory
 
 from docutils.nodes import raw
 from docutils.parsers.rst import Directive, directives
-from pygments import highlight
-from pygments.formatters import HtmlFormatter
-from pygments.lexers import get_lexer_by_name, guess_lexer
-from pygments.styles import get_all_styles, get_style_by_name
-from pygments.token import Token
-from pygments.util import ClassNotFound
+
+from flamingo.core.plugins.plugin_manager import PluginDependencyError
+
+try:
+    from pygments import highlight
+    from pygments.formatters import HtmlFormatter
+    from pygments.lexers import get_lexer_by_name, guess_lexer
+    from pygments.styles import get_all_styles, get_style_by_name
+    from pygments.token import Token
+    from pygments.util import ClassNotFound
+except ImportError:
+    pygments = None
+    highlight = None
+    HtmlFormatter = None
+    get_lexer_by_name = None
+    guess_lexer = None
+    get_all_styles = None
+    get_style_by_name = None
+    Token = None
+    ClassNotFound = None
 
 from flamingo.plugins.rst import register_directive
 
@@ -70,6 +84,12 @@ def code_block(context):
 
 
 class rstPygments:
+    def __init__(self):
+        if not ClassNotFound:
+            raise PluginDependencyError(
+                "Pygments plugin is missing optional installation dependency flamingo[pygments]."
+            )
+
     def get_options(self):
         options = [
             (
