@@ -2,7 +2,13 @@ import logging
 from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
-from feedgen.feed import FeedGenerator
+
+from flamingo.core.plugins.plugin_manager import PluginDependencyError
+
+try:
+    from feedgen.feed import FeedGenerator
+except ImportError:
+    FeedGenerator = None
 
 logger = logging.getLogger("flamingo.plugins.Feeds")
 
@@ -28,6 +34,10 @@ def make_urls_absolute(html, base_url):
 
 
 class Feeds:
+    def __init__(self):
+        if not FeedGenerator:
+            raise PluginDependencyError("Feeds plugin is missing optional installation dependency flamingo[feeds].")
+
     def pre_build(self, context):
         env = context.templating_engine.env
         render_summary = env.globals.get("render_summary")

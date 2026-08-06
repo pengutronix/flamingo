@@ -6,14 +6,25 @@ from tempfile import TemporaryDirectory
 
 from bs4 import BeautifulSoup
 from jinja2 import pass_context
-from sphinx import version_info as sphinx_version_info
-from sphinx.jinja2glue import _tobool, _todim, _toint, accesskey
 
 from flamingo import Content
 from flamingo.plugins.menu.menu import Section
 
+from ...core.plugins.plugin_manager import PluginDependencyError
 from . import defaults
-from .sphinx_theme import SphinxTheme
+
+try:
+    from sphinx import version_info as sphinx_version_info
+    from sphinx.jinja2glue import _tobool, _todim, _toint, accesskey
+
+    from .sphinx_theme import SphinxTheme
+except ImportError:
+    sphinx_version_info = None
+    _tobool = None
+    _todim = None
+    _toint = None
+    accesskey = None
+    SphinxTheme = None
 
 logger = logging.getLogger("flamingo.plugins.SphinxThemes")
 
@@ -50,6 +61,12 @@ class TocTree:
 
 
 class SphinxThemes:
+    def __init__(self):
+        if not SphinxTheme:
+            raise PluginDependencyError(
+                "SphinxThemes plugin is missing optional installation dependency flamingo[sphinx-themes]."
+            )
+
     # plugin options ##########################################################
     def reset_options(self):
         self.settings = {}

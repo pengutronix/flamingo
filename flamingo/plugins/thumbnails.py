@@ -4,16 +4,23 @@ import os
 import re
 from collections import OrderedDict
 
+from flamingo.core.plugins.plugin_manager import PluginDependencyError
+
 try:
     from docutils.parsers.rst import directives
 
     RST = True
 
 except ImportError:
+    directives = False
     RST = False
 
-from PIL import Image as PillowImage
-from PIL import UnidentifiedImageError
+try:
+    from PIL import Image as PillowImage
+    from PIL import UnidentifiedImageError
+except ImportError:
+    PillowImage = None
+    UnidentifiedImageError = None
 
 from flamingo.core.data_model import Content
 
@@ -86,6 +93,12 @@ def scale_image(original_size, width=None, height=None):
 
 class Thumbnails:
     THEME_PATHS = [os.path.join(os.path.dirname(__file__), "theme")]
+
+    def __init__(self):
+        if not UnidentifiedImageError:
+            raise PluginDependencyError(
+                "Thumbnails plugin is missing optional installation dependency flamingo[thumbnails]."
+            )
 
     def settings_setup(self, context):
         THUMBNAIL_CACHE = getattr(context.settings, "THUMBNAIL_CACHE", DEFAULT_THUMBNAIL_CACHE)
