@@ -3,6 +3,15 @@
 Changelog
 =========
 
+`v1.11.1 <https://github.com/pengutronix/flamingo/compare/v1.11...v1.11.1>`_ (2026-08-06)
+-----------------------------------------------------------------------------------------
+
+Bugfixes
+~~~~~~~~
+
+* core/plugins: Fix Flamingo failing to start up if not all optional dependencies have been installed.
+  Improve error messages for plugins with optional dependencies.
+
 `v1.11 <https://github.com/pengutronix/flamingo/compare/v1.10.2...v1.11>`_ (2026-07-31)
 ---------------------------------------------------------------------------------------
 
