@@ -3,6 +3,18 @@
 Changelog
 =========
 
+`v1.12 <https://github.com/pengutronix/flamingo/compare/v1.11.1...v1.12>`_ (2026-08-11)
+---------------------------------------------------------------------------------------
+
+Changes
+~~~~~~~
+
+* plugins/static: Invalidate HTTP cache by appending md5sum to static files.
+  This adds a Jinja2 filter :code:`static_file` that will generate a URL with the
+  md5sum of the file appended as a query parameter.
+  Using the :code:`static_file` filter is optional.
+  The old way of manually specifying the href attribute still works.
+
 `v1.11.1 <https://github.com/pengutronix/flamingo/compare/v1.11...v1.11.1>`_ (2026-08-06)
 -----------------------------------------------------------------------------------------
 
