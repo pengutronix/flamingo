@@ -25,10 +25,10 @@
 {%- endif -%}
 <img src="{{ content.url }}"
   {% if content.alt %}
-     alt="{{ content.alt }}"
+     alt="{{ content.alt | e }}"
   {% endif %}
   {% if content.title %}
-     title="{{ content.title }}"
+     title="{{ content.title | e }}"
   {% endif %}
   style="
     {% if not content.is_thumbnail %}
