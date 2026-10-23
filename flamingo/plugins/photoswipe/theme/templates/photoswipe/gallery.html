@@ -27,7 +27,7 @@
     <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
       {%- if media_content.is_thumbnail -%}
         <a href="{{ media_content.original.url }}" itemprop="contentUrl" data-size="{{ utils.get_size(context, media_content.original) }}">
-          <img src="{{ media_content.url }}" itemprop="thumbnail" alt="{{ media_content.alt }}" />
+          <img src="{{ media_content.url }}" itemprop="thumbnail" alt="{{ media_content.alt | e }}" />
         </a>
       {%- else -%}
         <a href="{{ media_content.url }}" itemprop="contentUrl"
@@ -38,7 +38,7 @@
               {{ utils.get_size(context, media_content) }}
             {% endif %}
           ">
-          <img src="{{ media_content.url }}" itemprop="thumbnail" alt="{{ media_content.alt }}"
+          <img src="{{ media_content.url }}" itemprop="thumbnail" alt="{{ media_content.alt | e }}"
             style="
               {% if width %}
                 width: {{ width }};
