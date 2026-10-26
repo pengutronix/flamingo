@@ -39,3 +39,31 @@ def test_add_media(flamingo_dummy_context, flamingo_env):
     flamingo_env.build()
 
     assert flamingo_env.read("/output/media/foo.jpg") == "1"
+
+
+def test_image_alt_and_title_escaped(flamingo_env):
+    flamingo_env.settings.PLUGINS.append("flamingo.core.plugins.Media")
+
+    flamingo_env.write("/content/foo.jpg", "1")
+
+    flamingo_env.write(
+        "/content/index.rst",
+        """
+
+
+    Hello World
+    ===========
+
+    .. img:: foo.jpg
+        :alt: foo "bar" baz
+        :title: bar "foo" baz
+
+    """,
+    )
+
+    flamingo_env.build()
+
+    html = flamingo_env.read("/output/index.html")
+
+    assert 'alt=" foo "bar" baz"' not in html
+    assert 'title="bar "foo" baz"' not in html
